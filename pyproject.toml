@@ -1,0 +1,78 @@
+[project]
+name = "kn-research-process"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = [
+    "ipykernel>=7.3.0",
+    "kaxanuk-data-curator>=0.49.1",
+    "matplotlib>=3.11.1",
+    "numpy>=2.5.2",
+    "pandas>=2.3.3",
+    "pandas-stubs~=2.3.3",
+    "python-dotenv>=1.2.3",
+    "requests>=2.34.2",
+]
+
+[dependency-groups]
+dev = [
+    "apm-cli>=0.28.0",
+]
+notebook = [
+    "ipykernel>=7.3.0",
+    "jupyterlab>=4.6.3",
+]
+
+# Ruff is configured to check the house style in `.claude/rules/`, so the rules are enforceable
+# rather than merely written down.  Run it without installing anything:
+#
+#     uvx ruff check .
+#
+# Rulesets left deliberately unselected, because they contradict the house style:
+#
+#   UP  - would rewrite quoted annotations into `from __future__` imports, which the style guide
+#         forbids outright; quoted annotations are the prescribed alternative.
+#   RET - RET504 would inline `result = ...; return result`, but the guide keeps the intermediate
+#         variable on purpose, so the object survives for a debugger to look at.
+#   PL  - PLC0415 would flag the licensed-engine imports made inside a guard, which are late by
+#         necessity: the engines are optional and absent from a fresh clone.
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+
+[tool.ruff.lint]
+select = [
+    "C4",
+    "E",
+    "F",
+    "I",
+    "N",
+    "SIM",
+    "W",
+]
+ignore = [
+    # Fires on `TRADING_DAYS[TRADING_DAYS >= first_day]`, reading an UPPERCASE name as a literal.
+    # The house style requires constants to be uppercase, so this rule misfires by construction,
+    # and its suggested rewrite (`first_day <= TRADING_DAYS`) reads worse inside a filter.
+    "SIM300",
+]
+
+# Every notebook resolves the repository root and puts `Experiments/` on the import path before
+# importing `engine` and `panel` from it.  The import cannot come first: there is nothing to
+# import from until the path is set.
+[tool.ruff.lint.per-file-ignores]
+"*.ipynb" = ["E402"]
+
+# KaxaNuk libraries are third-party, but reading them in their own block is how you see at a
+# glance which stage of the platform a module sits on.
+[tool.ruff.lint.isort]
+section-order = [
+    "future",
+    "standard-library",
+    "third-party",
+    "kaxanuk",
+    "first-party",
+    "local-folder",
+]
+
+[tool.ruff.lint.isort.sections]
+kaxanuk = ["kaxanuk"]

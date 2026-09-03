@@ -1,0 +1,38 @@
+# The build context only has to be complete enough for `uv sync --frozen`
+# (pyproject.toml + uv.lock). Everything the notebooks actually read arrives at
+# runtime: the devcontainer bind-mounts the repo over /workspace, shadowing the
+# COPY'd tree entirely. So anything bulky is dropped here to keep the context
+# small, even when it is tracked in git.
+
+.git
+.github
+.idea
+.claude
+.agents
+.mypy_cache
+.pytest_cache
+.ruff_cache
+.venv
+__pycache__
+apm_modules
+dist
+build
+
+# Credentials never enter the image; they are injected as environment variables.
+Config
+
+# Pipeline data -- regenerable by Universe/universe.ipynb, Data/curator.py and
+# Data/refinery.py, or copied in from the vendor (Data/Curator/Factors).
+**/*.csv
+**/*.parquet
+**/*.xlsx
+
+# Literature and generated charts.
+Bibliotheca
+**/*.pdf
+**/*.png
+**/*.jpg
+**/*.jpeg
+
+# Standalone interactive charts: plotly.js is inlined, so each is several MB.
+**/*.html

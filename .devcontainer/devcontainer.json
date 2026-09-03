@@ -1,0 +1,38 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/python
+{
+    "name": "KaxaNuk KN Research Process dev container",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "workspace-knrp",
+    "workspaceFolder": "/workspace",
+
+    // Jupyter Lab, for running the pipeline notebooks from the container.
+//    "forwardPorts": [8888],
+//    "portsAttributes": {
+//        "8888": {
+//            "label": "Jupyter Lab",
+//            "onAutoForward": "notify"
+//        }
+//    },
+
+    // Start Jupyter
+    "postCreateCommand": "/usr/local/bin/start-notebook.py",
+
+    // Configure tool-specific properties.
+    "customizations": {
+        "jetbrains": {
+            "backend": "PyCharm"
+        },
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-toolsai.jupyter"
+            ],
+            // The project lives in the uv-managed 3.14 venv, not the image's
+            // Python -- point the editor at it so imports resolve.
+            "settings": {
+                "python.defaultInterpreterPath": "/opt/venv/bin/python"
+            }
+        }
+    }
+}
