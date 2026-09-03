@@ -154,11 +154,14 @@ available elsewhere.**
 is right twice over: no binaries in the tree, and no redistribution of licensed material.
 **Do not download papers, books or datasets without asking.**
 
-> **Read a source because you have a question, not because it is a good source.** The seven
-> research-integrity notes ship with the template because every strategy needs them before it has a
-> question of its own; everything else in the folder should arrive because a result raised a
-> question. On the reference implementation, the single most useful note was a book read *after*
-> attribution reported something nobody could explain — and it supplied the explanation.
+> **Read a source because you have a question, not because it is a good source.** Nine notes ship
+> with the template, in two parts of `BIBLIOGRAPHY.md`: **Part 0**, the two books whose method the
+> process runs — Paleologo for step 6 and the alpha decomposition, Grinold & Kahn for the information
+> coefficient behind step 3 — and **Part 5**, the seven papers behind the controls. Every strategy
+> needs those before it has a question of its own; everything else arrives because a result raised
+> one. Part 0 also carries the lineage the process descends from, as provenance rather than notes.
+> On the reference implementation, the single most useful note was a book read *after* attribution
+> reported something nobody could explain — and it supplied the explanation.
 
 ## Universe — what is investable
 

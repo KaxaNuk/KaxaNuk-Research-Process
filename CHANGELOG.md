@@ -34,6 +34,36 @@ convention. The first MAJOR bump a repository built from this template ever take
 
 ---
 
+## 0.2.0 (2026-09-03)
+
+**MINOR** — additive. The Bibliotheca gains the two books whose method the process runs, and the
+lineage the process descends from.
+
+### Added
+
+* **Part 0 of `Bibliotheca/BIBLIOGRAPHY.md` — the process itself.** A lineage table from the KaxaNuk
+  deck *Intro to Investment Research*: fifteen questions the field asked in order, who answered each,
+  what it settled, and which step or rule of this process descends from it. Provenance, not notes —
+  none of the rows is a reading note, because the process is what they changed.
+* **Two book notes**, written for any strategy and asking to be re-read against yours:
+  [Paleologo (2021)](Bibliotheca/Books/Paleologo_2021_Advanced_Portfolio_Management/INDEX.md) — total
+  PnL as an idiosyncratic series plus a factor series (section 8.1.1, the contract of step 6),
+  selection, sizing and timing by counterfactual books, and why a factor model built on relative
+  factors is blind to an absolute rule; and
+  [Grinold & Kahn (2000)](Bibliotheca/Books/Grinold_Kahn_2000_Active_Portfolio_Management/INDEX.md) —
+  the information ratio, the fundamental law IR ≈ IC × √BR, the IC as an out-of-sample correlation,
+  the information horizon behind the analyzer's decay chart, and costs as the price of breadth.
+* Part 5 now states the one control with no paper behind it — look-ahead — rather than citing a weak
+  fit, and the *cited without a note* section records Paleologo (2025), Brinson & Fachler (1985) and
+  Brinson, Hood & Beebower (1986) as the trail behind the attribution stage.
+
+### Changed
+
+* `AGENTS.md`'s Bibliotheca section says nine notes ship, in Parts 0 and 5, bracketing the four
+  parts that belong to the strategy.
+
+---
+
 ## 0.1.0 (2026-09-03)
 
 **MINOR** — the template instantiated. No strategy, no data, no result: the KN Research Process with
