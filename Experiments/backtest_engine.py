@@ -7,7 +7,11 @@ backtest that disagrees with the engine is worse than no backtest at all, becaus
 reader to pick whichever number they prefer.  The engine models integer share counts, per-share
 commission on the unadjusted price and a cash reserve, and it is what the results are quoted on.
 
-Three things this module owns, so the three experiment notebooks share one code path:
+**Step 5 only.** Attribution is a different KaxaNuk library under a different licence, and it
+lives in `attribution_analysis.py` -- which means a book can be priced by somebody who has no
+attribution licence at all.
+
+Three things this module owns, so every experiment notebook shares one code path:
 
 - **Shaping** a `dates x companies` weight frame into the `Ticker x dates` CSV the engine loads.
 - **Running** the engine over that file, including the gross/net exposure limits a long/short
@@ -23,13 +27,8 @@ strictly backward-looking, so it introduces no information the strategy did not 
 """
 
 __all__ = [
-    "ATTRIBUTION_HOLDINGS_FILE",
-    "ATTRIBUTION_RETURNS_DAY_FIRST",
-    "ATTRIBUTION_RETURNS_FILE",
-    "ATTRIBUTION_RETURNS_SERIES_NAME",
     "BENCHMARK_TICKERS",
     "CASH_TICKER",
-    "FACTOR_FILE_PATTERN",
     "EngineRun",
     "EngineSettings",
     "align_to_common_start",
@@ -48,24 +47,20 @@ import re
 
 import pandas
 
-# What every experiment is scored against, in the order results report them; the first is
-# primary.  `Data/curator.py` decides what gets *fetched* -- SPY and QQQ are downloaded, KN600 is
-# supplied by hand -- and this decides what gets *reported*.  A ticker named here without a price
-# file in the market-data directory is dropped by the engine, so `available_benchmarks` checks
+# What every experiment is scored against, in the order results report them; the first is primary.
+# `Data/curator.py` decides what gets *fetched*; this decides what gets *reported against*, and
+# keeping the two apart is what lets a benchmark be downloaded for reference without being promoted
+# to a headline comparison.  **Both lists have to name the same tickers**: one named here without a
+# price file in the market-data directory is dropped by the engine, so `available_benchmarks` checks
 # for the files before a run rather than letting a benchmark vanish from a results table.
+#
+# AOR is primary because the example is a multi-asset book, and a multi-asset book measured only
+# against the S&P 500 is being asked the wrong question.  SPY is second because somebody will ask.
 BENCHMARK_TICKERS = (
+    "AOR",
     "SPY",
-    "QQQ",
-    "KN600",
 )
 CASH_TICKER = "BIL"
-
-# The inputs the attribution stage reads, all supplied by hand into `Data/Curator/`.
-ATTRIBUTION_HOLDINGS_FILE = "index_daily_holdings_2017.csv"
-ATTRIBUTION_RETURNS_DAY_FIRST = True
-ATTRIBUTION_RETURNS_FILE = "kn600_returns.csv"
-ATTRIBUTION_RETURNS_SERIES_NAME = "KN600"
-FACTOR_FILE_PATTERN = "f_*.csv"
 
 # The three price columns, each doing a different job.  Getting them out of step is silent: the
 # P&L and the attribution would quietly run on different bases and the disagreement would surface
@@ -159,10 +154,11 @@ def available_benchmarks(
     """
     Which of `tickers` actually have a price file, reporting the ones that do not.
 
-    A fresh clone has no `KN600.csv` -- that index is supplied by hand, not downloaded (see
-    README.md) -- and the engine raises if it is told to measure against a benchmark it cannot
-    price.  Measuring against two benchmarks instead of three is a much better outcome than a
-    crash, so the missing ones are named and dropped rather than allowed to stop the run.
+    The engine raises if it is told to measure against a benchmark it cannot price, and a
+    benchmark can be missing for an ordinary reason -- a hand-supplied index nobody has dropped in
+    yet, or a download that failed for one ticker.  Naming the missing ones and carrying on is a
+    much better outcome than a crash, provided they are **named**: a benchmark that vanishes
+    silently from a results table is the graceful degradation `AGENTS.md` forbids.
     """
     present = tuple(
         ticker

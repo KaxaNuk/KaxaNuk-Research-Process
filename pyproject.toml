@@ -63,8 +63,12 @@ ignore = [
 "*.ipynb" = ["E402"]
 
 # KaxaNuk libraries are third-party, but reading them in their own block is how you see at a
-# glance which stage of the platform a module sits on.
+# glance which stage of the platform a module sits on. `jump_model` is declared local because
+# neither `Data/Refinery/` nor `Experiments/` is a package: each is put on the path by the module
+# that loads it, and its siblings are imported by bare name, which Ruff would otherwise file
+# alongside numpy and pandas.
 [tool.ruff.lint.isort]
+known-local-folder = ["jump_model", "securities_panel"]
 section-order = [
     "future",
     "standard-library",

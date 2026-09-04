@@ -21,6 +21,7 @@ panel, over an identical window, keyed identically.
 
 __all__ = [
     "BASE_PANEL_COLUMNS",
+    "CLASSIFICATION_COLUMNS",
     "DATE_COLUMN",
     "MARK_PRICE_COLUMN",
     "TRADE_PRICE_COLUMN",
@@ -40,13 +41,21 @@ TRADE_PRICE_COLUMN = "c_vwap_dividend_and_split_adjusted"
 
 # The columns every experiment needs regardless of its rule.  An experiment adds its own signal
 # and sizing columns on top:
-#     load_company_panel(..., columns=(*BASE_PANEL_COLUMNS, "c_my_signal"))
+#     load_company_panel(..., columns=(*BASE_PANEL_COLUMNS, "r_regime_bull"))
 BASE_PANEL_COLUMNS = (
     DATE_COLUMN,
     MARK_PRICE_COLUMN,
     TRADE_PRICE_COLUMN,
-    "sector_current",
-    "industry_current",
+)
+
+# Classification columns joined onto the panel by `Data/refinery.py`, carried into the metadata
+# frame so a book can be grouped for reporting.  They are named here rather than in
+# `BASE_PANEL_COLUMNS` because they are optional: a security master that classifies securities by
+# something else, or not at all, changes this tuple and nothing else.  A column absent from the
+# refined files is skipped rather than raising -- the panel is still a panel without it.
+CLASSIFICATION_COLUMNS = (
+    "asset_class_current",
+    "asset_group_current",
 )
 
 
@@ -103,11 +112,28 @@ def load_company_panel(
 
         raise FileNotFoundError(msg)
 
+    available = set(pandas.read_csv(paths[0], nrows=0).columns)
+    missing = [column for column in columns if column not in available]
+    if len(missing) > 0:
+        msg = " ".join(
+            (
+                f"the refined files do not carry {missing}.",
+                "Either the Refinery has not produced them yet (rerun Data/refinery.py) or the",
+                "experiment's setup cell names a column that no longer exists.",
+            )
+        )
+
+        raise KeyError(msg)
+
+    # Classification is optional: an experiment that reports by group gets it, one whose security
+    # master carries no classification simply has no group column in its metadata.
+    classification = [column for column in CLASSIFICATION_COLUMNS if column in available]
+
     frames = []
     for path in paths:
         frame = pandas.read_csv(
             path,
-            usecols=list(columns),
+            usecols=[*columns, *classification],
             parse_dates=[DATE_COLUMN],
         )
         frame.insert(0, "ticker", path.stem)
@@ -176,8 +202,10 @@ def load_company_panel(
         .groupby("company")
         .agg(
             ticker=("ticker", "last"),
-            sector=("sector_current", "last"),
-            industry=("industry_current", "last"),
+            **{
+                column.removesuffix("_current"): (column, "last")
+                for column in classification
+            },
         )
     )
     name_by_isin = dict(

@@ -56,7 +56,7 @@ unchanged, and compare the Sharpe with the real book. Drop economically insignif
 first, or the analysis is dominated by slivers nobody was betting on.
 
 > **What this implies for a strategy built on this process.** Every counterfactual is a weight file,
-> and `Experiments/engine.py` prices weight files — so this decomposition costs one engine pass per
+> and `Experiments/backtest_engine.py` prices weight files — so this decomposition costs one engine pass per
 > counterfactual and no new data. Equal-weight the real book for sizing; draw random names from the
 > eligible pool at the same sizes for selection; shift the entry dates for timing. The procedure,
 > with the weight-file recipes, is the `alpha-decomposition` skill in the KaxaNuk APM package.

@@ -26,7 +26,7 @@ graduates.
 
 | # | Criterion | Why it is on the list |
 | --- | --- | --- |
-| 1 | **Beats the benchmarks on risk-adjusted return** — engine Sharpe above SPY, QQQ and KN600, *and* above its own control row, over the same window | A strategy that only beats the index on raw return is usually just carrying more risk |
+| 1 | **Beats the benchmarks on risk-adjusted return** — engine Sharpe above every benchmark in `engine.BENCHMARK_TICKERS`, *and* above its own control row, over the same window | A strategy that only beats the index on raw return is usually just carrying more risk |
 | 2 | **Attribution shows selection or idiosyncratic alpha**, not a pure factor exposure | If the return decomposes entirely into beta and size, the honest product is a cheaper factor fund, not this |
 | 3 | **Conclusions survive parameter perturbation, and the trial count is deflated** | A result that appears at one threshold and vanishes at the next is a sweep artefact. Read the direction across a sweep, never the single best cell |
 | 4 | **Costs and capacity are modelled and stated** — turnover, commission, and any assumption the engine does *not* model, borrow cost above all | The gap between a backtest and a fill is where strategies die |

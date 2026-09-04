@@ -31,7 +31,7 @@ raw return.
 > **What this implies for a strategy built on this process.** Every table in `RESULTS.md` is read
 > against a control row for this reason: the number that carries meaning is the gap to the
 > benchmark's own rule on the same window, per unit of risk, not the headline CAGR. It is also why
-> the Backtest Engine's Sharpe against SPY, QQQ and KN600 is criterion 1 of the graduation gate and
+> the Backtest Engine's Sharpe against every declared benchmark is criterion 1 of the graduation gate and
 > raw return is not.
 
 ## 2. The fundamental law of active management: IR ≈ IC × √BR

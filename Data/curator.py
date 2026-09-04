@@ -1,56 +1,56 @@
 """
-Data Curator stage: download market data for the universe and the benchmarks.
+Data Curator stage: download one price file per identifier, with its `c_*` columns computed.
 
-Block 1 of 3 in the Data stage.  This module owns everything that touches a data provider:
+**Run order: steps 1 and 2 of 6** (see README.md).  `--report` is step 1 and touches no
+network; the plain run is step 2.  Nothing has to have run before it.  Next is
+`Universe/universe.ipynb`, which profiles what this wrote.
 
-    Data/curator.py            -- this file, the download driver
-    Data/Curator/
-        custom_calculations.py -- the `c_*` functions the curator computes during the pull
-        Time_Series/           -- one file per identifier: the universe, the cash proxy, and the
-                                  tradable benchmarks
-        Benchmarks/            -- NOT written here.  The drop zone for index data no provider
-                                  serves (the KaxaNuk KN600 family), supplied by hand today and
-                                  downloaded by this script once that fabric exists
-        Factors/               -- NOT written here.  The same, for the factor-model files the
-                                  attribution stage reads
+Block 1 of 3 in the Data stage, and the only thing in this repository that talks to a data
+provider.
 
-Nothing under `Data/` is committed to version control except code: every file is downloaded
-here, derived by `Data/refinery.py`, or dropped in by the user.  A fresh clone therefore starts
-empty and rebuilds.
+    Data/curator.py                     this file -- the download driver
+    Data/Curator/custom_calculations.py the `c_*` columns, computed during the pull
+    Data/Curator/Time_Series/           one CSV per identifier: universe, cash proxy, benchmarks
+    Data/Curator/Benchmarks/            NOT written here -- the drop zone for index files no
+                                        provider serves, which attribution reads
+    Data/Curator/Factors/               NOT written here -- the same, for factor-model files
 
-The tradable benchmarks land in `Time_Series/` alongside the universe rather than in a directory
-of their own.  They have to: the backtest engine resolves every ticker -- holdings and benchmarks
-alike -- against one market-data directory, so a benchmark filed anywhere else is a benchmark the
-engine cannot price.  Keeping them apart would be tidier on disk and broken in use.  Nothing
-leaks into the cross-section as a result, because `Data/refinery.py` excludes them by name.
+Nothing under `Data/` is committed.  Every file there is downloaded here, derived by
+`Data/refinery.py`, or dropped in by hand, so a fresh clone starts empty and rebuilds.
+
+The cash proxy and the benchmarks land in `Time_Series/` alongside the universe, and they have
+to: the backtest engine resolves every ticker it prices -- holdings and benchmarks alike --
+against one market-data directory, so a benchmark filed anywhere else is a benchmark the engine
+cannot price.  Nothing leaks into the cross-section as a result, because `Data/refinery.py` takes
+its membership from `Universe/Investable_Universe.csv` and those three are not in it.
 
 Run it directly:
 
-    uv run python Data/curator.py                 # download whatever is missing or stale
-    uv run python Data/curator.py --mode smoke    # a handful of liquid names
-    uv run python Data/curator.py --report        # no network at all; report what is on disk
-    uv run python Data/curator.py --force         # refetch everything
+    uv run python Data/curator.py --report    # no network at all; say what is on disk
+    uv run python Data/curator.py             # download whatever is missing or stale
+    uv run python Data/curator.py --mode smoke   # three tickers, for a first run
+    uv run python Data/curator.py --force        # refetch everything
 
-The run is **resumable**: one `main()` call per identifier means an interrupted run picks up
-where it stopped, and a single bad ticker costs one ticker rather than the whole batch.  Files
-already on disk with the expected header are skipped.
+The run is **resumable**.  One provider call per identifier means an interrupted run picks up
+where it stopped, and one bad ticker costs one ticker rather than the whole batch.  A file already
+on disk whose header matches `OUTPUT_COLUMNS` is skipped.
 """
 
 __all__ = [
     "build_configuration",
-    "build_fundamental_data_provider",
     "build_market_data_provider",
     "build_output_handlers",
+    "download_identifier",
     "download_identifiers",
     "load_custom_calculation_modules",
     "main",
     "read_identifiers",
     "report_on_disk",
     "report_supplied_files",
-    "stage_supplied_price_series",
 ]
 
 import argparse
+import collections
 import concurrent.futures
 import csv
 import dataclasses
@@ -66,92 +66,61 @@ import time
 import types
 
 import dotenv
-import numpy
-import pandas
 
 import kaxanuk.data_curator
 import kaxanuk.data_curator.data_providers
 import kaxanuk.data_curator.entities
 import kaxanuk.data_curator.output_handlers
 
-# --- Paths ---------------------------------------------------------------------------------
+# --- Paths -----------------------------------------------------------------------------------
 REPOSITORY_ROOT = pathlib.Path(__file__).resolve().parent.parent
-# Where the user drops the index and factor files no provider serves.  This script never writes
-# to either; it only reports on what it finds, so a missing file is visible before a notebook
-# fails on it.
-SUPPLIED_BENCHMARK_DIRECTORY = REPOSITORY_ROOT / "Data" / "Curator" / "Benchmarks"
-SUPPLIED_FACTOR_DIRECTORY = REPOSITORY_ROOT / "Data" / "Curator" / "Factors"
 CUSTOM_CALCULATIONS_PATH = REPOSITORY_ROOT / "Data" / "Curator" / "custom_calculations.py"
 ENVIRONMENT_PATH = REPOSITORY_ROOT / "Config" / ".env"
-RAW_UNIVERSE_PATH = REPOSITORY_ROOT / "Universe" / "Investable_Universe.csv"
-SECURITY_MASTER_PATH = REPOSITORY_ROOT / "Universe" / "Security_Master.csv"
-TIME_SERIES_OUTPUT_DIRECTORY = REPOSITORY_ROOT / "Data" / "Curator" / "Time_Series"
+INVESTABLE_UNIVERSE_PATH = REPOSITORY_ROOT / "Universe" / "Investable_Universe.csv"
+SUPPLIED_BENCHMARK_DIRECTORY = REPOSITORY_ROOT / "Data" / "Curator" / "Benchmarks"
+SUPPLIED_FACTOR_DIRECTORY = REPOSITORY_ROOT / "Data" / "Curator" / "Factors"
+TIME_SERIES_DIRECTORY = REPOSITORY_ROOT / "Data" / "Curator" / "Time_Series"
 
-# --- Providers and window ------------------------------------------------------------------
-END_DATE = datetime.date(2026, 7, 1)
-FUNDAMENTAL_DATA_PROVIDER = None  # None skips fundamentals entirely; this strategy needs none.
+# --- Provider and window ---------------------------------------------------------------------
+# The window starts before the earliest asset's inception on purpose: the panel is then ragged at
+# the left edge, which is what a real universe looks like, and `Universe/universe.ipynb` measures
+# exactly how ragged.  The end date is fixed rather than "today" so two people running this a week
+# apart still get comparable files.
+END_DATE = datetime.date(2026, 9, 1)
+FUNDAMENTAL_DATA_PROVIDER = None  # None skips fundamentals; a price-driven strategy needs none.
 MARKET_DATA_PROVIDER = "financial_modeling_prep"
 PERIOD = "quarterly"  # Only consulted when fundamentals are enabled.
-START_DATE = datetime.date(2015, 1, 1)
+START_DATE = datetime.date(2010, 1, 1)
 
-# --- Identifiers ---------------------------------------------------------------------------
-# Three things ride along with every mode, all for the same reason: the backtest engine resolves
-# every ticker it is given against one market-data directory, so anything it has to price needs a
-# file there.
+# --- Identifiers -----------------------------------------------------------------------------
+# The investable universe comes from `Universe/Investable_Universe.csv`.  Two other groups ride
+# along with every mode, because the engine has to be able to price them:
 #
 #   - the cash proxy, because the engine's weight file has no cash row, so "go to cash" has to be
 #     expressible as a holding in a real, priced, transaction-costed instrument;
-#   - the tradable benchmarks, because they are what the strategy is measured against.
+#   - the benchmarks, because they are what the strategy is reported against.
 #
-# KN600, the KaxaNuk US equity index, is deliberately absent from the downloads: no provider
-# serves it, so it is supplied by hand into Benchmarks/.  See `report_supplied_files`.
-#
-# To swap in a different benchmark, edit the constants below and the matching ones in
-# `Experiments/engine.py`, which decides what results are *reported* against.  This file decides
-# what gets *fetched*; keeping the two apart is why a benchmark can be downloaded for the panel
-# without being promoted to a headline comparison.
+# To change what a result is measured against, edit `BENCHMARK_IDENTIFIERS` here *and*
+# `BENCHMARK_TICKERS` in `Experiments/backtest_engine.py`.  Keeping those apart is deliberate:
+# this file
+# decides what is *fetched*, that one decides what is *reported against*, and a benchmark can be
+# downloaded for reference without being promoted to a headline comparison.
 BENCHMARK_IDENTIFIERS = (
-    "SPY",
-    "QQQ",
+    "AOR",  # iShares Core 60/40 Balanced Allocation
+    "SPY",  # S&P 500, for the "why not just hold equities?" comparison
 )
 CASH_TICKER = "BIL"
-FACTOR_FILE_PATTERN = "f_*.csv"
-# Price series that have to reach the market-data directory, because the engine prices every
-# ticker it is given from there and a benchmark it cannot price is a benchmark it silently drops.
-SUPPLIED_PRICE_SERIES = ("KN600.csv",)
-# Everything a fresh clone must be handed by a person: the supplied price series plus the two
-# tables the attribution stage reads.  Named so a clone is told what is missing rather than
-# discovering it three notebooks later.
-SUPPLIED_BENCHMARK_FILES = SUPPLIED_PRICE_SERIES + (
-    "index_daily_holdings_2017.csv",
-    "kn600_returns.csv",
-)
-# Columns the engine asks for by name, each paired with the `m_*` twin to fall back on.  An index
-# level series carries no reconstructed VWAP -- our ticker files only have one because the
-# custom calculations rebuild it from the provider's nulls -- but for an already-adjusted level
-# the twin *is* the same series, and a benchmark is never traded, so the column only has to
-# satisfy the loader.
-ENGINE_COLUMN_FALLBACKS = {
-    "c_vwap": "m_vwap",
-    "c_vwap_dividend_and_split_adjusted": "m_vwap_dividend_and_split_adjusted",
-}
-SMOKE_TICKERS = (
-    "AAPL",
-    "MSFT",
-    "JPM",
-    "XOM",
-    "JNJ",
-    "PG",
-    "NEE",
-    "AMT",
+SMOKE_TICKERS: tuple[str, ...] = (
+    # --- example: begin ---
+    "IVV",
+    "AGG",
+    "GLD",
+    # --- example: end ---
 )
 
-# --- Output columns ------------------------------------------------------------------------
-# Market data only.  All three adjustment families are carried in full (OHLC + vwap + volume):
-# the cost of an unused column is bytes on disk, while the cost of a missing one is a full
-# refetch of every identifier.  Widening this tuple changes the header, so the staleness check
-# below refetches everything on the next run -- intended, because the directory can then never
-# end up holding a mix of schemas.
+# --- Output columns --------------------------------------------------------------------------
+# All three adjustment families are carried in full.  An unused column costs bytes on disk; a
+# missing one costs a refetch of every identifier.
 BASE_COLUMNS = (
     "m_date",
     "m_open",
@@ -173,7 +142,19 @@ BASE_COLUMNS = (
     "m_vwap_dividend_and_split_adjusted",
     "m_volume_dividend_and_split_adjusted",
 )
+# Every name here is a function in `Data/Curator/custom_calculations.py`.
 CUSTOM_COLUMNS = (
+    "c_return_1d",
+    # --- example: begin ---
+    "c_return_ewm_hl5",
+    "c_return_ewm_hl10",
+    "c_return_ewm_hl21",
+    "c_downside_deviation_log_hl5",
+    "c_downside_deviation_log_hl21",
+    "c_sortino_hl5",
+    "c_sortino_hl10",
+    "c_sortino_hl21",
+    # --- example: end ---
     "c_daily_traded_value_1d",
     "c_daily_traded_value_63d",
     "c_split_ratio",
@@ -183,13 +164,15 @@ CUSTOM_COLUMNS = (
 )
 OUTPUT_COLUMNS = BASE_COLUMNS + CUSTOM_COLUMNS
 
-# --- Run behaviour -------------------------------------------------------------------------
+# --- Run behaviour ---------------------------------------------------------------------------
+# Everything attribution needs and no provider serves.  Reported so a clone learns what is missing
+# from the first command it runs, rather than from a notebook failing three stages later.
+FACTOR_FILE_PATTERN = "f_*.csv"
 LOGGER_LEVEL = logging.WARNING
 MAX_ATTEMPTS = 3
 OUTPUT_FORMATS = ("csv",)  # Any non-empty subset of ("csv", "parquet"); csv is required.
-PROGRESS_EVERY = 25
 RETRY_BACKOFF_SECONDS = 2
-SPARE_CORES = 2  # Left free so the machine stays responsive during a full run.
+SPARE_CORES = 2  # Left free so the machine stays usable during a full run.
 TRANSIENT_ERRORS = (
     http.client.HTTPException,
     OSError,
@@ -200,17 +183,10 @@ _OUTPUT_HANDLERS_BY_FORMAT = {
     "parquet": kaxanuk.data_curator.output_handlers.ParquetOutput,
 }
 _PRINT_LOCK = threading.Lock()
-
-
-@dataclasses.dataclass
-class DownloadState:
-    """Running tally of one `download_identifiers` call, shared across its worker threads."""
-
-    total: int
-    failed: int = 0
-    processed: int = 0
-    skipped: int = 0
-    failures: dict[str, str] = dataclasses.field(default_factory=dict)
+# Providers hold per-instance connection state, so each worker thread gets its own set rather than
+# sharing one.  A transient error replaces them, because a dropped connection is exactly what
+# leaves that state dirty.
+_THREAD_STATE = threading.local()
 
 
 @dataclasses.dataclass
@@ -222,39 +198,21 @@ class OnDiskReport:
 
 
 def build_configuration(
-    identifiers: tuple[str, ...],
+    identifier: str,
 ) -> "kaxanuk.data_curator.entities.Configuration":
-    """Assemble the Configuration entity the curator is driven by."""
+    """Assemble the Configuration entity one download is driven by."""
 
     return kaxanuk.data_curator.entities.Configuration(
         start_date=START_DATE,
         end_date=END_DATE,
         period=PERIOD,
-        identifiers=identifiers,
+        identifiers=(identifier,),
         columns=OUTPUT_COLUMNS,
     )
 
 
-def build_fundamental_data_provider() -> (
-    "kaxanuk.data_curator.data_providers.DataProviderInterface | None"
-):
-    """Fresh fundamental-data provider, or None while fundamentals are disabled."""
-    if FUNDAMENTAL_DATA_PROVIDER is None:
-
-        return None
-
-    return kaxanuk.data_curator.data_providers.FinancialModelingPrep(
-        api_key=_read_api_key(),
-    )
-
-
 def build_market_data_provider() -> "kaxanuk.data_curator.data_providers.DataProviderInterface":
-    """
-    Fresh market-data provider instance.
-
-    Providers keep per-instance state after `initialize()`, so every worker thread builds its own
-    rather than sharing one.
-    """
+    """A fresh market-data provider instance."""
 
     return kaxanuk.data_curator.data_providers.FinancialModelingPrep(
         api_key=_read_api_key(),
@@ -272,6 +230,53 @@ def build_output_handlers(
     ]
 
 
+def download_identifier(
+    identifier: str,
+    output_directory: pathlib.Path,
+    custom_calculation_modules: list[types.ModuleType],
+    force_redownload: bool,
+) -> str:
+    """
+    Download one identifier and return its outcome: skipped, processed, or a failure reason.
+
+    Never raises.  One bad ticker has to cost one ticker, not the batch, so every exception is
+    turned into a reason string the caller reports and moves past.
+    """
+    output_path = output_directory / f"{identifier}.csv"
+    if _stale_reason(output_path, force_redownload) is None:
+
+        return "skipped"
+
+    for attempt in range(1, MAX_ATTEMPTS + 1):
+        try:
+            kaxanuk.data_curator.main(
+                configuration=build_configuration(identifier),
+                market_data_provider=_thread_market_data_provider(),
+                fundamental_data_provider=_thread_fundamental_data_provider(),
+                output_handlers=_thread_output_handlers(output_directory),
+                custom_calculation_modules=custom_calculation_modules,
+                logger_level=LOGGER_LEVEL,
+            )
+            if output_path.is_file():
+
+                return "processed"
+
+            return "failed: no output produced (unknown identifier, or no data in the window)"
+
+        except TRANSIENT_ERRORS as error:
+            if attempt >= MAX_ATTEMPTS:
+
+                return f"failed: {type(error).__name__}: {error} (after {attempt} attempts)"
+
+            time.sleep(RETRY_BACKOFF_SECONDS * attempt)
+            _reset_thread_providers()
+        except Exception as error:  # noqa: BLE001 - one bad ticker must not stop the batch.
+
+            return f"failed: {type(error).__name__}: {error}"
+
+    return "failed: retries exhausted"
+
+
 def download_identifiers(
     identifiers: tuple[str, ...],
     output_directory: pathlib.Path,
@@ -279,64 +284,54 @@ def download_identifiers(
     label: str,
     force_redownload: bool = False,
     max_threads: int | None = None,
-) -> DownloadState:
+) -> collections.Counter:
     """
-    Resumable, multithreaded per-identifier download into `output_directory`.
+    Download every identifier into `output_directory`, in parallel, and tally the outcomes.
 
-    Downloads are network-bound, so threads rather than processes are the right tool.  Identifiers
-    are split into one contiguous chunk per worker and each worker builds its own providers and
-    output handlers, so no two threads share a writer or a connection.
+    Downloads are network-bound, so threads rather than processes are the right tool.  Work is
+    handed out one identifier at a time instead of in fixed blocks, so a slow ticker delays only
+    itself.
     """
     output_directory.mkdir(parents=True, exist_ok=True)
-    state = DownloadState(total=len(identifiers))
     worker_count = _thread_count(len(identifiers), max_threads)
     print(
-        " ".join(
-            (
-                f"--- {label}: {len(identifiers)} identifier(s) ->",
-                f"{output_directory.name}/ on {worker_count} thread(s) ---",
-            )
-        )
+        f"--- {label}: {len(identifiers)} identifier(s)"
+        f" -> {output_directory.name}/ on {worker_count} thread(s) ---"
     )
 
     started_at = time.monotonic()
-    chunks = _chunk_identifiers(identifiers, worker_count)
-    with concurrent.futures.ThreadPoolExecutor(max_workers=len(chunks)) as executor:
-        futures = [
+    outcomes = collections.Counter()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=worker_count) as executor:
+        futures = {
             executor.submit(
-                _download_chunk,
-                chunk,
+                download_identifier,
+                identifier,
                 output_directory,
                 custom_calculation_modules,
-                state,
                 force_redownload,
-            )
-            for chunk in chunks
-        ]
+            ): identifier
+            for identifier in identifiers
+        }
         for future in concurrent.futures.as_completed(futures):
-            future.result()  # Re-raise anything a worker could not handle itself.
-    elapsed_seconds = time.monotonic() - started_at
+            identifier = futures[future]
+            outcome = future.result()
+            outcomes[outcome.split(":")[0]] += 1
+            _report_progress(identifier, outcome, sum(outcomes.values()), len(identifiers))
 
     print(
-        " ".join(
-            (
-                f"{label} done in {elapsed_seconds:,.0f}s -",
-                f"processed={state.processed} skipped={state.skipped} failed={state.failed}",
-            )
-        )
+        f"{label} done in {time.monotonic() - started_at:,.0f}s -"
+        f" {dict(outcomes)}"
     )
-    for identifier, detail in sorted(state.failures.items()):
-        print(f"  {identifier}: {detail}")
 
-    return state
+    return outcomes
 
 
 def load_custom_calculation_modules() -> list[types.ModuleType]:
     """
     Import `Data/Curator/custom_calculations.py` as a module object.
 
-    It is loaded by path rather than by import statement because `Data/` is a plain directory
-    rather than a package, and the curator wants a module object either way.
+    Loaded by path rather than by import statement because `Data/` is a plain directory rather
+    than a package, and the Curator wants a module object either way.
     """
     specification = importlib.util.spec_from_file_location(
         "curator_calculations",
@@ -362,7 +357,6 @@ def main() -> int:
         "--mode",
         choices=(
             "full",
-            "sector_sample",
             "smoke",
         ),
         default="full",
@@ -389,52 +383,49 @@ def main() -> int:
         default=None,
         help="worker threads (default: one per core, less a couple of spares)",
     )
-    parser.add_argument(
-        "--sector-sample-size",
-        type=int,
-        default=3,
-        help="industries sampled per sector when --mode sector_sample (default: 3)",
-    )
     arguments = parser.parse_args()
 
     logging.getLogger().setLevel(LOGGER_LEVEL)
     _validate_output_formats()
 
-    identifiers = read_identifiers(arguments.mode, arguments.sector_sample_size)
+    try:
+        identifiers = read_identifiers(arguments.mode)
+    except (FileNotFoundError, ValueError) as error:
+        # The universe is the one input a person has to supply, so getting it wrong is the most
+        # likely first failure. A traceback would say the same thing and read like a bug.
+        print(f"Cannot read the universe: {error}")
+
+        return 1
+
     print(f"Repository root : {REPOSITORY_ROOT}")
     print(f"Mode            : {arguments.mode} -> {len(identifiers)} identifier(s)")
-    print(f"Output          : {TIME_SERIES_OUTPUT_DIRECTORY.relative_to(REPOSITORY_ROOT)}")
+    print(f"Output          : {TIME_SERIES_DIRECTORY.relative_to(REPOSITORY_ROOT)}")
     print(f"Window          : {START_DATE} -> {END_DATE}")
-    print(f"Columns         : {len(OUTPUT_COLUMNS)}")
+    print(f"Columns         : {len(OUTPUT_COLUMNS)} ({len(CUSTOM_COLUMNS)} of them c_*)")
+    print()
 
     if arguments.report:
-        print()
-        report_on_disk(identifiers, TIME_SERIES_OUTPUT_DIRECTORY, f"Universe ({arguments.mode})")
-        report_on_disk(BENCHMARK_IDENTIFIERS, TIME_SERIES_OUTPUT_DIRECTORY, "Benchmarks")
-        staged = stage_supplied_price_series()
-        print(f"Staged index price series: {staged} into {TIME_SERIES_OUTPUT_DIRECTORY.name}/")
+        report_on_disk(identifiers, TIME_SERIES_DIRECTORY, f"Universe ({arguments.mode})")
+        report_on_disk(BENCHMARK_IDENTIFIERS, TIME_SERIES_DIRECTORY, "Benchmarks")
         report_supplied_files()
 
         return 0
 
     custom_calculation_modules = load_custom_calculation_modules()
-    print(f"Custom calcs    : {CUSTOM_CALCULATIONS_PATH.name}")
-    print()
-
-    universe_state = download_identifiers(
+    universe_outcomes = download_identifiers(
         identifiers,
-        TIME_SERIES_OUTPUT_DIRECTORY,
+        TIME_SERIES_DIRECTORY,
         custom_calculation_modules,
         f"Universe ({arguments.mode})",
         arguments.force,
         arguments.threads,
     )
-    benchmark_state = DownloadState(total=0)
+    benchmark_outcomes = collections.Counter()
     if not arguments.no_benchmarks:
         print()
-        benchmark_state = download_identifiers(
+        benchmark_outcomes = download_identifiers(
             BENCHMARK_IDENTIFIERS,
-            TIME_SERIES_OUTPUT_DIRECTORY,
+            TIME_SERIES_DIRECTORY,
             custom_calculation_modules,
             "Benchmarks",
             arguments.force,
@@ -442,131 +433,27 @@ def main() -> int:
         )
 
     print()
-    staged = stage_supplied_price_series()
-    print(f"Staged index price series: {staged} into {TIME_SERIES_OUTPUT_DIRECTORY.name}/")
     report_supplied_files()
+    failures = universe_outcomes["failed"] + benchmark_outcomes["failed"]
 
-    return 1 if (universe_state.failed + benchmark_state.failed) > 0 else 0
+    return 1 if failures > 0 else 0
 
 
 def read_identifiers(
     mode: str,
-    sector_sample_size: int = 3,
 ) -> tuple[str, ...]:
     """
     The identifiers to download for `mode`, always including the cash proxy.
 
-    `Investable_Universe.csv` is the authority on *what exists*, so it -- not the enriched
-    security master -- drives the download.  That keeps the curator runnable before the universe
-    notebook has ever been run.  Only `sector_sample` needs classification data, and it says so
-    if the master is missing.
+    `Investable_Universe.csv` is the authority on what exists, so it -- not the enriched security
+    master -- drives the download.  That keeps the Curator runnable before the universe notebook
+    has ever been run, which matters because the notebook needs downloaded files to profile.
     """
-    if mode == "smoke":
-        selected = SMOKE_TICKERS
-    elif mode == "sector_sample":
-        selected = _read_sector_sample(sector_sample_size)
-    else:
-        selected = _read_universe_tickers()
+    selected = SMOKE_TICKERS if mode == "smoke" else _read_universe_tickers()
 
     return tuple(
-        dict.fromkeys(
-            selected + (CASH_TICKER,)
-        )
+        dict.fromkeys(selected + (CASH_TICKER,))
     )
-
-
-def stage_supplied_price_series() -> int:
-    """
-    Copy hand-supplied index price series into the market-data directory, and report how many.
-
-    The engine resolves every ticker it prices -- holdings and benchmarks alike -- against one
-    directory.  These files arrive in `Benchmarks/` because a person put them there, so without
-    this step `KN600` is a benchmark the engine cannot find, and the run quietly measures against
-    SPY and QQQ alone.  Copying is cheap and idempotent, so it happens on every run rather than
-    being something to remember.
-
-    Columns the engine asks for but an index level series does not carry are filled from their
-    `m_*` twins on the way across.  Returns the number of files staged.
-    """
-    staged = 0
-    for file_name in SUPPLIED_PRICE_SERIES:
-        source = SUPPLIED_BENCHMARK_DIRECTORY / file_name
-        destination = TIME_SERIES_OUTPUT_DIRECTORY / file_name
-        if not source.is_file():
-
-            continue
-
-        if (
-            destination.is_file()
-            and destination.stat().st_mtime >= source.stat().st_mtime
-        ):
-            staged += 1
-
-            continue
-
-        frame = pandas.read_csv(source)
-        for engine_column, fallback_column in ENGINE_COLUMN_FALLBACKS.items():
-            if engine_column in frame.columns and frame[engine_column].notna().any():
-
-                continue
-
-            if fallback_column not in frame.columns or not frame[fallback_column].notna().any():
-                msg = " ".join(
-                    (
-                        f"{file_name} carries neither {engine_column} nor a usable",
-                        f"{fallback_column} to derive it from; the engine cannot price it",
-                    )
-                )
-
-                raise ValueError(msg)
-
-            frame[engine_column] = frame[fallback_column]
-
-        TIME_SERIES_OUTPUT_DIRECTORY.mkdir(parents=True, exist_ok=True)
-        frame.to_csv(destination, index=False)
-        staged += 1
-
-    return staged
-
-
-def report_supplied_files() -> bool:
-    """
-    Report which hand-supplied inputs are present, and say what breaks without them.
-
-    These are the files no data provider serves: the KaxaNuk index family and the factor models.
-    Reporting them here means a fresh clone learns what is missing from the first command it runs,
-    rather than from a notebook failing three stages later.  Returns whether everything is present.
-    """
-    missing_benchmarks = [
-        name
-        for name in SUPPLIED_BENCHMARK_FILES
-        if not (SUPPLIED_BENCHMARK_DIRECTORY / name).is_file()
-    ]
-    factor_files = (
-        sorted(SUPPLIED_FACTOR_DIRECTORY.glob(FACTOR_FILE_PATTERN))
-        if SUPPLIED_FACTOR_DIRECTORY.is_dir()
-        else []
-    )
-
-    print(
-        " ".join(
-            (
-                "Supplied index files:",
-                f"{len(SUPPLIED_BENCHMARK_FILES) - len(missing_benchmarks)}",
-                f"/ {len(SUPPLIED_BENCHMARK_FILES)} in",
-                f"{SUPPLIED_BENCHMARK_DIRECTORY.name}/",
-            )
-        )
-    )
-    if len(missing_benchmarks) > 0:
-        print(f"  missing: {', '.join(missing_benchmarks)}")
-        print("  -> the backtest runs against SPY and QQQ only; attribution cannot run at all")
-
-    print(f"Supplied factor files: {len(factor_files)} in {SUPPLIED_FACTOR_DIRECTORY.name}/")
-    if len(factor_files) == 0:
-        print("  -> attribution cannot run; see README.md for what to drop in here")
-
-    return len(missing_benchmarks) == 0 and len(factor_files) > 0
 
 
 def report_on_disk(
@@ -592,100 +479,42 @@ def report_on_disk(
 
     print(f"{label}: {len(ready)}/{len(identifiers)} ready in {output_directory.name}/")
     if len(pending) > 0:
-        listed = ", ".join(pending[:15])
-        suffix = " ..." if len(pending) > 15 else ""
-        print(f"  needs download: {listed}{suffix}")
+        print(f"  needs download: {', '.join(pending)}")
 
     return OnDiskReport(pending=pending, ready=ready)
 
 
-def _chunk_identifiers(
-    identifiers: tuple[str, ...],
-    chunk_count: int,
-) -> list[tuple[str, ...]]:
-    """Split `identifiers` into `chunk_count` roughly equal contiguous tuples."""
-    # dtype=object keeps the identifiers plain `str`, so they still format into a file path.
-    parts = numpy.array_split(
-        numpy.asarray(identifiers, dtype=object),
-        chunk_count,
+def report_supplied_files() -> bool:
+    """
+    Report whether the attribution inputs are present, and say what breaks without them.
+
+    Nothing downloads these: an index's daily holdings and a factor model are not products a price
+    provider sells.  Stages 1 to 5 run without them; step 6 does not.  Returns whether any were
+    found.
+    """
+    benchmark_files = _existing_files(SUPPLIED_BENCHMARK_DIRECTORY, "*.csv")
+    factor_files = _existing_files(SUPPLIED_FACTOR_DIRECTORY, FACTOR_FILE_PATTERN)
+
+    print(
+        f"Attribution inputs: {len(benchmark_files)} file(s) in Benchmarks/,"
+        f" {len(factor_files)} in Factors/"
     )
+    if len(benchmark_files) == 0 or len(factor_files) == 0:
+        print("  -> step 6 reports what is missing and skips; steps 1-5 are unaffected")
 
-    return [
-        tuple(part)
-        for part in parts
-        if len(part) > 0
-    ]
+    return len(benchmark_files) > 0 and len(factor_files) > 0
 
 
-def _download_chunk(
-    identifiers: tuple[str, ...],
-    output_directory: pathlib.Path,
-    custom_calculation_modules: list[types.ModuleType],
-    state: DownloadState,
-    force_redownload: bool,
-) -> None:
-    """
-    Download every identifier in `identifiers` through one set of providers.
+def _existing_files(
+    directory: pathlib.Path,
+    pattern: str,
+) -> list[pathlib.Path]:
+    """Files matching `pattern` in `directory`, or an empty list when the directory is absent."""
+    if not directory.is_dir():
 
-    Providers are built once per chunk rather than once per identifier to keep the per-instance
-    setup off the hot path.  A transient error swaps in fresh ones, because a dropped connection
-    is exactly what leaves the provider's connection state dirty.
-    """
-    market_data_provider = build_market_data_provider()
-    fundamental_data_provider = build_fundamental_data_provider()
-    output_handlers = build_output_handlers(output_directory)
+        return []
 
-    for identifier in identifiers:
-        output_path = output_directory / f"{identifier}.csv"
-        reason = _stale_reason(output_path, force_redownload)
-        if reason is None:
-            _record_outcome(state, identifier, "skipped")
-
-            continue
-
-        configuration = build_configuration((identifier,))
-        for attempt in range(1, MAX_ATTEMPTS + 1):
-            try:
-                kaxanuk.data_curator.main(
-                    configuration=configuration,
-                    market_data_provider=market_data_provider,
-                    fundamental_data_provider=fundamental_data_provider,
-                    output_handlers=output_handlers,
-                    custom_calculation_modules=custom_calculation_modules,
-                    logger_level=LOGGER_LEVEL,
-                )
-                if output_path.is_file():
-                    _record_outcome(state, identifier, "processed")
-                else:
-                    _record_outcome(
-                        state,
-                        identifier,
-                        "failed",
-                        "no output produced (identifier error / no data)",
-                    )
-
-                break
-            except TRANSIENT_ERRORS as error:
-                if attempt >= MAX_ATTEMPTS:
-                    _record_outcome(
-                        state,
-                        identifier,
-                        "failed",
-                        f"{type(error).__name__}: {error} (after {attempt} attempts)",
-                    )
-                else:
-                    time.sleep(RETRY_BACKOFF_SECONDS * attempt)
-                    market_data_provider = build_market_data_provider()
-                    fundamental_data_provider = build_fundamental_data_provider()
-            except Exception as error:  # noqa: BLE001 - one bad ticker must not stop the batch.
-                _record_outcome(
-                    state,
-                    identifier,
-                    "failed",
-                    f"{type(error).__name__}: {error}",
-                )
-
-                break
+    return sorted(directory.glob(pattern))
 
 
 def _read_api_key() -> str:
@@ -700,96 +529,61 @@ def _read_api_key() -> str:
     return api_key
 
 
-def _read_sector_sample(
-    sector_sample_size: int,
-) -> tuple[str, ...]:
-    """
-    One ticker from each of the largest `sector_sample_size` industries in every sector.
-
-    Spreading across industries, rather than taking the first few tickers of a sector, keeps the
-    sample from being all banks or all REITs.  Selection is alphabetical within an industry, so
-    the sample is identical on every run.
-    """
-    if not SECURITY_MASTER_PATH.is_file():
+def _read_universe_tickers() -> tuple[str, ...]:
+    """Every ticker in the investable universe, in file order."""
+    if not INVESTABLE_UNIVERSE_PATH.is_file():
         msg = " ".join(
             (
-                f"--mode sector_sample needs {SECURITY_MASTER_PATH.name}, which does not exist.",
-                "Run Universe/universe.ipynb first: sector and industry are not in",
-                "Investable_Universe.csv, they come from the data provider.",
+                f"{INVESTABLE_UNIVERSE_PATH} is missing, so there is nothing to download.",
+                "It is committed with the repository; restore it from version control, or point",
+                "INVESTABLE_UNIVERSE_PATH at whichever seed you want to download.",
             )
         )
 
         raise FileNotFoundError(msg)
 
-    with SECURITY_MASTER_PATH.open(encoding="utf-8-sig", newline="") as handle:
-        rows = [
-            row
-            for row in csv.DictReader(handle)
-            if row.get("sector") and row.get("industry")
-        ]
-
-    industries_by_sector: dict[str, dict[str, list[str]]] = {}
-    for row in rows:
-        sector_industries = industries_by_sector.setdefault(row["sector"], {})
-        sector_industries.setdefault(row["industry"], []).append(row["ticker"])
-
-    selected = []
-    for sector in sorted(industries_by_sector):
-        sector_industries = industries_by_sector[sector]
-        # Negating the count sorts the largest industries first while keeping the tie-break on
-        # the industry name ascending, so the sample is stable across runs.
-        ranked_industries = sorted(
-            (-len(tickers), industry)
-            for industry, tickers in sector_industries.items()
-        )
-        for negative_count, industry in ranked_industries[:sector_sample_size]:
-            selected.append(
-                sorted(sector_industries[industry])[0]
-            )
-
-    return tuple(selected)
-
-
-def _read_universe_tickers() -> tuple[str, ...]:
-    """Every ticker in the raw investable universe, in file order."""
-    with RAW_UNIVERSE_PATH.open(encoding="utf-8-sig", newline="") as handle:
+    with INVESTABLE_UNIVERSE_PATH.open(encoding="utf-8-sig", newline="") as handle:
         tickers = [
             row["ticker"].strip()
             for row in csv.DictReader(handle)
             if row.get("ticker", "").strip()
         ]
 
+    if len(tickers) == 0:
+        msg = " ".join(
+            (
+                f"{INVESTABLE_UNIVERSE_PATH.name} has a header but no rows, so there is nothing to",
+                "download.  Add one line per security you want -- `ticker` and `name` are the only",
+                "required columns, and every other column in that file is yours to choose.",
+            )
+        )
+
+        raise ValueError(msg)
+
     return tuple(dict.fromkeys(tickers))
 
 
-def _record_outcome(
-    state: DownloadState,
+def _report_progress(
     identifier: str,
     outcome: str,
-    detail: str | None = None,
+    done: int,
+    total: int,
 ) -> None:
     """
-    Thread-safe tally plus a milestone progress line.  Failures are always reported immediately.
+    One line per identifier, printed under a lock so worker output cannot interleave.
 
-    Printing inside the lock is the point: it is what keeps the workers' lines from interleaving.
+    A dozen identifiers is small enough to name every one; that is more useful than a percentage,
+    because the interesting case is always "which ticker was it".
     """
+    marker = "FAILED " if outcome.startswith("failed") else ""
     with _PRINT_LOCK:
-        setattr(state, outcome, getattr(state, outcome) + 1)
-        if detail is not None:
-            state.failures[identifier] = detail
-        done = state.processed + state.skipped + state.failed
+        print(f"  [{done:>3}/{total}] {marker}{identifier}: {outcome}")
 
-        if outcome == "failed":
-            print(f"  [FAILED] {identifier}: {detail}")
-        if done % PROGRESS_EVERY == 0 or done == state.total:
-            print(
-                " ".join(
-                    (
-                        f"  [{done:>4}/{state.total}] processed={state.processed}",
-                        f"skipped={state.skipped} failed={state.failed}",
-                    )
-                )
-            )
+
+def _reset_thread_providers() -> None:
+    """Discard this thread's providers so the next attempt builds clean connection state."""
+    _THREAD_STATE.market_data_provider = None
+    _THREAD_STATE.fundamental_data_provider = None
 
 
 def _stale_reason(
@@ -797,10 +591,10 @@ def _stale_reason(
     force_redownload: bool,
 ) -> str | None:
     """
-    Why `output_path` needs downloading again, or None when it is usable as-is.
+    Why `output_path` needs downloading again, or None when it is usable as it stands.
 
-    Checking the header rather than just the file's existence is what keeps a change to
-    OUTPUT_COLUMNS from silently leaving a directory of mixed-schema files behind.
+    Checking the header rather than only the file's existence is what stops a change to
+    `OUTPUT_COLUMNS` leaving a directory of mixed-schema files behind.
     """
     if force_redownload:
 
@@ -833,6 +627,40 @@ def _thread_count(
     return max(1, min(work_item_count, available_cores))
 
 
+def _thread_fundamental_data_provider() -> (
+    "kaxanuk.data_curator.data_providers.DataProviderInterface | None"
+):
+    """This thread's fundamental-data provider, or None while fundamentals are disabled."""
+    if FUNDAMENTAL_DATA_PROVIDER is None:
+
+        return None
+
+    if getattr(_THREAD_STATE, "fundamental_data_provider", None) is None:
+        _THREAD_STATE.fundamental_data_provider = build_market_data_provider()
+
+    return _THREAD_STATE.fundamental_data_provider
+
+
+def _thread_market_data_provider() -> (
+    "kaxanuk.data_curator.data_providers.DataProviderInterface"
+):
+    """This thread's market-data provider, built on first use and reused afterwards."""
+    if getattr(_THREAD_STATE, "market_data_provider", None) is None:
+        _THREAD_STATE.market_data_provider = build_market_data_provider()
+
+    return _THREAD_STATE.market_data_provider
+
+
+def _thread_output_handlers(
+    output_directory: pathlib.Path,
+) -> list["kaxanuk.data_curator.output_handlers.OutputHandlerInterface"]:
+    """This thread's output handlers, so no two threads ever share a writer."""
+    if getattr(_THREAD_STATE, "output_handlers", None) is None:
+        _THREAD_STATE.output_handlers = build_output_handlers(output_directory)
+
+    return _THREAD_STATE.output_handlers
+
+
 def _validate_output_formats() -> None:
     """Fail early on an OUTPUT_FORMATS value the rest of the module cannot honour."""
     if len(OUTPUT_FORMATS) == 0 or not set(OUTPUT_FORMATS) <= set(_OUTPUT_HANDLERS_BY_FORMAT):
@@ -842,7 +670,7 @@ def _validate_output_formats() -> None:
 
     # The staleness check reads the CSV header, so CSV has to be one of the formats.
     if "csv" not in OUTPUT_FORMATS:
-        msg = "keep 'csv' in OUTPUT_FORMATS: the resume/staleness check depends on it"
+        msg = "keep 'csv' in OUTPUT_FORMATS: the resume and staleness check depends on it"
 
         raise ValueError(msg)
 

@@ -1,36 +1,258 @@
 # KN Research Process
 
-**v0.1.0 — the template.** A US-equity research repository with no strategy in it yet: the
-**KaxaNuk Investment Lab**'s eight-step process as a folder structure, its document architecture with
-every file's contract stated, and the code that makes a clean clone run. Copy it to start a
-strategy; the reference implementation it was extracted from is **Golden Flow**.
+**The KaxaNuk Investment Lab's research process as a folder structure**, with one worked example
+running end to end inside it. Copy this repository to start a strategy; delete the example and put
+yours in its place.
 
-> **<The strategy's main idea, in one sentence, once there is one.>**
+It is not an equity template. The universe is twelve lines of CSV, and every stage below reads it
+without knowing what is in it — **stocks, ETFs, FX, crypto, commodities or futures all run the same
+pipeline.** The example uses ETFs because twelve of them download in seven seconds, which is what
+lets a newcomer see the whole process work before deciding to trust any part of it.
 
-> **Status: template. Nothing has been tested here.** Read [`OBJECTIVE.md`](OBJECTIVE.md) to see
-> what a strategy has to state, [`RESULTS.md`](RESULTS.md) to see what it has to report, and
-> [`AGENTS.md`](AGENTS.md) to see how work is done.
+> **The example.** Twelve asset-class ETFs. A *statistical jump model* labels each one, every day,
+> as being in its calm state or its turbulent one — fitted on that asset's own history, refitted as
+> the window rolls forward, and read strictly causally. After
+> [Shu, Yu & Mulvey (2024)](Bibliotheca/Papers/Shu_Yu_Mulvey_2024_Dynamic_Asset_Allocation_With_Asset_Specific_Regime_Forecasts.md).
+> [`OBJECTIVE.md`](OBJECTIVE.md) states what it claims; [`RESULTS.md`](RESULTS.md) states how far it
+> got.
 
-## Starting a strategy from this template
+---
 
-In this order. Each step is the smallest change that makes the next one possible.
+## Run it
 
-1. **Name it.** `name` in `pyproject.toml`; the kernel name and display name in
-   `.devcontainer/Dockerfile`; `name` and the service in `.devcontainer/docker-compose.yml` and
-   `.devcontainer/devcontainer.json`. Replace `<Strategy_Name>` wherever it appears in the documents.
-2. **State the idea** in [`OBJECTIVE.md`](OBJECTIVE.md): the main idea, the objective, the claims
-   inside it. Every slot in angle brackets is guidance; none survives.
-3. **Write the hypothesis** in `Experiments/Experiment_1/BLUEPRINT_1.md` — *before* the rule. It
-   never changes afterwards.
-4. **Compute the signal.** Add its `c_*` function to `Data/Curator/custom_calculations.py` and list
-   it in `CUSTOM_COLUMNS` in `Data/curator.py`. Cross-sectional features go in
-   `Data/Refinery/custom_calculations.py`.
-5. **Point the notebooks at it.** `SIGNAL_COLUMN` in `Universe/universe.ipynb`, `ELIGIBILITY_COLUMN`
-   and the feature lists in `Data/analyzer.ipynb`, `SIGNAL_COLUMN` and `SIZING_COLUMN` in the
-   experiment notebook's setup cell. Those are the only strategy names outside the rule itself.
-6. **Write the rule** — section 2 of `Experiments/Experiment_1/experiment_1.ipynb`, the one cell that
-   raises until you do. Everything after it runs unchanged.
-7. **Fill `Config/.env`** from the template and run the pipeline, below.
+You need Docker, or Python 3.14 and [uv](https://docs.astral.sh/uv/). Then one credential: a
+[Financial Modeling Prep](https://site.financialmodelingprep.com/developer/docs) key.
+
+```bash
+cp Config/.env.template Config/.env
+```
+
+Put your key in `KNDC_API_KEY_FMP`. The other two entries are KaxaNuk engine licences — steps 1 to 4
+run without them, steps 5 and 6 report what is missing and skip.
+
+```bash
+uv sync --group notebook
+```
+
+One more line registers the notebook kernel, so the notebooks run the same Python locally as they do
+in the container:
+
+```bash
+uv run python -m ipykernel install --user --name kn-research-process --display-name "KN Research Process (Python 3.14)"
+```
+
+### The whole run, in order
+
+**Six steps. Do them in this order.** The whole thing is about three minutes of compute.
+
+| # | Run | What it writes | Takes |
+| --- | --- | --- | --- |
+| **1** | `uv run python Data/curator.py --report` | nothing — tells you what is missing and what each gap breaks | instant |
+| **2** | `uv run python Data/curator.py` | `Data/Curator/Time_Series/` — one price file per security | ~12 s |
+| **3** | notebook `Universe/universe.ipynb` | `Universe/Security_Master.csv`, `Data_Issues.csv`, `Charts/` | ~20 s |
+| **4** | `uv run python Data/refinery.py` | `Data/Refinery/Time_Series/` — the panel, with the regime signal on it | ~20 s |
+| **5** | notebook `Data/analyzer.ipynb` | `Data/Analyzer/` — the charts and the information-coefficient table | ~2 min |
+| **6** | notebook `Experiments/Experiment_1/experiment_1.ipynb` | `Experiments/Experiment_1/Portfolio/` — the book | ~30 s |
+
+Open the notebooks with:
+
+```bash
+uv run --group notebook jupyter lab
+```
+
+**Every file in the pipeline states its own place in this order, in its first paragraph** — so
+wherever you land, you can tell what has to have run before it and what comes next.
+
+> **The order is a dependency, not a preference.** Step 3 profiles files step 2 downloaded, and it
+> writes the security master step 4 joins onto the panel — which is why it sits between two Data
+> commands rather than before them. Run the refinery too early and it will not fail: it names the
+> columns it is dropping and carries on, which is the right behaviour and the wrong outcome.
+>
+> **Steps 5 and 6 report and skip without the licensed engines.** You still get the full analysis
+> and a real book; you do not get performance numbers. That is by design, not a broken clone.
+
+<details>
+<summary>In a dev container instead</summary>
+
+`docker compose -f .devcontainer/docker-compose.yml up --build` serves JupyterLab on
+`http://localhost:8888`. Two interpreters live in the image on purpose: the base image's Python 3.13
+runs the Jupyter *server*, and a uv-managed Python 3.14 at `/opt/venv` runs the *notebooks*,
+registered as the **KN Research Process (Python 3.14)** kernel — **pick that kernel.** The repository
+is bind-mounted at `/workspace`, so anything you download survives a rebuild. Compose reads
+`Config/.env`, so credentials reach the container without being restated anywhere.
+</details>
+
+---
+
+## The eight steps
+
+Steps 1 to 7 are the Lab, and this repository. Step 8 is outside it: a strategy leaves the Lab when
+it joins the KN Fund allocation.
+
+| # | Step | The question | Where | What you edit |
+| --- | --- | --- | --- | --- |
+| 1 | **Bibliotheca** | What do we believe, and on what evidence? | `Bibliotheca/` | one note per source |
+| 2 | **Universe** | What is investable? | `Universe/` | `Investable_Universe.csv` |
+| 3 | **Data** | What can we measure? | `Data/` | the two `custom_calculations.py` |
+| 4 | **Portfolio** | How is the book built? | `Experiments/Experiment_N/` | the rule cell |
+| 5 | **Backtest** | How would it have done, net? | `Experiments/Experiment_N/Backtest/` | nothing — one engine |
+| 6 | **Attribution** | Where does the return come from? | `Experiments/Experiment_N/Attribution/` | nothing |
+| 7 | **Paper trading** | Does it hold up unseen? | `Paper_Trading/` | nothing until it graduates |
+| 8 | Production | Joins the KN Fund allocation | **elsewhere** | — |
+
+**Each step reads only from the steps above it, and owns its outputs.** A notebook that recomputes
+something an earlier stage produced has broken the process even when the number matches, because the
+next experiment will compute it slightly differently and the two stop being comparable.
+
+```
+1  Bibliotheca/               ->  BIBLIOGRAPHY.md + one note per source
+2  Universe/universe.ipynb    ->  Security_Master.csv, Data_Issues.csv, Charts/
+3  Data/curator.py            ->  Data/Curator/Time_Series/    m_* + c_*   per security
+   Data/refinery.py           ->  Data/Refinery/Time_Series/   + r_*       cross-sectional
+   Data/analyzer.ipynb        ->  Data/Analyzer/               charts + the IC table
+4  Experiments/securities_panel.py  the one panel loader, shared by every experiment
+   Experiments/portfolio_construction.py   eligible set -> weights, one swappable signature
+   Experiments/Experiment_N/   ->  Portfolio/
+5  Experiments/backtest_engine.py  the one path from a book of weights to a number
+                               ->  Backtest/
+6  Experiments/attribution_analysis.py   where the return came from
+                               ->  Attribution/
+7  Paper_Trading/                  nothing has graduated yet
+```
+
+---
+
+## The walkthrough
+
+Run it in this order the first time. The order is a **recommendation**, not a constraint — but the
+file names and column prefixes are a **convention**, and keeping them is what lets two people share
+a tool without explaining it first.
+
+### Step 1 · Bibliotheca — read before you build
+
+[`Bibliotheca/BIBLIOGRAPHY.md`](Bibliotheca/BIBLIOGRAPHY.md) is the index; every source gets its own
+note. A note is not a summary — **it ends by saying what it changes about your strategy**, in a
+blockquote, and that blockquote is the only part that is yours.
+
+Ships with eleven notes: the two books whose method the process runs, the seven papers behind its
+integrity controls, and the two papers the example is built from. Everything else arrives because a
+result raised a question — and a source listed without a note is a **lead**, not a citation.
+
+### Step 2 · Universe — decide what is investable
+
+Open [`Universe/Investable_Universe.csv`](Universe/Investable_Universe.csv). Twelve rows, seven
+columns. **Two columns are required — `ticker` and `name` — and the rest are yours.** This one
+carries `asset_class` and `asset_group` because the example compares asset classes; a crypto seed
+would carry something else, and nothing downstream would notice.
+
+Then run `Universe/universe.ipynb` — **after the curator has downloaded, because it profiles those
+files, and before the refinery, because it writes the `Security_Master.csv` the refinery joins.** It
+fills in what the provider knows, writes `Data_Issues.csv`, and answers the question everybody
+forgets to ask: **when does each asset actually become usable?** A file that starts in 2010 gives no
+signal in 2010 if the model needs five years of history first. On the example that pushes the honest
+start of a backtest from 2010 to 2016-04-12.
+
+### Step 3 · Data — curate, refine, analyse
+
+Three blocks. The first two are plain modules because their output is a file; the third is a notebook
+because its output is an argument.
+
+**`Data/curator.py`** downloads one file per ticker and computes the `c_*` columns while it goes.
+Resumable, and it skips anything already on disk with the right header. `--report` makes no network
+call at all and tells you what is present — run that first.
+
+**`Data/refinery.py`** stacks those files into one panel and computes the `r_*` columns across it.
+No network, so this is the command you re-run while you iterate.
+
+**`Data/analyzer.ipynb`** is where a feature earns a backtest or is dropped. On the example it
+produces the finding the whole repository exists to make possible, which is in
+[`RESULTS.md`](RESULTS.md).
+
+### Step 4 to 6 · Experiments
+
+One folder per idea, four markdown files and a notebook. **Write `BLUEPRINT_N.md` before the rule** —
+a hypothesis edited after its test is not a hypothesis. Then one cell of `experiment_N.ipynb` is the
+strategy, and everything after it runs unchanged.
+
+<!-- example: begin -->
+That ordering is not ceremony. In this repository the benchmark's blueprint made four predictions
+from the analyzer, and **the construction stage falsified one of them before the engine was ever
+installed** — which changed what the strategy is understood to be, and cost nothing to discover. The
+falsification is in
+[`FINDINGS_1.md`](Experiments/Experiment_1/FINDINGS_1.md).
+<!-- example: end -->
+
+Steps 5 and 6 need the licensed engines. Without them the notebook still builds and writes the book,
+then reports what is missing and skips — so a clone with no licence gets everything except the
+numbers.
+
+### Step 7 · Paper trading
+
+The only stage that runs on data the rule has never seen.
+[`Paper_Trading/BITACORA.md`](Paper_Trading/BITACORA.md) holds the five-criterion graduation gate.
+Read it before proposing that anything graduate.
+
+---
+
+## Where your logic goes
+
+The single most useful table here. **The prefix tells you which stage owns a column, and therefore
+which file to open.**
+
+| Prefix | Built by | Scope | Change it when |
+| --- | --- | --- | --- |
+| `m_*` | the provider, via the Curator | raw market data | never — it is what arrived |
+| `c_*` | `Data/Curator/custom_calculations.py` | **one security's own history** | you need a new per-security quantity |
+| `r_*` | `Data/Refinery/custom_calculations.py` | **securities against each other, per date** | you need a rank, a breadth reading, or a fitted model |
+| `*_current` | `Data/refinery.py` | joined from the security master — **not point-in-time** | you classify securities by something new |
+
+Two rules that follow, and one exception the example leans on:
+
+- **A `c_*` column that needs to see other securities is misplaced** and belongs in the Refinery.
+- **Widening the Curator's schema forces a refetch of every identifier.** That is deliberate — it is
+  what stops the directory holding a mix of schemas — but it means the Curator is the wrong home for
+  anything you intend to tune.
+- **So a fitted column lives in the Refinery even when it is per-security.** The example's regime
+  label is computed from one asset's own history, which by the naming rule alone would make it
+  `c_*`. It sits in the Refinery because its hyperparameters are exactly what an experiment sweeps,
+  and **a sweep must never cost a download.** Its inputs — eight arithmetic features, frozen at the
+  paper's values — stay in the Curator, because they have nothing to tune.
+
+Four `c_*` columns are **engine infrastructure and never removed**: `c_split_ratio`,
+`c_dividend_split_ratio`, `c_vwap` (the commission price) and `c_vwap_dividend_and_split_adjusted`
+(the fill price).
+
+### Only four things are shared between experiments
+
+Everything specific to a strategy lives in its own notebook, where a reader can see it. Four
+modules are shared, all for the same reason: **if they differed between experiments, comparing
+experiments would be meaningless.** One per stage, and one per KaxaNuk library.
+
+| Module | Owns | Breaks without it |
+| --- | --- | --- |
+| `Experiments/securities_panel.py` | reading the refined files, stitching ticker changes by ISIN, pivoting to `dates × securities` | every notebook loads the panel its own way, so experiments stop measuring the same universe |
+| `Experiments/portfolio_construction.py` | turning an eligible set into weights — and the constraints every scheme respects | every notebook invents its own sizing, so a weighting difference is indistinguishable from a signal difference |
+| `Experiments/backtest_engine.py` | writing the weight file, running the engine, reading results back, aligning variants onto one window | a difference in cost model or window shows up as strategy skill |
+| `Experiments/attribution_analysis.py` | shaping the hand-supplied index data into the tables the attribution library auto-detects, and saying what is missing before it tries | a mis-shaped table makes the loader read the attribution transposed rather than fail |
+
+**No strategy column is named in any of them.** The columns a rule reads are declared in the
+experiment notebook's setup cell.
+
+`portfolio_construction.py` is the seam the KaxaNuk **Portfolio Construction** library will replace.
+Everything it offers is reached through one function signature — given the securities eligible today
+and a returns history that has already been cut off before today, return weights summing to at most
+one. `equal_weight` and `inverse_volatility` ship; a minimum-variance optimiser, hierarchical risk
+parity, or a call into the library are the same shape. **Swapping one for another is one line in the
+rule cell**, which is what makes two experiments comparable rather than merely adjacent.
+
+### One backtest, and only one
+
+**Every performance figure comes from the KaxaNuk Backtest Engine**, reached through `backtest_engine.py`.
+There is deliberately no second, lighter simulator: one that disagrees just lets the reader pick the
+number they prefer. On the reference implementation, replacing a flat-cost approximation with the
+engine cut the winning margin by a third — real per-share commission on a high-turnover book.
+
+---
 
 ## The documents
 
@@ -39,269 +261,101 @@ trying to do, [`RESULTS.md`](RESULTS.md) says how far we got and what it cost.
 
 | Document | What it holds |
 | --- | --- |
-| [`OBJECTIVE.md`](OBJECTIVE.md) | the main idea, what the strategy is trying to do, and the status of the claims inside it |
-| [`RESULTS.md`](RESULTS.md) | the executive summary of every experiment, compiled from the `FINDINGS_N.md` files, with the methods record as an appendix |
-| [`CHANGELOG.md`](CHANGELOG.md) | every version of the repository, newest first |
-| [`AGENTS.md`](AGENTS.md) | **how work is done here** — what belongs in each file, the restrictions, the bar a result must clear, the house rules |
-| [`CLAUDE.md`](CLAUDE.md) | one line; points an AI assistant at `AGENTS.md` |
-| [`Bibliotheca/BIBLIOGRAPHY.md`](Bibliotheca/BIBLIOGRAPHY.md) | the index of papers and books, each linking to its own reading note |
-| [`Paper_Trading/BITACORA.md`](Paper_Trading/BITACORA.md) | what graduation means, and the five-criterion gate |
+| [`OBJECTIVE.md`](OBJECTIVE.md) | the main idea, and the status of each claim inside it |
+| [`RESULTS.md`](RESULTS.md) | the executive summary of every experiment, compiled from the `FINDINGS_N.md` files |
+| [`CHANGELOG.md`](CHANGELOG.md) | every version, newest first, and what a version number means here |
+| [`AGENTS.md`](AGENTS.md) | **how work is done** — the restrictions, and the bar a result has to clear |
+| [`Bibliotheca/BIBLIOGRAPHY.md`](Bibliotheca/BIBLIOGRAPHY.md) | the index of sources, each linking to its note |
+| [`Paper_Trading/BITACORA.md`](Paper_Trading/BITACORA.md) | what graduation means, and the gate |
 
 Four files inside every `Experiments/Experiment_N/`:
 
 | Document | What it holds | Changes when |
 | --- | --- | --- |
 | `BLUEPRINT_N.md` | the hypothesis: thesis, rules, success criteria, key risks | **never, once written** |
-| `BRAINSTORMING_N.md` | planning — ideas and what to try next | thinking happens, before the work |
+| `BRAINSTORMING_N.md` | planning — ideas, and what was considered and dropped | thinking happens, before the work |
 | `JOURNAL_N.md` | every iteration, dated, oldest first, append-only | work proceeds |
 | `FINDINGS_N.md` | the latest results worth keeping; **feeds `RESULTS.md`** | a result changes |
 
-[`AGENTS.md`](AGENTS.md) explains why those four are separate and who writes each.
+---
 
-## The pipeline
+## Starting your own strategy
 
-Eight steps. **Steps 1-7 are the Investment Lab — this repository.** Step 8 lives elsewhere: a
-strategy leaves the Lab when it joins the KN Fund allocation.
+**Start from `main` and delete the example in place.** Everything that belongs to the worked
+example is marked in the source — `# --- example: begin ---` in Python, `<!-- example: begin -->`
+in Markdown, and `# EXAMPLE-ONLY CELL` on a whole notebook cell. You can see exactly what to
+remove without running anything and without a diff. Then replace
+`Universe/Investable_Universe.csv`, the two `custom_calculations.py`, and the documents whose
+whole content is a strategy: `OBJECTIVE.md`, `RESULTS.md`, and the four per-experiment files.
 
-| # | Step | Question | Where |
-| --- | --- | --- | --- |
-| 1 | Bibliotheca | What do we believe, and on what evidence? | `Bibliotheca/` |
-| 2 | Universe | Which securities are investable, point-in-time? | `Universe/` |
-| 3 | Data | Curation, refinery, analysis — what can we measure? | `Data/` |
-| 4 | Portfolio | How is the book constructed? | `Experiments/Experiment_N/Portfolio/` |
-| 5 | Backtest | How would it have performed, net of costs? | `Experiments/Experiment_N/Backtest/` |
-| 6 | Attribution | Where do the alpha and the risk come from? | `Experiments/Experiment_N/Attribution/` |
-| 7 | Paper trading | Does it hold up on data the rule has never seen? | `Paper_Trading/` |
-| 8 | Production | Joins the KN Fund allocation | **outside this repository** |
+**Or start from `dev`** if you want only the folder structure and intend to write every line
+yourself. It has no code, no documents and no history in common with `main` — just the shape.
 
-```
-1  Bibliotheca/                ->  BIBLIOGRAPHY.md + one note per source
-2  Universe/universe.ipynb     ->  Security_Master.csv, Data_Issues.csv, Charts/
-3  Data/curator.py             ->  Data/Curator/Time_Series/    m_* + c_*   (per ticker)
-   Data/refinery.py            ->  Data/Refinery/Time_Series/   + r_*       (cross-sectional)
-   Data/analyzer.ipynb         ->  Data/Analyzer/               EDA + signal ICs
-4  Experiments/panel.py            the one panel loader, shared by every experiment
-   Experiments/engine.py           the one path from a book of weights to a number
-   Experiments/Experiment_N/   ->  Portfolio/
-5                              ->  Backtest/
-6                              ->  Attribution/
-7  Paper_Trading/Paper_Trading_N/  nothing has graduated yet
-```
-
-Each stage owns its outputs and reads only from the stage above it. Nothing downstream recomputes
-what an earlier stage produced — that separation is what keeps experiments comparable, because all
-of them read an identical panel.
-
-### The six Lab libraries are the stage layout
-
-Each library maps onto one stage. Three are live; three are in development, and those three are
-exactly the stages this template hand-rolls today. Where a stage is hand-rolled, its file says so
-and names the interface the library will replace.
-
-| Library | Status | Stage here |
-| --- | --- | --- |
-| Data Curator | live | `Data/curator.py` |
-| Data Refinery | in development | `Data/refinery.py` — hand-rolled |
-| Data Analyzer | in development | `Data/analyzer.ipynb` — hand-rolled |
-| Portfolio Construction | in development | step 4, in the experiment notebook — hand-rolled |
-| Backtest Engine | live | `Experiments/engine.py`, step 5 |
-| Attribution Analysis | live | `Experiments/engine.py`, step 6 |
-
-| Column family | Built by | Scope |
-| --- | --- | --- |
-| `m_*` | the data provider, via the Curator | raw market data |
-| `c_*` | `Data/Curator/custom_calculations.py` | **per ticker** — one name's own history |
-| `r_*` | `Data/Refinery/custom_calculations.py` | **cross-sectional** — names against each other, per date |
-| `*_current` | `Data/refinery.py` | joined from the security master — **not point-in-time** |
-
-### Why the Experiments stage has two modules and not just notebooks
-
-Everything specific to a strategy — what it selects, how it sizes, when it trades — is written out in
-that experiment's own notebook, where a reader can see it. Only two things are shared, both for the
-same reason: **if they differed between experiments, the comparison between experiments would be
-meaningless.**
-
-| Module | What it owns | What breaks without it |
-| --- | --- | --- |
-| `Experiments/panel.py` | reading the refined files, stitching ticker changes into one company by ISIN, pivoting to `dates × companies` | every notebook loading the panel its own way, so the experiments stop measuring the same universe |
-| `Experiments/engine.py` | writing the weight file, running the KaxaNuk engine, reading results back, aligning variants onto one window | every notebook re-deriving the engine call, so a difference in cost model or window shows up as strategy skill |
-
-**No strategy column is named in either module.** The columns a rule reads are declared in the
-experiment notebook's setup cell. Experiment 1 deliberately does **not** import `panel.py`: it writes
-the loading steps inline, because it is the baseline everything else is measured against, and a
-baseline that cannot be read top to bottom without chasing an import is a worse baseline.
-
-## One backtest, and only one
-
-**Every performance figure in this repository comes from the KaxaNuk Backtest Engine.** There is
-deliberately no second, lighter simulator: a simpler backtest that disagrees with the engine is worse
-than no backtest at all, because it lets the reader pick whichever number they prefer. The engine
-models integer share counts, per-share commission on the unadjusted price, and a cash reserve.
-
-The reference implementation had a second one for a while, and it was doing the work. When the engine
-replaced it, the winning experiment's margin fell by a third — real commission on a high-turnover
-book. That is the lesson this rule encodes.
-
-Variants are ranked by running **each one through the engine** over a window shared by all of them
-(`engine.align_to_common_start`), never by an approximation.
-
-## Setup
-
-### In a dev container (recommended)
-
-The repository ships a dev container so a teammate needs Docker and nothing else — no local Python,
-no `uv`, no matching interpreter version. Open the folder in VS Code or PyCharm and accept the
-"reopen in container" prompt, or:
-
-```bash
-docker compose -f .devcontainer/docker-compose.yml up --build
-```
-
-JupyterLab is served on `http://localhost:8888`. Two interpreters live in the image on purpose: the
-base image's Python 3.13 runs the Jupyter *server*, and a `uv`-managed Python 3.14 at `/opt/venv`
-runs the *notebooks*, registered as the **KN Research Process (Python 3.14)** kernel — **pick that
-kernel**, not the default one. The split exists because this project requires Python ≥3.14 and the
-Jupyter base image tops out at 3.13.
-
-The repository is bind-mounted at `/workspace`, so downloaded data and any file you write inside the
-container lands on the host and survives a rebuild.
-
-> **The licensed engines are not in the image.** They are deliberately absent from `pyproject.toml`
-> so their index URLs and keys never enter version control, which means `uv sync` cannot install
-> them. Stages 1-4 run in the container as built; to run the backtest and attribution stages too,
-> install them once inside it — the change persists until the image is rebuilt.
-
-### Locally
-
-```bash
-uv sync --group notebook
-```
-
-### 1. Configure credentials
-
-```bash
-cp Config/.env.template Config/.env
-```
-
-Then fill in the three keys. **`Config/.env` holds real secrets and is gitignored for that reason**;
-`Config/.env.template` is committed and is the only record of what a clone must create.
-
-```
-KNDC_API_KEY_FMP=...          # data provider (Financial Modeling Prep)
-KNBE_API_KEY_KAXANUK=...      # backtest engine licence
-KNAA_API_KEY_KAXANUK=...      # attribution analysis licence
-```
-
-Compose injects them into the container automatically. Dev container *settings* — the Jupyter token
-and the host port — live in `.devcontainer/.env` instead, copied from
-`.devcontainer/.env.template`; those are preferences, not secrets.
-
-### 2. Install the licensed KaxaNuk engines
-
-The backtest engine and attribution analysis are **not on PyPI** and are deliberately kept out of
-`pyproject.toml` and `uv.lock`, so the licensed index URLs and keys never enter version control.
-Install them separately, substituting your own keys and servers from the welcome emails:
-
-```bash
-uv pip install kaxanuk-backtest-engine --extra-index-url https://license:YOUR_KEY@YOUR_SERVER/simple/
-```
-
-```bash
-uv pip install kaxanuk-attribution_analysis --extra-index-url https://license:YOUR_KEY@YOUR_ATTRIBUTION_SERVER/simple/
-```
-
-Every notebook guards these imports and reports-and-skips without them, so the pipeline still runs
-and produces its portfolio deliverables — but it produces **no results**, by design.
-
-### 3. Build the data
-
-```bash
-uv run python Data/curator.py --report
-```
-
-Makes no network calls and tells you exactly what is present and what each missing file breaks.
-**Run it first.**
-
-```bash
-uv run python Data/curator.py
-```
-
-```bash
-uv run python Data/refinery.py
-```
-
-The curator is resumable and skips files already on disk with the expected header, so an interrupted
-run picks up where it stopped and a single bad ticker costs one ticker rather than the whole batch.
-
-### 4. Run the notebooks
-
-In pipeline order: `Universe/universe.ipynb`, `Data/analyzer.ipynb`, then each
-`Experiments/Experiment_N/experiment_N.ipynb`.
-
-### 5. Strip outputs before committing
-
-```bash
-uv run --group notebook jupyter nbconvert --clear-output --inplace Universe/universe.ipynb Data/analyzer.ipynb Experiments/*/experiment_*.ipynb
-```
-
-The committed notebook is the *method*; `FINDINGS_N.md` is the *record*.
-
-## What a fresh clone contains — and what it does not
+## What a clone contains, and what it does not
 
 **Only source is committed:** code, notebooks with outputs stripped, documentation, the folder
-skeleton, and one seed file — `Universe/Investable_Universe.csv`, the KaxaNuk point-in-time US-equity
-universe the whole pipeline grows from, delisted names retained. It is load-bearing twice over:
-`Data/curator.py` downloads from it, and `Data/refinery.py` reads it back as the panel's membership
-list, which keeps the cash proxy and the benchmarks out of every cross-sectional rank without naming
-them anywhere.
+skeleton, and `Universe/Investable_Universe.csv` — the seed the whole pipeline grows from, and the
+one file you change to make this repository about something else.
 
-**Nothing under `Data/` is committed.** Every file there is downloaded, derived, or dropped in by
-you:
+**Nothing under `Data/` is committed.** Every file there is downloaded, derived, or dropped in:
 
 | What | Where | How it gets there |
 | --- | --- | --- |
-| Per-ticker time series | `Data/Curator/Time_Series/` | `Data/curator.py` downloads it |
-| Cash proxy (`BIL`) and tradable benchmarks (`SPY`, `QQQ`) | `Data/Curator/Time_Series/` | same download — the engine needs every ticker it prices in one directory |
+| Per-security time series | `Data/Curator/Time_Series/` | `Data/curator.py` downloads it |
+| Cash proxy (`BIL`) and benchmarks (`AOR`, `SPY`) | `Data/Curator/Time_Series/` | same download — the engine prices every ticker from one directory |
 | Cross-sectional panel | `Data/Refinery/Time_Series/` | `Data/refinery.py` derives it |
-| **KaxaNuk index files** | `Data/Curator/Benchmarks/` | **you supply**: `KN600.csv`, `index_daily_holdings_2017.csv`, `kn600_returns.csv` |
-| **Factor models** | `Data/Curator/Factors/` | **you supply**: `f_*.csv` |
-| Analyzer charts and the signal IC table | `Data/Analyzer/` | `Data/analyzer.ipynb` rebuilds them |
-| Books, performance series, attribution figures | `Experiments/*/Portfolio/`, `Backtest/`, `Attribution/` | each experiment notebook |
+| Benchmark holdings and factor models | `Data/Curator/Benchmarks/`, `Factors/` | **you supply** — no price provider sells them |
+| Charts and the IC table | `Data/Analyzer/` | `Data/analyzer.ipynb` rebuilds them |
+| Books, performance series, attribution | `Experiments/*/Portfolio/`, `Backtest/`, `Attribution/` | each experiment notebook |
 
-The two supplied groups exist because no data provider serves them. **Without them** the pipeline
-still runs end to end: the backtest measures against SPY and QQQ instead of all three benchmarks, and
-the attribution stage reports what is missing and skips. Nothing crashes.
+Without the two supplied groups the pipeline still runs end to end; attribution reports what is
+missing and skips.
 
-> **A regenerable file is not a backed-up file.** A `git clean -fdx`, or "discard all changes" in a
-> GUI, removes every one of them — `Config/.env` included, and that one cannot be regenerated at all.
+> **A regenerable file is not a backed-up file.** `git clean -fdx`, or "discard all changes" in a
+> GUI, removes every one of them — `Config/.env` included, and that one cannot be regenerated.
 
-## House style
+**`Config/.env` is gitignored because it is secret**, not merely because it is machine-specific.
+Never print a value from it, never put one in a commit, a notebook output or a log line. A key that
+is exposed gets rotated, not edited out of a file.
 
-PEP 8 plus a stricter house layer ("Bloom Code") whose one-line summary is *optimise for the reader
-who has never seen this file*: no import aliases, no abbreviations, no nested functions ever, one
-item per line in any comma-separated construct, and type hints on everything.
+---
 
-The rules are **not committed here.** They are shared across KaxaNuk repositories and installed by
-APM, so this repository keeps its whole agent setup out of version control — `apm.yml`,
-`apm.lock.yaml`, `apm_modules/` and the `.claude/` tree APM writes are all gitignored. Nothing in the
-pipeline depends on them being present.
+## House style, and keeping it clean
 
-What *is* committed is the enforcement. `pyproject.toml` configures Ruff to match the standard, and
-the whole repository — notebooks included — passes:
+PEP 8 plus a stricter house layer, whose one-line summary is *optimise for the reader who has never
+seen this file*: no import aliases, no abbreviations, no nested functions, one item per line in any
+comma-separated construct, type hints on everything. The rules live in an organisation-level APM
+package and are not committed here. What is committed is the enforcement:
 
 ```bash
 uvx ruff check .
 ```
 
-Where a rule contradicts the house style it is switched off **at the point of exclusion, with the
-reason written down**. Read those comments before adding a rule back.
+Four checks are disabled because they contradict the house style, each commented at the point of
+exclusion in `pyproject.toml`. **Read the comment before switching one back on.**
 
-## Keeping the repository clean
+No binaries are committed — no charts, no workbooks, no PDFs — and notebook outputs are stripped
+before committing. The committed notebook is the *method*; `FINDINGS_N.md` is the *record*.
 
-No binaries are committed — no charts, no engine workbooks, no PDFs. All of it is either rebuilt by
-the pipeline or licensed to a person rather than to a repository, and keeping it out is what keeps a
-clone small and its diffs readable. `.gitignore` enforces this by extension, so an accidental
-`git add` of a chart does nothing.
+```bash
+uv run --group notebook jupyter nbconvert --clear-output --inplace Universe/universe.ipynb Data/analyzer.ipynb Experiments/*/experiment_*.ipynb
+```
 
-See [`AGENTS.md`](AGENTS.md) for the full process, the restrictions, and the bar any new signal has
-to clear.
+## How work reaches `main`
+
+Two long-lived branches with different jobs, and one short-lived kind:
+
+| Branch | What it is |
+| --- | --- |
+| `main` | this — the process, the pipeline and the worked example |
+| `dev` | **the architecture, empty**: folders and `.gitkeep` files, nothing else. Copy it when you want the shape and intend to write every line yourself |
+| `issues/<number>` | one per issue on the GitHub Project, cut from `main` and merged back into it. Where all work happens |
+
+`dev` shares no history with `main` and nothing is merged between them — it is a scaffold, not an
+integration branch. **The issue exists before the branch**: it is where the *why* lives, and in
+this repository the reasoning is the product.
+
+[`AGENTS.md`](AGENTS.md) has the loop, and what a pull request has to satisfy before it lands.
+
+**[`AGENTS.md`](AGENTS.md) is next**: the restrictions, the bar any new signal has to clear, and the
+five ways a backtest lies.

@@ -1,40 +1,47 @@
 """
 Data Refinery stage: the cross-sectional (N x N) layer over the curated data.
 
-Block 2 of 3 in the Data stage, and the seam the KaxaNuk Data Refinery library will replace:
-this module is hand-rolled today.  Keep its contract stable -- read Curator files, resolve `r_*`
-functions by parameter name, write Refinery files with the same rows -- so the swap is a one-file
-change.  The Curator works one ticker at a time, so every `c_*` column is
-a function of that ticker's own history.  A rank or a breadth reading compares names against
-each other on a date, which no per-ticker calculation can express.  This module stacks every
-Curator file into one panel, computes the `r_*` columns across the cross-section, and writes
-per-ticker files back out carrying the original columns plus the new ones:
+**Run order: step 4 of 6** (see README.md).  After `Universe/universe.ipynb`, because it
+joins the security master that notebook writes; before `Data/analyzer.ipynb`, which reads
+what this writes.  Run it too early and it says which columns it is dropping and carries
+on.
 
-    Data/Curator/Time_Series/AAPL.csv     m_* + c_*                  (per ticker, time series)
+Block 2 of 3 in the Data stage, and the seam the KaxaNuk Data Refinery library will replace: this
+module is hand-rolled today.  Keep its contract stable -- read Curator files, resolve `r_*`
+functions by parameter name, write Refinery files with the same rows -- so the swap is a one-file
+change.
+
+The Curator works one security at a time, so every `c_*` column is a function of that security's
+own history.  A rank or a breadth reading compares securities against each other on a date, which
+no per-security calculation can express.  This module stacks every Curator file into one panel,
+computes the `r_*` columns across it, and writes per-security files back out carrying the original
+columns plus the new ones:
+
+    Data/Curator/Time_Series/IVV.csv     m_* + c_*                (per security, time series)
             |
-            v   read every ticker, compute per date across the cross-section
-    Data/Refinery/Time_Series/AAPL.csv    m_* + c_* + r_* (+ sector) (same rows, more columns)
+            v   read every security, compute per date across the cross-section
+    Data/Refinery/Time_Series/IVV.csv    m_* + c_* + r_* (+ join) (same rows, more columns)
 
 Run it directly:
 
     uv run python Data/refinery.py                  # refine everything on disk
-    uv run python Data/refinery.py --limit 50       # first 50 tickers, for a quick pass
+    uv run python Data/refinery.py --limit 50       # first 50 securities, for a quick pass
     uv run python Data/refinery.py --dry-run        # compute and report, write nothing
 
 `Data/Refinery/custom_calculations.py` owns the calculations; this module owns loading, ordering
-and writing.  Functions are resolved by parameter name against the columns already built, the
-same convention the Data Curator uses, so a new `r_*` column needs no registration beyond being
-defined -- add it to REFINERY_COLUMNS there and it lands in the output.
+and writing.  Functions are resolved by parameter name against the columns already built, the same
+convention the Data Curator uses, so a new `r_*` column needs no registration beyond being defined
+-- add it to `REFINERY_COLUMNS` there and it lands in the output.
 
 Enrichment that comes from *outside* the panel is attached here rather than in the calculations
-module, because it is a join and not a calculation.  Today that means sector and industry, read
-from `Universe/Security_Master.csv`.
+module, because it is a join and not a calculation.  Today that means the classification columns
+of `Universe/Security_Master.csv`.
 
-    WARNING: those are the classification each name carries *today*.  The provider has no
-    history, so a sector attributed before a reclassification is wrong -- GOOGL, GOOG, META, DIS
-    and NFLX moved to Communication Services in September 2018, and V, MA and PYPL to Financials
-    in March 2023, both inside this backtest window.  The columns are named `sector_current` and
-    `industry_current` so no downstream reader can mistake them for point-in-time values.
+    WARNING: a joined column is what a security is classified as **today**.  The provider keeps no
+    history, so on a universe whose members get reclassified -- an equity moving between GICS
+    sectors, a token changing category -- every period before the move is attributed wrongly, and
+    nothing raises an error.  Joined columns are suffixed `_current` so no downstream reader can
+    mistake one for a point-in-time value.
 """
 
 __all__ = [
@@ -71,11 +78,13 @@ DATE_COLUMN = "m_date"
 TICKER_COLUMN = "ticker"
 UNIVERSE_TICKER_COLUMN = "ticker"
 
-# Columns joined in from the security master.  Named `_current` on purpose -- see the module
-# docstring.
+# Columns joined in from the security master, as {master column: panel column}.  Every one is
+# suffixed `_current` on purpose -- see the module docstring.  Edit this mapping to carry whatever
+# your security master classifies securities by; a column the master does not have is reported and
+# skipped rather than joined in as nulls.
 SECURITY_MASTER_COLUMNS = {
-    "sector": "sector_current",
-    "industry": "industry_current",
+    "asset_class": "asset_class_current",
+    "asset_group": "asset_group_current",
 }
 
 
@@ -83,7 +92,7 @@ def attach_security_master(
     panel: pandas.DataFrame,
 ) -> pandas.DataFrame:
     """
-    Join the current sector and industry onto the panel, or warn and skip when unavailable.
+    Join the security master's classification columns onto the panel, or warn and skip.
 
     Missing security master is not fatal: everything computed from the panel itself still works,
     and the universe notebook is what produces the master in the first place.
@@ -102,13 +111,23 @@ def attach_security_master(
         return panel
 
     with SECURITY_MASTER_PATH.open(encoding="utf-8-sig", newline="") as handle:
+        reader = csv.DictReader(handle)
+        available = set(reader.fieldnames or ())
         classification = {
             row["ticker"]: row
-            for row in csv.DictReader(handle)
+            for row in reader
         }
 
     enriched = panel.copy()
     for source_column, output_column in SECURITY_MASTER_COLUMNS.items():
+        if source_column not in available:
+            print(
+                f"  WARNING: {SECURITY_MASTER_PATH.name} has no '{source_column}' column,"
+                f" so {output_column} is omitted rather than joined in as nulls."
+            )
+
+            continue
+
         enriched[output_column] = enriched[TICKER_COLUMN].map(
             {
                 ticker: (row.get(source_column) or None)
@@ -126,16 +145,13 @@ def build_curator_panel(
     """
     Every column of every Curator file, stacked into one long panel sorted by date then ticker.
 
-    Only the columns a file actually carries are read, because the directory is not guaranteed to
-    hold a single schema -- the KN600 benchmark ships without the `c_*` columns.
-
-    Membership is an allowlist taken from the investable universe, not a list of benchmarks to
+    Membership is an **allowlist** taken from the investable universe, not a list of things to
     skip.  The Curator directory also holds the cash proxy and the benchmarks, because the engine
-    prices every ticker from one place, and none of them belong in a cross-section: a benchmark
-    ranked against its own constituents is meaningless, and the cash proxy would sit at the
-    bottom of every liquidity rank.  Reading membership from the same file the curator downloads
-    from means adding a benchmark can never silently pollute a rank -- there is no second list to
-    forget to update.
+    prices every ticker from one place, and none of them belongs in a cross-section: a benchmark
+    ranked against its own constituents is meaningless, and a cash proxy would sit at the bottom of
+    every risk rank and the top of every calm one.  Reading membership back from the same file the
+    Curator downloaded from means adding a benchmark can never silently pollute a rank -- there is
+    no second list to forget to update.
     """
     investable_tickers = read_investable_tickers()
     paths = sorted(
@@ -174,20 +190,20 @@ def build_curator_panel(
 
 
 def load_custom_calculation_functions(
-    skip_sector_columns: bool = False,
+    skip_classified_columns: bool = False,
 ) -> dict[str, types.FunctionType]:
     """
     The `r_*` functions from `Data/Refinery/custom_calculations.py`, keyed by column name.
 
     Loaded by path rather than by import statement because `Data/` is a plain directory rather
-    than a package.  `skip_sector_columns` drops the columns that need the security master's
+    than a package.  `skip_classified_columns` drops the columns that need the security master's
     classification join, so the refinery stays runnable before the universe notebook has run.
     """
     module = _load_module(CUSTOM_CALCULATIONS_PATH)
     requested = [
         column
         for column in module.REFINERY_COLUMNS
-        if not (skip_sector_columns and column in module.SECTOR_DEPENDENT_COLUMNS)
+        if not (skip_classified_columns and column in module.CLASSIFICATION_DEPENDENT_COLUMNS)
     ]
 
     functions = {}
@@ -238,11 +254,11 @@ def main() -> int:
 
     curator_columns = list(panel.columns)
     enriched = attach_security_master(panel)
-    skip_sector_columns = not SECURITY_MASTER_PATH.is_file()
-    functions = load_custom_calculation_functions(skip_sector_columns)
+    skip_classified_columns = not SECURITY_MASTER_PATH.is_file()
+    functions = load_custom_calculation_functions(skip_classified_columns)
     print(f"Calculations    : {len(functions)} r_* column(s)")
-    if skip_sector_columns:
-        print("  sector-dependent columns skipped (no Security_Master.csv yet)")
+    if skip_classified_columns:
+        print("  classification-dependent columns skipped (no Security_Master.csv yet)")
 
     refined = refine_panel(enriched, functions)
     print(
@@ -331,7 +347,9 @@ def refine_panel(
                 name: refined[name]
                 for name in _parameter_names(pending[column])
             }
+            started_at = time.monotonic()
             refined[column] = pending[column](**arguments)
+            print(f"  {column:34s} {time.monotonic() - started_at:6.1f}s")
             del pending[column]
 
     return refined
@@ -376,7 +394,17 @@ def write_refinery_files(
 def _load_module(
     path: pathlib.Path,
 ) -> types.ModuleType:
-    """Import `path` as a standalone module object."""
+    """
+    Import `path` as a standalone module object.
+
+    Its directory goes on the import path first, so the calculations module can import a sibling
+    -- `jump_model` -- by name.  `Data/Refinery/` is a plain directory rather than a package, so
+    without this the only way a calculations file could reach a helper beside it would be another
+    path-loading incantation at the top of every one.
+    """
+    if str(path.parent) not in sys.path:
+        sys.path.insert(0, str(path.parent))
+
     specification = importlib.util.spec_from_file_location(
         f"{path.parent.name.lower()}_calculations",
         path,

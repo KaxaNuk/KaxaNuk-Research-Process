@@ -20,10 +20,10 @@ Universe/Provider_Cache/
 # Nothing under Data/ is committed except code. Every file here is either downloaded by
 # Data/curator.py, derived by Data/refinery.py, or supplied by the user - see README.md.
 #
-# Today the curator downloads the per-ticker time series and the tradable benchmarks (SPY, QQQ,
-# BIL); the KaxaNuk index files and the factor models are dropped in by hand. Once the
-# benchmarks-and-factors fabric exists, the curator will fetch those too and this section will
-# not need to change.
+# The curator downloads the per-security time series, the tradable benchmarks (AOR, SPY) and the
+# cash proxy (BIL). The index holdings and factor models attribution reads are dropped in by hand,
+# because no price provider sells them. Once a benchmarks-and-factors fabric exists the curator
+# will fetch those too, and this section will not need to change.
 Data/Curator/Time_Series/*.csv
 Data/Curator/Time_Series/*.parquet
 Data/Curator/Benchmarks/*.csv
