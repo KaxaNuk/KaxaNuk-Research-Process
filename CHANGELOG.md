@@ -43,137 +43,99 @@ lists, each item written for somebody who was not in the room:
 
 ---
 
-## 0.3.0 (2026-09-03)
+## 0.3.0 (2026-09-04)
 
-**MINOR** — the template gains a worked example, and stops being US-equity-shaped. Nothing published
-is invalidated because nothing had been published: at 0.2.0 there were no results.
+**MINOR** — the template stops being US-equity-shaped, gains a fourth shared module, and splits into
+two branches: `main` is the process with nothing in it, `example` is one strategy worked end to end.
 
-**What to do differently:** the repository is now multi-asset by default and the universe is twelve
-lines of CSV. If you are starting a strategy, replace `Universe/Investable_Universe.csv` and the two
-`custom_calculations.py` files, and read `README.md` rather than `AGENTS.md` first.
+**What to do differently:** the universe is now a CSV whose only required columns are `ticker` and
+`name`, so the repository is multi-asset by default. Name your signal in two places —
+`ELIGIBILITY_COLUMN` in `Data/analyzer.ipynb` and `SIGNAL_COLUMN` in the experiment notebook — and
+the benchmark rule runs without being written.
 
 ### Added
 
-* **A worked example that runs end to end in under a minute** — twelve asset-class ETFs, a
-  statistical jump model labelling each one's regime daily. Universe, data and analysis are complete;
-  no book has been backtested. After
-  [Shu, Yu & Mulvey (2024)](Bibliotheca/Papers/Shu_Yu_Mulvey_2024_Dynamic_Asset_Allocation_With_Asset_Specific_Regime_Forecasts.md).
+* **`Experiments/portfolio_construction.py`** — step 4, behind one swappable signature: given the
+  securities eligible today and a returns history already cut off before today, return weights
+  summing to **at most** one. `equal_weight` and `inverse_volatility` ship; a minimum-variance
+  optimiser, hierarchical risk parity, or a call into the KaxaNuk Portfolio Construction library are
+  the same shape, so swapping one is one line in the rule cell.
 * **`Experiments/attribution_analysis.py`** — step 6, split out of the engine so the two KaxaNuk
-  libraries live in one module each. It owns the shaping of the hand-supplied index data into the
-  tables the library auto-detects, and reports which of its four inputs are missing before it
-  tries. Getting that layout wrong makes the loader read the attribution transposed rather than
-  fail, which is why the shaping is not left in a notebook.
-* **`Experiments/portfolio_construction.py`** — step 4, behind one swappable signature: given
-  the securities eligible today and a returns history already cut off before today, return
-  weights summing to **at most** one. `equal_weight` and `inverse_volatility` ship; a
-  minimum-variance optimiser, hierarchical risk parity, or a call into the KaxaNuk Portfolio
-  Construction library are the same shape, so swapping one is one line in the rule cell.
-* **Experiment 1 is written and built.** `BLUEPRINT_1.md` fixed four predictions from the
-  analyzer *before* the rule cell existed, and the construction stage **falsified one of them**
-  without the engine: the book is 95.3% invested, not the predicted ~55%, because equal weight
-  over a shrinking eligible set concentrates rather than de-risking. The benchmark is a
-  rotation, not a risk reducer.
-* **`dev`, the architecture with nothing in it.** An orphan branch carrying the folder structure
-  and its `.gitkeep` files and nothing else — no code, no documents, no shared history with
-  `main`. What you copy when you want the shape and intend to write every line yourself.
-* **Example markers in the source.** `# --- example: begin ---`, `<!-- example: begin -->` and
-  `# EXAMPLE-ONLY CELL` mark every line that belongs to the worked example rather than to the
-  process, so somebody starting their own strategy can see what to delete without a diff.
-* **The branching model, written down.** `main` (the repository), `dev` (the empty architecture),
+  libraries live in one module each. It owns the shaping of hand-supplied index data into the tables
+  the library auto-detects, and reports which of its four inputs are missing before it tries. Getting
+  that layout wrong makes the loader read the attribution transposed rather than fail, which is why
+  the shaping is not left in a notebook.
+* **A benchmark rule that works out of the box.** Section 2 of the experiment notebook holds
+  everything the signal calls eligible, equally weighted, cash for the rest — event-driven, one day
+  of lag. It runs as soon as `SIGNAL_COLUMN` is set, because a benchmark you have to write before you
+  can measure anything is a benchmark that never gets written.
+* **A run order that is stated in seven places.** `README.md` numbers the six commands, and every
+  file in the pipeline says where it sits in that order in its first paragraph, so wherever you land
+  you know what must have run before it.
+* **The branching model, written down.** `main` (the template), `example` (one strategy, for reading)
   and `issues/<number>` cut from `main` and merged back into it — one per issue on the GitHub
-  Project, opened before the branch because the issue is where the reasoning lives. `AGENTS.md`
-  carries the loop and the pull-request checklist.
-* **A run order that is stated in six places.** `README.md` numbers the six commands, and every
-  file in the pipeline says where it sits in that order in its first paragraph, so wherever you
-  land you know what must have run before it.
-* **`Data/Refinery/jump_model.py`** — a statistical jump model in one readable file: coordinate
-  descent over a dynamic program, deterministic initialisation from the training returns, and a
-  rolling refit that never lets a model label a day it was trained on. It returns the **causal**
-  label; the smoothed one is available only where it is labelled as not tradable.
-* **Nine `c_*` feature columns** in the Curator — the source paper's eight, at its half-lives, plus
-  the daily total return they are built on. Arithmetic only, no fitted parameter, which is why they
-  can live in a stage a refetch is expensive in.
-* **Eight `r_*` columns** in the Refinery: the regime label, its bull switch, cross-sectional breadth,
-  and per-date ranks of momentum, Sortino, downside deviation and liquidity.
-* **A measurement of what look-ahead is worth: 44 annualised points**, from reading one fitted model
-  two ways in `Data/analyzer.ipynb` section 5. `Bibliotheca` Part 5 previously recorded look-ahead as
-  the one control with no evidence behind it; this closes that.
-* **A step-3 findings section in `RESULTS.md`.** Notebook outputs are stripped before committing, so a
-  measurement that lived only in a cell output did not survive the commit. Findings from the Data
+  Project, opened before the branch because the issue is where the reasoning lives.
+* **Example markers.** `# --- example: begin ---`, `<!-- example: begin -->` and
+  `# EXAMPLE-ONLY CELL` mark any line that belongs to a worked example rather than to the process, so
+  the two branches can be told apart by reading rather than by diffing.
+* **A step-3 findings section in `RESULTS.md`.** Notebook outputs are stripped before committing, so
+  a measurement that lived only in a cell output did not survive the commit. Findings from the Data
   stage now have a durable home.
-* Two paper notes, and Parts 1 to 4 of `BIBLIOGRAPHY.md` restocked with real leads for regimes,
-  universe and data, portfolio construction, and backtest and attribution. A source without a note is
-  now explicitly a *lead*, not a citation.
 
 ### Changed
 
-* **`Universe/Investable_Universe.csv` is twelve ETFs instead of 787 US equities**, with a schema the
-  strategy chooses: only `ticker` and `name` are required. Every stage downstream reads it without
-  knowing what is in it, so a crypto, FX or futures seed runs the same pipeline.
+* **`Universe/Investable_Universe.csv` requires only `ticker` and `name`.** Every stage reads it
+  without knowing what is in it, so a crypto, FX or futures seed runs the same pipeline. The 787-row
+  US-equity seed is gone.
 * **`Data/curator.py` rewritten** — 851 lines to 652, and the reduction is the smaller half of it.
   Work is handed out one identifier at a time through a plain thread pool with thread-local
   providers, replacing a chunked worker scheme, a shared mutable tally object and a lock-guarded
   progress counter; `download_identifier` now returns an outcome string instead of mutating shared
-  state, so it can be read and tested on its own. The equity-only `sector_sample` mode and the
-  hand-supplied price-series staging are gone.
+  state. An empty universe file is reported as a sentence rather than a traceback.
+* **`Data/refinery.py` deletes refined files for securities no longer in the universe.** Leaving
+  them was the worst kind of bug this stage can have: every cross-sectional column is computed over
+  the securities present, so a stale file carries ranks taken against a universe that no longer
+  exists, and anything reading the directory silently averages two incompatible cross-sections. It
+  produced a plausible number and no error.
 * **The daily return moved from the Refinery to the Curator**, as `c_return_1d`. It is a function of
-  one security's own history, so it was in the wrong stage — and the whole feature set is built on it.
+  one security's own history, so it was in the wrong stage.
 * **`Data/refinery.py` joins whatever the security master classifies by**, reporting and skipping a
   column the master does not carry instead of joining it in as nulls. The `sector`/`industry`
   hard-coding is gone; the `_current` suffix rule that made it safe stays.
-* **`Universe/universe.ipynb` rewritten**, from 49 cells to 20, and no longer equity-shaped. It now
-  answers the question everybody forgets: **when does each asset become usable?** On the example a
-  five-year training window moves the honest start of a backtest from 2010 to 2016-04-12.
-* **`Data/analyzer.ipynb` rewritten**, from a generic EDA to a set of questions with answers: what
-  diversification exists, whether the signal separates risk or return, what look-ahead is worth, and
-  whether the conclusion survives the parameter sweep.
-* **`AGENTS.md` cut from 624 lines to 379.** Everything the README now covers — the eight steps, the
-  column convention, setup, credentials, the shared modules — was removed rather than restated. What
-  is left is what the README does not say: who writes each document, the restrictions, the integrity
-  controls, and the known gaps. Versioning moved here, to the file that already explained it.
-* **`README.md` rewritten as the entry point**: five numbered steps that run the example, then a
-  walkthrough of the eight process steps in the order to do them, then one table saying where each
-  kind of logic goes. **The run order is now stated as a dependency**: the universe notebook profiles
-  files the curator downloaded, and writes the security master the refinery joins, so it sits between
-  them. Running the refinery first is not an error and that is the problem — it names the columns it
-  drops and carries on.
-* **The shared modules are renamed for what they hold**: `Experiments/panel.py` is now
-  `securities_panel.py`, and `Experiments/engine.py` is now `backtest_engine.py` — joined by the new
-  `portfolio_construction.py`, so `Experiments/` now reads as panel in, weights, engine out. They stay two files
-  rather than becoming one because `securities_panel.py` is pure pandas while `backtest_engine.py`
-  reaches for the licensed KaxaNuk library, and merging would put two very different dependencies in
-  the module every notebook imports just to read data. `panel` also collides with a PyPI package of
-  that name.
+* **The shared modules are renamed for what they hold**: `panel.py` is now `securities_panel.py` and
+  `engine.py` is now `backtest_engine.py`, joined by the two new modules — so `Experiments/` reads as
+  panel in, weights, engine out, attribution.
 * **`securities_panel.py` names no classification column in `BASE_PANEL_COLUMNS`.** Classification is
-  optional and discovered from the files, so a security master that classifies by something else — or
-  not at all — changes one tuple. It also now raises a readable error naming the missing columns
-  instead of failing inside `read_csv`.
-* **`Experiments/backtest_engine.py` reports against `AOR` and `SPY`**, the benchmarks the curator actually
-  fetches. AOR is primary: a multi-asset book measured only against the S&P 500 is being asked the
-  wrong question. The attribution file names are now visibly placeholders, since attribution has
-  never been run here.
-* `OBJECTIVE.md` states the example strategy and, at the bottom, how to write your own. Its claims
-  table carries a **falsified** row, which is the most useful row in it.
-* The bar in `AGENTS.md` gains a clause: **never choose a parameter on the metric it will be judged
-  by.** The source paper selects its jump penalty on cross-validated Sharpe; we select on persistence
-  and publish the sweep, and accept that this costs us the ability to claim its numbers.
+  optional and discovered from the files, and a missing column raises a readable error naming it
+  rather than failing inside `read_csv`.
+* **`Universe/universe.ipynb` rewritten**, from 49 cells to 20, and no longer equity-shaped. It now
+  answers the question everybody forgets: **when does each security become usable?** A five-year
+  warm-up moves the honest start of a backtest by five years, and nothing else in the pipeline says
+  so.
+* **`Data/analyzer.ipynb` rewritten** around the information-coefficient table, with the two
+  questions any signal owes an answer to written into its header: does it separate anything, and if
+  it is fitted, what is look-ahead worth?
+* **`AGENTS.md` cut from 624 lines to about 380.** Everything the README covers — the eight steps,
+  the column convention, setup, credentials, the shared modules — was removed rather than restated.
+  Versioning moved here, to the file that already explained it.
+* **`README.md` rewritten as the entry point**: six numbered steps that run the pipeline, a
+  walkthrough of the eight process steps in the order to do them, and one table saying where each
+  kind of logic goes. **The run order is stated as a dependency**, because the universe notebook sits
+  between two Data commands and running the refinery early does not fail — it silently drops columns.
+* **The invariant that weights sum to 1.0 is now "at most 1.0".** A strategy that can go to cash
+  cannot satisfy the stricter form, and the engine already parks the residual in a real, priced
+  instrument.
+* **The bar in `AGENTS.md` gains a clause:** never choose a parameter on the metric it will be judged
+  by. Choose it on a property of the signal — persistence, coverage, turnover — and publish the
+  sweep.
 
 ### Removed
 
-* `stage_supplied_price_series` and its engine-column fallbacks from the Curator. It existed to stage
-  a hand-supplied index price series into the market-data directory; the example's benchmarks are
-  downloadable, and machinery kept for a file that does not exist teaches the reader to keep
-  machinery for files that do not exist. The drop-zone directories and the *what is missing* report
-  stay.
-* The `sector_sample` download mode. `r_liquidity_zscore` moves to the skeleton, where it is
-  the worked example of per-date normalisation; the example branch has real features instead.
-* **The 787-row US-equity universe, deleted rather than archived.** A template carrying two universes
-  makes a reader ask which one is real. It is recoverable from history at
-  `53ba89d:Universe/Investable_Universe.csv` if it is ever needed again, and the ~400 MB of
-  downloaded equity price files it produced went with it — all of them regenerable by one command
-  against that seed.
-
----
+* `stage_supplied_price_series` and its engine-column fallbacks from the Curator. It staged a
+  hand-supplied index price series into the market-data directory; machinery kept for a file that
+  does not exist teaches the reader to keep machinery for files that do not exist. The drop-zone
+  directories and the *what is missing* report stay.
+* The `sector_sample` download mode, and the 787-row US-equity universe with it.
 
 ## 0.2.0 (2026-09-03)
 

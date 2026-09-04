@@ -5,12 +5,10 @@ logic goes. **This file says how work is done in it**: who writes each document 
 the restrictions, and the bar a result has to survive before anyone believes it. It does not repeat
 the README, so read that first.
 
-<!-- example: begin -->
-> **Status: step 4 of 8.** The example strategy has a universe, data, an analysis and a book.
-> **Nothing has been priced** — steps 5 and 6 need licensed engines this clone does not have.
-> [`RESULTS.md`](RESULTS.md) says exactly what has and has not been measured. Replace this
-> banner with your own status when you take the repository over.
-<!-- example: end -->
+> **Status: the template.** No strategy, no data, no result — the process with nothing in it yet.
+> [`OBJECTIVE.md`](OBJECTIVE.md) says what a strategy has to state and [`RESULTS.md`](RESULTS.md) what it
+> has to report; both are empty by design. Replace this banner with your own status when you take
+> the repository over.
 
 ## How work reaches `main`
 
@@ -18,17 +16,17 @@ Two long-lived branches with different jobs, plus one short-lived kind.
 
 | Branch | What it is | Cut from | Merges into |
 | --- | --- | --- | --- |
-| `main` | the repository. The process, the pipeline and the worked example. Always runnable, always lints, notebook outputs always stripped | — | — |
-| `dev` | **the architecture, empty** — folders and `.gitkeep` files and nothing else. What you copy when you want the shape and intend to write every line yourself | — | — |
+| `main` | **the template** — the process, the pipeline and the contracts, with no strategy in them. Always runnable, always lints, notebook outputs always stripped | — | — |
+| `example` | one strategy worked end to end, for reading rather than building on: what a filled-in repository is supposed to look like | `main` | never |
 | `issues/<number>` | one per GitHub issue. Where all work happens | `main` | `main` |
 
 `issues/27-B` and `issues/27-C` when one issue needs a second attempt, or splits into parallel lines
 of work: same issue, same discussion, separate history.
 
-**`dev` is not an integration branch.** It shares no history with `main` and nothing is ever merged
-between them — it is a scaffold, and the only thing it carries is the folder structure. If you change
-the structure on `main`, change it there too; nothing automates that, because there is nothing in it
-to automate.
+**`example` never merges back.** It is a demonstration, not a feature branch: everything in it that
+belongs to the *process* is on `main` already, and everything else is a strategy nobody else should
+inherit. When the process changes on `main`, the example is rebuilt on top of it — never merged
+into it.
 
 **Nothing else lives in the branch list.** A long-lived branch that is not one of these two is a fork
 nobody remembers to update.
@@ -258,11 +256,9 @@ strictly backwards, so giving two variants the same first day leaks nothing. Any
 returned in its causal form, and the smoothed form is available only where it is explicitly labelled
 as not tradable.
 
-<!-- example: begin -->
-**This is the control with the highest measured cost in this repository.** `Data/analyzer.ipynb`
-section 5 reads one fitted model both ways and puts the gap at **44 annualised points**. It is one
-line of code, the two series agree on 81% of days, and they differ exactly at the turning points.
-<!-- example: end -->
+**If your signal is fitted, measure what that costs.** Read the same model causally and smoothed and
+report the gap. It is the cheapest audit in the process and routinely the largest number in it: the
+two series agree on most days and differ exactly at the turning points, which is where the money is.
 
 **The one deliberate violation is named in its own column suffix:** `*_current` columns come from
 today's security master, so any period before a reclassification is misattributed. That is why the
@@ -330,9 +326,10 @@ Stack facts, not strategy facts. Each was learned the expensive way.
 - **Coverage is checked before conclusions.** A column at 60% coverage is not quietly averaged over
   the 60%; the refinery reports per-column coverage on every run, and `curator.py --report` says what
   is present before any network call.
-- **`rank(pct=True)` over *n* values averages to `(n+1)/2n`, not to 0.5.** On twelve assets that is
-  0.542. A causality check written against 0.5 fails on every date of a narrow universe and passes on
-  a wide one, which is the worst possible failure mode.
+- **`rank(pct=True)` over *n* values averages to `(n+1)/2n`, not to 0.5.** On twelve securities
+  that is 0.542; on eight hundred it is 0.5006. A causality check written against 0.5 therefore fails
+  on every date of a narrow universe and passes on a wide one, which is the worst possible failure
+  mode. Check against the identity, not against a half.
 
 ## What attribution must report
 

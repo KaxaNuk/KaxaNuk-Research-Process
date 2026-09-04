@@ -366,6 +366,12 @@ def write_refinery_files(
 
     The helper column the panel is keyed by is dropped again on the way out, so a refined file is
     a drop-in replacement for the Curator file it came from.  Returns the number of files written.
+
+    **Files for securities no longer in the panel are deleted.**  Leaving them would be the worst
+    kind of bug this stage can have: every cross-sectional column is computed *over the securities
+    present*, so a stale file carries ranks taken against a universe that no longer exists, and
+    anything reading the directory would silently average two incompatible cross-sections.  It
+    produces a plausible number and no error.
     """
     directory.mkdir(parents=True, exist_ok=True)
     enrichment_columns = [
@@ -379,16 +385,29 @@ def write_refinery_files(
         if column != TICKER_COLUMN
     ]
 
-    written = 0
+    written = set()
     for ticker, group in refined.groupby(TICKER_COLUMN):
         output = group.sort_values(DATE_COLUMN)[output_columns]
         output.to_csv(
             directory / f"{ticker}.csv",
             index=False,
         )
-        written += 1
+        written.add(str(ticker))
 
-    return written
+    stale = [
+        path
+        for path in sorted(directory.glob("*.csv"))
+        if path.stem not in written
+    ]
+    for path in stale:
+        path.unlink()
+    if len(stale) > 0:
+        print(
+            f"  removed {len(stale)} refined file(s) for securities no longer in the universe:"
+            f" {', '.join(path.stem for path in stale)}"
+        )
+
+    return len(written)
 
 
 def _load_module(

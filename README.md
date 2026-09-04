@@ -1,20 +1,16 @@
 # KN Research Process
 
-**The KaxaNuk Investment Lab's research process as a folder structure**, with one worked example
-running end to end inside it. Copy this repository to start a strategy; delete the example and put
-yours in its place.
+**The KaxaNuk Investment Lab's research process as a folder structure**, with the pipeline that makes
+it run and no strategy in it yet. Clone it, put your universe in one CSV, name your signal in two
+places, and the whole thing works end to end.
 
-It is not an equity template. The universe is twelve lines of CSV, and every stage below reads it
-without knowing what is in it — **stocks, ETFs, FX, crypto, commodities or futures all run the same
-pipeline.** The example uses ETFs because twelve of them download in seven seconds, which is what
-lets a newcomer see the whole process work before deciding to trust any part of it.
+It is not an equity template. The universe is a CSV whose only required columns are `ticker` and
+`name`, and every stage below reads it without knowing what is in it — **stocks, ETFs, FX, crypto,
+commodities or futures all run the same pipeline.**
 
-> **The example.** Twelve asset-class ETFs. A *statistical jump model* labels each one, every day,
-> as being in its calm state or its turbulent one — fitted on that asset's own history, refitted as
-> the window rolls forward, and read strictly causally. After
-> [Shu, Yu & Mulvey (2024)](Bibliotheca/Papers/Shu_Yu_Mulvey_2024_Dynamic_Asset_Allocation_With_Asset_Specific_Regime_Forecasts.md).
-> [`OBJECTIVE.md`](OBJECTIVE.md) states what it claims; [`RESULTS.md`](RESULTS.md) states how far it
-> got.
+> **Want to see it filled in?** The `example` branch carries one strategy worked end to end — twelve
+> asset-class ETFs and a regime model — with its objective, its measurements and a falsified
+> prediction left in place. It is there to be read, not built on. `git switch example`.
 
 ---
 
@@ -50,7 +46,7 @@ uv run python -m ipykernel install --user --name kn-research-process --display-n
 | **1** | `uv run python Data/curator.py --report` | nothing — tells you what is missing and what each gap breaks | instant |
 | **2** | `uv run python Data/curator.py` | `Data/Curator/Time_Series/` — one price file per security | ~12 s |
 | **3** | notebook `Universe/universe.ipynb` | `Universe/Security_Master.csv`, `Data_Issues.csv`, `Charts/` | ~20 s |
-| **4** | `uv run python Data/refinery.py` | `Data/Refinery/Time_Series/` — the panel, with the regime signal on it | ~20 s |
+| **4** | `uv run python Data/refinery.py` | `Data/Refinery/Time_Series/` — the panel, with your `r_*` columns on it | ~20 s |
 | **5** | notebook `Data/analyzer.ipynb` | `Data/Analyzer/` — the charts and the information-coefficient table | ~2 min |
 | **6** | notebook `Experiments/Experiment_1/experiment_1.ipynb` | `Experiments/Experiment_1/Portfolio/` — the book | ~30 s |
 
@@ -134,23 +130,24 @@ a tool without explaining it first.
 note. A note is not a summary — **it ends by saying what it changes about your strategy**, in a
 blockquote, and that blockquote is the only part that is yours.
 
-Ships with eleven notes: the two books whose method the process runs, the seven papers behind its
-integrity controls, and the two papers the example is built from. Everything else arrives because a
-result raised a question — and a source listed without a note is a **lead**, not a citation.
+Ships with nine notes: the two books whose method the process runs, and the seven papers behind
+its integrity controls. Everything else arrives because a result raised a question — and a source
+listed without a note is a **lead**, not a citation.
 
 ### Step 2 · Universe — decide what is investable
 
-Open [`Universe/Investable_Universe.csv`](Universe/Investable_Universe.csv). Twelve rows, seven
-columns. **Two columns are required — `ticker` and `name` — and the rest are yours.** This one
-carries `asset_class` and `asset_group` because the example compares asset classes; a crypto seed
-would carry something else, and nothing downstream would notice.
+Open [`Universe/Investable_Universe.csv`](Universe/Investable_Universe.csv). It ships with a header
+row and nothing else. **Two columns are required — `ticker` and `name` — and the rest are yours.**
+It carries `asset_class` and `asset_group` as a suggestion, because most strategies want to group
+their securities somehow; a crypto seed would carry something else, and nothing downstream would
+notice.
 
 Then run `Universe/universe.ipynb` — **after the curator has downloaded, because it profiles those
 files, and before the refinery, because it writes the `Security_Master.csv` the refinery joins.** It
 fills in what the provider knows, writes `Data_Issues.csv`, and answers the question everybody
 forgets to ask: **when does each asset actually become usable?** A file that starts in 2010 gives no
-signal in 2010 if the model needs five years of history first. On the example that pushes the honest
-start of a backtest from 2010 to 2016-04-12.
+signal in 2010 if the feature needs five years of history first. That date, not the first row of the
+price file, is the honest start of a backtest.
 
 ### Step 3 · Data — curate, refine, analyse
 
@@ -164,9 +161,10 @@ call at all and tells you what is present — run that first.
 **`Data/refinery.py`** stacks those files into one panel and computes the `r_*` columns across it.
 No network, so this is the command you re-run while you iterate.
 
-**`Data/analyzer.ipynb`** is where a feature earns a backtest or is dropped. On the example it
-produces the finding the whole repository exists to make possible, which is in
-[`RESULTS.md`](RESULTS.md).
+**`Data/analyzer.ipynb`** is where a feature earns a backtest or is dropped. Its information
+coefficient table is the instrument: the per-date correlation between each candidate feature and
+forward returns, inside the pool your strategy actually selects from. **A feature that fails
+there does not get a book built on it.**
 
 ### Step 4 to 6 · Experiments
 
@@ -174,13 +172,6 @@ One folder per idea, four markdown files and a notebook. **Write `BLUEPRINT_N.md
 a hypothesis edited after its test is not a hypothesis. Then one cell of `experiment_N.ipynb` is the
 strategy, and everything after it runs unchanged.
 
-<!-- example: begin -->
-That ordering is not ceremony. In this repository the benchmark's blueprint made four predictions
-from the analyzer, and **the construction stage falsified one of them before the engine was ever
-installed** — which changed what the strategy is understood to be, and cost nothing to discover. The
-falsification is in
-[`FINDINGS_1.md`](Experiments/Experiment_1/FINDINGS_1.md).
-<!-- example: end -->
 
 Steps 5 and 6 need the licensed engines. Without them the notebook still builds and writes the book,
 then reports what is missing and skips — so a clone with no licence gets everything except the
@@ -206,17 +197,16 @@ which file to open.**
 | `r_*` | `Data/Refinery/custom_calculations.py` | **securities against each other, per date** | you need a rank, a breadth reading, or a fitted model |
 | `*_current` | `Data/refinery.py` | joined from the security master — **not point-in-time** | you classify securities by something new |
 
-Two rules that follow, and one exception the example leans on:
+Two rules that follow, and one exception worth knowing:
 
 - **A `c_*` column that needs to see other securities is misplaced** and belongs in the Refinery.
 - **Widening the Curator's schema forces a refetch of every identifier.** That is deliberate — it is
   what stops the directory holding a mix of schemas — but it means the Curator is the wrong home for
   anything you intend to tune.
-- **So a fitted column lives in the Refinery even when it is per-security.** The example's regime
-  label is computed from one asset's own history, which by the naming rule alone would make it
-  `c_*`. It sits in the Refinery because its hyperparameters are exactly what an experiment sweeps,
-  and **a sweep must never cost a download.** Its inputs — eight arithmetic features, frozen at the
-  paper's values — stay in the Curator, because they have nothing to tune.
+- **So a fitted column lives in the Refinery even when it is per-security.** A model fitted on one
+  security's own history would be `c_*` by the naming rule alone. It belongs in the Refinery because
+  its hyperparameters are exactly what an experiment sweeps, and **a sweep must never cost a
+  download.** Its *inputs* — arithmetic with nothing to tune — stay in the Curator.
 
 Four `c_*` columns are **engine infrastructure and never removed**: `c_split_ratio`,
 `c_dividend_split_ratio`, `c_vwap` (the commission price) and `c_vwap_dividend_and_split_adjusted`
@@ -281,15 +271,27 @@ Four files inside every `Experiments/Experiment_N/`:
 
 ## Starting your own strategy
 
-**Start from `main` and delete the example in place.** Everything that belongs to the worked
-example is marked in the source — `# --- example: begin ---` in Python, `<!-- example: begin -->`
-in Markdown, and `# EXAMPLE-ONLY CELL` on a whole notebook cell. You can see exactly what to
-remove without running anything and without a diff. Then replace
-`Universe/Investable_Universe.csv`, the two `custom_calculations.py`, and the documents whose
-whole content is a strategy: `OBJECTIVE.md`, `RESULTS.md`, and the four per-experiment files.
+**You are already in it.** `main` is the template: nothing here is a strategy, and the four
+documents that hold one — `OBJECTIVE.md`, `RESULTS.md`, and the per-experiment files — ship as
+contracts with the answers left out. In order:
 
-**Or start from `dev`** if you want only the folder structure and intend to write every line
-yourself. It has no code, no documents and no history in common with `main` — just the shape.
+1. **Put your securities in `Universe/Investable_Universe.csv`.** One row each; `ticker` and
+   `name` are the only required columns.
+2. **Write `OBJECTIVE.md`** — the idea, and the claims inside it, *before* anything is measured.
+3. **Add your `c_*` and `r_*` columns** to the two `custom_calculations.py`, and list them in
+   `CUSTOM_COLUMNS` / `REFINERY_COLUMNS`.
+4. **Name your eligibility column** in `ELIGIBILITY_COLUMN` (`Data/analyzer.ipynb`) and
+   `SIGNAL_COLUMN` (`Experiments/Experiment_1/experiment_1.ipynb`). Those two are the only
+   strategy names outside the rule cell, and the notebook refuses to run until the second is set.
+5. **Write `BLUEPRINT_1.md` before the rule.** A hypothesis edited after its test is not a
+   hypothesis.
+
+The benchmark rule in section 2 of the experiment notebook already works: hold everything the
+signal calls eligible, equally weighted, cash for the rest. **It runs as soon as step 4 is done**,
+which is deliberate — a benchmark you have to write before you can measure anything is a
+benchmark that never gets written.
+
+**To see it filled in**, `git switch example`.
 
 ## What a clone contains, and what it does not
 
@@ -347,13 +349,13 @@ Two long-lived branches with different jobs, and one short-lived kind:
 
 | Branch | What it is |
 | --- | --- |
-| `main` | this — the process, the pipeline and the worked example |
-| `dev` | **the architecture, empty**: folders and `.gitkeep` files, nothing else. Copy it when you want the shape and intend to write every line yourself |
+| `main` | this — the template: the process, the pipeline and the contracts, with no strategy in them |
+| `example` | one strategy worked end to end, for reading rather than building on |
 | `issues/<number>` | one per issue on the GitHub Project, cut from `main` and merged back into it. Where all work happens |
 
-`dev` shares no history with `main` and nothing is merged between them — it is a scaffold, not an
-integration branch. **The issue exists before the branch**: it is where the *why* lives, and in
-this repository the reasoning is the product.
+`example` never merges back: everything in it that belongs to the *process* is on `main` already,
+and the rest is a strategy nobody else should inherit. **The issue exists before the branch**: it
+is where the *why* lives, and in this repository the reasoning is the product.
 
 [`AGENTS.md`](AGENTS.md) has the loop, and what a pull request has to satisfy before it lands.
 

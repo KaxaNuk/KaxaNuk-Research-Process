@@ -1,13 +1,1 @@
-ticker,name,asset_class,asset_group,index_name,index_ticker,isin
-IVV,iShares Core S&P 500 ETF,LargeCap,Equity,S&P 500 Total Return Index,SPTR,US4642872000
-IJH,iShares Core S&P Mid-Cap ETF,MidCap,Equity,S&P MidCap 400 Total Return Index,SPTRMDCP,US4642875078
-IWM,iShares Russell 2000 ETF,SmallCap,Equity,Russell 2000 Total Return Index,RU20INTR,US4642876555
-EFA,iShares MSCI EAFE ETF,EAFE,Equity,MSCI EAFE Net Total Return USD Index,NDDUEAFE,US4642874659
-EEM,iShares MSCI Emerging Markets ETF,EM,Equity,MSCI Emerging Net Total Return USD Index,NDUEEGF,US4642872349
-AGG,iShares Core U.S. Aggregate Bond ETF,AggBond,Fixed Income,Bloomberg US Aggregate Bond Total Return Index,LBUSTRUU,US4642872265
-SPTL,State Street SPDR Portfolio Long Term Treasury ETF,Treasury,Fixed Income,Bloomberg US Long Treasury Total Return Index,LUTLTRUU,US78464A6644
-HYG,iShares iBoxx $ High Yield Corporate Bond ETF,HighYield,Fixed Income,iBoxx USD Liquid High Yield Total Return Index,IBOXHY,US4642885135
-SPBO,State Street SPDR Portfolio Corporate Bond ETF,Corporate,Fixed Income,Bloomberg US Corporate Total Return Index,LUACTRUU,US78464A1447
-IYR,iShares U.S. Real Estate ETF,REIT,Real Assets,Dow Jones US Real Estate Total Return Index,DJUSRET,US4642877397
-DBC,Invesco DB Commodity Index Tracking Fund,Commodity,Real Assets,DBIQ Optimum Yield Diversified Commodity Index Excess Return,DBLCDBCE,US46138B1035
-GLD,SPDR Gold Shares,Gold,Real Assets,LBMA Gold Price PM USD,GOLDLNPM,US78463V1070
+ticker,name,asset_class,asset_group

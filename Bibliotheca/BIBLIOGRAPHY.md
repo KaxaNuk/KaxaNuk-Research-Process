@@ -33,10 +33,11 @@ been read and a note written.
 right twice over: no binaries in the tree, and no redistribution of licensed material. **Do not
 download papers, books or datasets without asking.** Links go here; files arrive on request.
 
-> **Read a source because you have a question, not because it is a good source.** Parts 0 and 5 ship
-> with the process itself and every strategy needs them. Parts 1 to 4 are the *example* strategy's
-> reading, and are what you replace: they show the shape of a well-stocked bibliography for one idea,
-> not the reading list for yours.
+> **Read a source because you have a question, not because it is a good source.** Parts 0 and 5 are
+> the process's own reading: the two books behind its machinery, and the seven papers behind its
+> controls — what every strategy needs before it has a question of its own. Parts 2 to 4 are seeded
+> with the standard reading behind steps 3 to 6, none of it read yet. **Part 1 is empty on purpose**:
+> it fills as *your* idea raises questions, and nothing enters it because it is a good book.
 
 ---
 
@@ -60,7 +61,7 @@ because the process is what they changed.
 | Which factors, empirically? | Fama & French (1992, 1993), Carhart (1997) | value, size, momentum; research becomes systematic | KN5FM's factor set |
 | Why do inefficiencies survive? | Kahneman & Tversky (1979), Shiller (1981) | loss aversion, bias, asymmetric preferences | the economic-reason clause: a mechanism, not a pattern |
 | Why is being right not enough? | Shleifer & Vishny (1997) | arbitrage is costly and capital-constrained | costs and capacity as gate criterion 4; results accepted net |
-| What framework survives both? | Lo (2004) | markets adapt; strategies have life cycles; **regimes matter** | step 7 exists because alpha decays — and the example strategy is this row, made operational |
+| What framework survives both? | Lo (2004) | markets adapt; strategies have life cycles; regimes matter | step 7 exists because alpha decays; one-regime caveats in every findings file |
 | What does durable research look like? | Asness (1997), Asness, Moskowitz & Pedersen (2013) | factors persist but cycle; robustness beats intuition | sweeps read as curves; rejected results reported as loudly as promising ones |
 | What is actually yours? | Paleologo (2021, 2025) | **alpha is what remains after risk is removed** | step 6 and the alpha decomposition |
 | Who finds clean signals faster? | Dixon, Halperin & Bilokon (2020) | learning replaces assumptions about the data-generating process | outside this process today; a stage that learns still passes the same gate |
@@ -75,55 +76,51 @@ The two books the template ships notes for are the ones whose *method* the proce
 
 ---
 
-## Part 1 — The core idea: market regimes
+## Part 1 — The core idea
 
-*What the example strategy claims, and the sources that argue with it.* Replace this whole part with
-the evidence under **your** idea — including whatever argues against it.
+<The evidence under the claims in `OBJECTIVE.md` themselves — **including the sources that argue
+against them**. This is the part of the bibliography that should argue with you, and it is empty
+until your strategy has a question of its own.>
 
 | Source | What it bears on |
 | --- | --- |
-| [Shu, Yu & Mulvey (2024) — *Dynamic Asset Allocation with Asset-Specific Regime Forecasts*](Papers/Shu_Yu_Mulvey_2024_Dynamic_Asset_Allocation_With_Asset_Specific_Regime_Forecasts.md) | **the paper the example implements**: the twelve-asset universe, the eight features, and why a forecasting layer sits on top of the jump model |
-| [Shu, Yu & Mulvey (2024) — *Downside Risk Reduction Using Regime-Switching Signals*](Papers/Shu_Yu_Mulvey_2024_Downside_Risk_Reduction_Using_Regime_Switching_Signals.md) | **the finding this repository reproduced**: the signal cuts drawdown and volatility, and barely moves return. The authors call regime identification *interpretative rather than predictive* |
-| Nystrup, Lindström & Madsen (2020) — *Learning hidden Markov models with persistent states by penalizing jumps*, Expert Systems with Applications 150, 113307 | **where the algorithm in `Data/Refinery/jump_model.py` comes from**: the jump penalty as the fix for hidden Markov models that switch too fast. *No note yet — read this before changing the model.* |
-| Bemporad, Breschi, Piga & Boyd (2018) — *Fitting jump models*, Automatica | the original jump-model formulation, outside finance. *No note yet.* |
-| Hamilton (1989) — *A New Approach to the Economic Analysis of Nonstationary Time Series and the Business Cycle*, Econometrica 57(2), 357-384 | the regime-switching model everything here is measured against, and the thing the jump penalty was invented to beat. *No note yet.* |
-| Ang & Bekaert (2002) — *International Asset Allocation With Regime Shifts*, Review of Financial Studies | whether regimes are worth acting on across asset classes rather than within one. *No note yet — this is the closest thing to a direct challenge to the example's premise.* |
-| Moskowitz, Ooi & Pedersen (2012) — *Time Series Momentum*, Journal of Financial Economics 104(2) | **the competing explanation.** A regime filter is a cousin of time-series momentum; if the two are the same trade, the regime model is an expensive way to buy it. *No note yet.* |
+| | |
 
 ## Part 2 — Universe and data: what is investable, and what the data does to you
 
 *Sources about the inputs rather than the idea. The survivorship and delisting notes live in Part 5,
-because they are integrity controls first.*
+because they are integrity controls first. Add whatever your instrument type demands — an ETF book
+owes a reading on premium and discount to net asset value, a crypto book one on exchange
+idiosyncrasy, a futures book one on roll.*
 
 | Source | What it bears on |
 | --- | --- |
 | [Brown, Goetzmann, Ibbotson & Ross (1992)](Papers/Brown_Goetzmann_Ibbotson_Ross_1992_Survivorship_Bias_In_Performance_Studies.md) | why `Universe/Investable_Universe.csv` must retain delisted names — see Part 5 |
 | [Shumway (1997)](Papers/Shumway_1997_The_Delisting_Bias_In_CRSP_Data.md) | why the last day of a delisted name is an open gap here — see Part 5 |
-| Petajisto (2017) — *Inefficiencies in the Pricing of Exchange-Traded Funds*, Financial Analysts Journal 73(1) | **the example trades ETFs, not indices.** Premiums and discounts to net asset value are a cost the backtest does not model. *No note yet.* |
-| Ben-David, Franzoni & Moussawi (2017) — *Exchange-Traded Funds*, Annual Review of Financial Economics | what an ETF is as an instrument, and where its behaviour departs from the index it tracks. *No note yet.* |
 
 ## Part 3 — Portfolio construction and sizing
 
-*How the book is built once the selection is made. Empty of notes because the example has not
-reached step 4 — which is exactly what this part being empty is supposed to tell you.*
+*How the book is built once the selection is made — step 4, and everything
+`Experiments/portfolio_construction.py` will eventually reach. Seeded with the standard reading; none
+of it has a note, so none of it may be claimed on yet.*
 
 | Source | What it bears on |
 | --- | --- |
-| Markowitz (1952) — *Portfolio Selection*, Journal of Finance 7(1), 77-91 | the mean-variance optimisation the source paper feeds its regime forecasts into. *No note yet.* |
-| DeMiguel, Garlappi & Uppal (2009) — *Optimal Versus Naive Diversification: How Inefficient Is the 1/N Portfolio Strategy?*, Review of Financial Studies 22(5) | **the control every construction variant has to beat.** Equal weighting is not a straw man. *No note yet.* |
-| Ledoit & Wolf (2004) — *Honey, I Shrunk the Sample Covariance Matrix*, Journal of Portfolio Management 30(4) | a twelve-asset covariance estimated on daily data is noisy; this is the standard repair. *No note yet.* |
-| López de Prado (2016) — *Building Diversified Portfolios that Outperform Out of Sample*, Journal of Portfolio Management 42(4) | hierarchical risk parity — the alternative the Portfolio Construction library will offer. *No note yet.* |
-| Moreira & Muir (2017) — *Volatility-Managed Portfolios*, Journal of Finance 72(4) | **the nearest rival to the example's whole thesis**: scaling exposure by recent volatility, with no regime model at all. If this does the same job more simply, the regime model has to justify itself. *No note yet.* |
+| Markowitz (1952) — *Portfolio Selection*, Journal of Finance 7(1), 77-91 | mean-variance optimisation, and the origin of the idea that risk lives in covariance. *No note yet.* |
+| DeMiguel, Garlappi & Uppal (2009) — *Optimal Versus Naive Diversification: How Inefficient Is the 1/N Portfolio Strategy?*, Review of Financial Studies 22(5) | **the control every construction variant has to beat.** Equal weighting is not a straw man, and on a narrow universe it is hard to beat out of sample. *No note yet.* |
+| Ledoit & Wolf (2004) — *Honey, I Shrunk the Sample Covariance Matrix*, Journal of Portfolio Management 30(4) | a covariance estimated from daily data over few securities is mostly noise; this is the standard repair. *No note yet.* |
+| López de Prado (2016) — *Building Diversified Portfolios that Outperform Out of Sample*, Journal of Portfolio Management 42(4) | hierarchical risk parity — one of the alternatives the Portfolio Construction library will offer. *No note yet.* |
+| Moreira & Muir (2017) — *Volatility-Managed Portfolios*, Journal of Finance 72(4) | scaling exposure by recent volatility. **The cheap rival to any risk-aware strategy**: if it does the same job more simply, the complicated version has to justify itself. *No note yet.* |
 
 ## Part 4 — Backtest and attribution
 
-*What a result has to survive, and how the return gets taken apart.*
+*What a result has to survive, and how the return gets taken apart — steps 5 and 6.*
 
 | Source | What it bears on |
 | --- | --- |
 | [Novy-Marx & Velikov (2016)](Papers/NovyMarx_Velikov_2016_A_Taxonomy_Of_Anomalies_And_Their_Trading_Costs.md) | results are accepted net only — see Part 5 |
 | Brinson & Fachler (1985) — *Measuring Non-US Equity Portfolio Performance*, Journal of Portfolio Management | the allocation / selection / interaction split the Attribution Analysis library runs under this name. *No note yet.* |
-| Brinson, Hood & Beebower (1986) — *Determinants of Portfolio Performance*, Financial Analysts Journal 42(4) | the companion, and the origin of the claim that allocation dominates selection — which is precisely what the example strategy is a bet on. *No note yet.* |
+| Brinson, Hood & Beebower (1986) — *Determinants of Portfolio Performance*, Financial Analysts Journal 42(4) | the companion, and the origin of the claim that allocation dominates selection. *No note yet.* |
 | Harvey & Liu (2015) — *Backtesting*, Journal of Portfolio Management 42(1) | how much to haircut a reported Sharpe for the search that produced it. *No note yet.* |
 
 ## Part 5 — Research integrity: what stops us fooling ourselves
@@ -142,13 +139,12 @@ it does not. **Their implications are written for any strategy; rewrite each aga
 | [Bailey, Borwein, López de Prado & Zhu (2014) — *Pseudo-Mathematics and Financial Charlatanism*](Papers/Bailey_Borwein_LopezDePrado_Zhu_2014_Pseudo_Mathematics_And_Financial_Charlatanism.md) | the argument for step 7 existing at all, and for freezing parameters at graduation |
 | [Novy-Marx & Velikov (2016) — *A Taxonomy of Anomalies and Their Trading Costs*](Papers/NovyMarx_Velikov_2016_A_Taxonomy_Of_Anomalies_And_Their_Trading_Costs.md) | results are accepted **net** only |
 
-**One control had no paper behind it: look-ahead.** The point-in-time discipline — decide on
+**One control has no paper behind it: look-ahead.** The point-in-time discipline — decide on
 yesterday's information, trade at the next available price, name every `*_current` column for what it
-is — was practitioner discipline rather than a literature, and this index used to say so instead of
-citing a weak fit. **The example strategy supplied the missing evidence itself**: `Data/analyzer.ipynb`
-section 5 measures what one line of look-ahead is worth on this data, by reading the same fitted model
-two ways. That measurement, not a citation, is the control's justification here. If you find the paper
-that earns the row, add it anyway.
+is — is practitioner discipline rather than a literature, and this index says so instead of citing a
+weak fit. **The cheapest evidence is your own**: if your signal is fitted, read the same model
+causally and smoothed and report the gap. That measurement is worth more here than a citation. If you
+find the paper that earns the row, add it anyway.
 
 ---
 
@@ -158,10 +154,5 @@ Recorded so the trail survives. None has been read into this repository.
 
 - **Paleologo (2025) — *The Elements of Quantitative Investing*.** Named in the lineage deck beside
   the 2021 book. No note, no link recorded.
-- **The reference implementation of the statistical jump model**, published by the first author of
-  the two Shu papers: [`Yizhan-Oliver-Shu/jump-models`](https://github.com/Yizhan-Oliver-Shu/jump-models).
-  Not a source and not a dependency — `Data/Refinery/jump_model.py` is written from the papers'
-  description so the algorithm is readable in one file. Worth checking against when the model is
-  changed. Link last checked 2026-09-03.
 - The lineage sources in Part 0 that are not otherwise noted. They are provenance; a note is owed
   only when one of them answers a question your strategy raises.

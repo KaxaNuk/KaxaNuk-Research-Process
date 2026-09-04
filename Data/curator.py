@@ -111,11 +111,6 @@ BENCHMARK_IDENTIFIERS = (
 )
 CASH_TICKER = "BIL"
 SMOKE_TICKERS: tuple[str, ...] = (
-    # --- example: begin ---
-    "IVV",
-    "AGG",
-    "GLD",
-    # --- example: end ---
 )
 
 # --- Output columns --------------------------------------------------------------------------
@@ -145,16 +140,6 @@ BASE_COLUMNS = (
 # Every name here is a function in `Data/Curator/custom_calculations.py`.
 CUSTOM_COLUMNS = (
     "c_return_1d",
-    # --- example: begin ---
-    "c_return_ewm_hl5",
-    "c_return_ewm_hl10",
-    "c_return_ewm_hl21",
-    "c_downside_deviation_log_hl5",
-    "c_downside_deviation_log_hl21",
-    "c_sortino_hl5",
-    "c_sortino_hl10",
-    "c_sortino_hl21",
-    # --- example: end ---
     "c_daily_traded_value_1d",
     "c_daily_traded_value_63d",
     "c_split_ratio",
