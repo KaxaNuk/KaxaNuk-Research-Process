@@ -4,7 +4,7 @@
 it run and no strategy in it yet. Clone it, put your universe in one CSV, name your signal in two
 places, and the whole thing works end to end.
 
-It is not an equity template. The universe is a CSV whose only required columns are `ticker` and
+The universe is an initial CSV whose only required columns are `ticker` and
 `name`, and every stage below reads it without knowing what is in it — **stocks, ETFs, FX, crypto,
 commodities or futures all run the same pipeline.**
 
