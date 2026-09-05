@@ -47,15 +47,29 @@ for somebody who was not in the room:
 file is a short statement of what is expected in it.
 
 **What to do differently:** nothing on `main` runs. Read it to learn the shape, fill it in with your
-own idea, or `git switch example` for one strategy worked end to end.
+own idea, or read the `example` branch KaxaNuk keeps beside `main` for one strategy worked end to
+end.
+
+### Added
+
+* **`LICENSE` — MIT**, the Data Curator's licence, so the template can be public, forked and
+  contributed to without friction. `main` lives at `KaxaNuk/KaxaNuk-Research-Process`.
+* **The tools, and a researcher beside the process.** `README.md` names the four tools — GitHub
+  Desktop, PyCharm, Claude, and the APM packages through which Claude learns the six modules — and
+  points at `KaxaNuk/KaxaNuk-Researcher`, a companion that reads a strategy's `Bibliotheca/` and
+  drafts the hypothesis in each blueprint from it.
+* **Attribution in two layers and a third pass.** `AGENTS.md` now says what each layer answers:
+  Brinson-Fachler names the lever that moved, the factor model separates compensated tilts from
+  idiosyncratic alpha, and Brinson-Fachler on the residual says whether the Sharpe survives once
+  the factor turns. The notebook, the module and the gate say the same.
 
 ### Removed
 
-* **All executable code.** The Curator and Refinery drivers, the two calculation modules and every
-  notebook code cell are now docstrings and markdown. A template whose example code has to be
+* **All executable code.** The Curator and Refinery drivers, the four shared experiment modules,
+  the two calculation modules and every notebook code cell are now docstrings and markdown. A template whose example code has to be
   deleted before you can start is a template that gets started by deleting things.
-* **The four shared experiment modules**, the nine Bibliotheca notes and the lockfile — they belong
-  to a filled-in repository, and they are on `example`.
+* **The nine Bibliotheca notes and the lockfile** — they belong to a filled-in repository, and they
+  are on `example`.
 * **The dev container** and its Docker build context. Setting the environment up is two commands,
   and a container that has to be rebuilt whenever the process changes is a second thing to maintain.
 
@@ -78,6 +92,8 @@ own idea, or `git switch example` for one strategy worked end to end.
 * **Joined classification columns are prefixed `current_`**, not suffixed `_current`, so every column
   family is a prefix, and the prefix alone says which stage owns a column and whether it is
   point-in-time.
+* **Bibliotheca notes carry their four fields as frontmatter**, so a tool can index what cites
+  what, and **blueprint predictions cite a note or a measurement** — never nothing.
 
 ## 0.3.0 (2026-09-04)
 

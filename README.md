@@ -1,7 +1,7 @@
 # KN Research Process
 
-**A template to speed up the investment research process.** The KaxaNuk Investment Lab's eight
-steps as a folder structure, with the conventions that let two people share a tool without
+**A template to speed up the investment research process.** KaxaNuk's eight steps as a
+folder structure, with the conventions that let two people share a tool without
 explaining it first.
 
 **There is no code on `main`.** Every file here is a short description of what is expected in it —
@@ -12,9 +12,16 @@ The universe is one CSV whose only required column is `main_identifier`, and eve
 without knowing what is in it: **equities, ETFs, FX, crypto, commodities or futures all run the
 same process.**
 
-> **Want to see it filled in?** `git switch example` carries one strategy worked end to end — the
-> pipeline, the notebooks, the measurements and a falsified prediction left in place. It is there
-> to be read, not built on.
+> **Want to see it filled in?** One strategy worked end to end — the pipeline, the notebooks, the
+> measurements and a falsified prediction left in place — is on the `example` branch KaxaNuk keeps
+> beside `main`. The public template ships `main` only. It is there to be read, not built on.
+
+**Where this lives.** `main` is public at
+[`KaxaNuk/KaxaNuk-Research-Process`](https://github.com/KaxaNuk/KaxaNuk-Research-Process). Get it
+with *Use this template* on GitHub, or ask Claude to run the `start-a-strategy` prompt from
+[`KaxaNuk/KaxaNuk-APM`](https://github.com/KaxaNuk/KaxaNuk-APM), which copies it and installs the
+skills — that prompt is still being written. Issues and pull requests are welcome: the process
+improves in public, the way the Data Curator did.
 
 ---
 
@@ -52,7 +59,8 @@ Bibliotheca/          step 1 - one note per source, and BIBLIOGRAPHY.md as the i
 Universe/             step 2 - Investable_Universe.csv (the seed) and universe.ipynb
 Data/                 step 3 - curator.py, refinery.py, analyzer.ipynb, and the two
                                custom_calculations.py where your columns go
-Experiments/          steps 4-6 - one folder per idea: four documents and a notebook
+Experiments/          steps 4-6 - one folder per idea (four documents and a notebook), and the
+                               four modules every experiment shares
 Paper_Trading/        step 7 - the graduation gate, and the frozen rule of anything that passes
 Config/               .env.template - copy to .env and fill in your keys
 ```
@@ -68,10 +76,10 @@ all changes removes every one of them — `Config/.env` included, and that one c
 One module per stage, each reading the previous module's output, so you can enter the pipeline
 wherever your work already is.
 
-| Module | Stage | What it does |
+| Module | # | What it does |
 | --- | --- | --- |
-| **Data Curator** | 3 | pulls raw market and fundamental data from any provider and aligns it on one calendar |
-| **Data Refinery** | 3 | cleans, adjusts and reshapes the curated data into analysis-ready series |
+| **Data Curator** | 1 | pulls raw market and fundamental data from any provider and aligns it on one calendar |
+| **Data Refinery** | 2 | cleans, adjusts and reshapes the curated data into analysis-ready series |
 | **Data Analyzer** | 3 | builds features and tests whether they carry signal, before you model anything |
 | **Portfolio Construction** | 4 | turns a signal into weights, position limits and a rebalancing rule |
 | **Backtest Engine** | 5 | runs the rules over history with costs and no look-ahead, and returns the track record |
@@ -132,8 +140,8 @@ Two rules follow, and one exception worth knowing:
 
 Everything specific to a strategy lives in its notebook, where a reader can see it. Four modules are
 shared between experiments — one per Lab library — for one reason: **if they differed between
-experiments, comparing experiments would be meaningless.** None is on `main`; all four are on
-`example`, and a filled-in repository creates them under `Experiments/`.
+experiments, comparing experiments would be meaningless.** Each ships beside the notebook as a
+description of what it must do; `example` has them filled in.
 
 | Module | Owns |
 | --- | --- |
@@ -167,6 +175,32 @@ out.
 
 ---
 
+## The tools
+
+Install once, use for every strategy.
+
+| Tool | Job |
+| --- | --- |
+| **GitHub Desktop** | where your work lives, and how you get it back after you break it |
+| **PyCharm** | the editor, the interpreter and the terminal in one window |
+| **Claude** | your pair for the parts you have not written before |
+| **APM packages** | how Claude learns the six Lab modules and this process — what each does, how it is called, and what it must never be asked to do |
+
+APM is the Agent Package Manager, installed with `uv sync --group dev`. KaxaNuk's packages for it
+live at [`KaxaNuk/KaxaNuk-APM`](https://github.com/KaxaNuk/KaxaNuk-APM): the process, the Data
+Curator's calculations, and one skill per Lab module as they are written. Nothing here needs them
+to be read; a filled-in repository is faster with them.
+
+### A researcher beside the process
+
+[`KaxaNuk/KaxaNuk-Researcher`](https://github.com/KaxaNuk/KaxaNuk-Researcher) is a companion you
+name and teach — one per person, not per strategy. It keeps its own library of what you have
+read, reads this repository's `Bibliotheca/`, and drafts the claims in `OBJECTIVE.md` and the
+hypothesis in each `BLUEPRINT_N.md` from those notes, every prediction citing the note it came
+from. It is a separate project, and it is being built.
+
+---
+
 ## Starting your own strategy
 
 **You are already in it.** In order:
@@ -182,7 +216,7 @@ out.
 5. **Write `BLUEPRINT_1.md` before the rule.** A hypothesis edited after its test is not a
    hypothesis.
 
-**To see it filled in**, `git switch example`.
+**To see it filled in**: the `example` branch, where KaxaNuk keeps it beside `main`.
 
 ---
 
@@ -211,12 +245,9 @@ answer, and `BRAINSTORMING` looks forward so planning is never mistaken for hist
 
 | Branch | What it is |
 | --- | --- |
-| `main` | this — the process, with nothing in it |
-| `example` | one strategy worked end to end, for reading rather than building on |
+| `main` | this — the process, with nothing in it. Public at `KaxaNuk/KaxaNuk-Research-Process` |
+| `example` | one strategy worked end to end, for reading rather than building on. Kept by KaxaNuk beside `main`, not in the public template |
 | `issues/<number>` | one per issue on the GitHub Project, cut from `main` and merged back into it. Where all work happens |
-
-**The issue exists before the branch**: it is where the *why* lives, and in this repository the
-reasoning is the product. `example` never merges back.
 
 **[`AGENTS.md`](AGENTS.md) is next**: the workflow, the bar any new signal has to clear, and the
 five ways a backtest lies.

@@ -29,9 +29,11 @@ download papers, books or datasets without asking.** Links go here; files arrive
 
 ## What a note looks like
 
-Every note opens with the same four fields, so provenance is always in the same place: where it
-lives, the citation and when the link was last checked, whether a local copy is held, and the date
-it was read into this repository along with what was read — the whole paper, or an abstract.
+Every note opens with the same four fields as YAML frontmatter — `source` (where it lives),
+`citation` (with the date the link was last checked), `local_copy` (whether a PDF sits beside the
+note, gitignored) and `read` (the date it was read into this repository, and what was read — the
+whole paper, or an abstract). Frontmatter because a tool can index it: the Investment Lab will
+read these fields, and the links between notes, to show what cites what.
 
 | Note | Body |
 | --- | --- |
@@ -53,6 +55,15 @@ Four rules separate a note from a summary:
 
 **A note that does not say what it changes about this strategy is a summary, and summaries are
 available elsewhere.**
+
+## How a researcher uses this folder
+
+A researcher — a person, or yours from
+[`KaxaNuk/KaxaNuk-Researcher`](https://github.com/KaxaNuk/KaxaNuk-Researcher) — reads these notes
+to draft the claims in [`../OBJECTIVE.md`](../OBJECTIVE.md) and the thesis and predictions in each
+`BLUEPRINT_N.md`. **Every prediction it writes cites the note it came from**, and a source without
+a note cannot be cited: it is a lead, and the note is written first. That is what makes the
+hypothesis defensible afterwards — each line of it points back to something somebody read.
 
 > **Read a source because you have a question, not because it is a good source.** Part 1 is empty on
 > purpose: it fills as *your* idea raises questions. Parts 2 to 5 are seeded with the standard

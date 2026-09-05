@@ -21,6 +21,16 @@ lines of work: same issue, same discussion, separate history. **`example` never 
 everything in it that belongs to the *process* is on `main` already, and the rest is a strategy
 nobody else should inherit. When the process changes, the example is rebuilt on top of it.
 
+Two things follow for anyone starting from this repository. **Generating a new repository from the
+template copies `main` only** — the `example` branch stays behind unless every branch is asked for,
+which is the intended default: a new project should not inherit a strategy. And **the issue
+branches below are a recommendation**, there to keep project management simple, not a gate.
+
+**`main` is public.** It lives at `KaxaNuk/KaxaNuk-Research-Process`, and issues and pull requests
+from anyone land there — the process improves in public, the way the Data Curator did. `example`
+stays in KaxaNuk's private repository and is rebuilt on top of the public `main` when the process
+changes. Publishing is one push of `main` to the public remote; nothing else crosses.
+
 ### The issue exists before the branch
 
 An idea goes on the **GitHub Project** first. The issue is where the *why* lives; the branch is only
@@ -84,7 +94,7 @@ should do. Each experiment stands on its own hypothesis. Reading another's answe
 parameter tuned on one book quietly becomes the default of the next, and how three experiments
 become one experiment reported three times.
 
-Two standing exceptions, and only two:
+Two standing exceptions, and one that has to be asked for:
 
 - **Experiment 1 is the declared benchmark**, so its rules and published numbers are shared
   context. It is not a null: it is a real strategy with a real return. **Its rules freeze once
@@ -93,6 +103,10 @@ Two standing exceptions, and only two:
 - **`RESULTS.md` is the shared record.** Comparing *final* results across experiments is the whole
   point of having several. What is forbidden is borrowing another experiment's *choices* before your
   own are made.
+- **A researcher may lift this, explicitly.** When one experiment needs to read another — to reuse
+  a loader, to check a data fix, to build a control arm that differs in exactly one thing — the
+  request and the reason go in that experiment's `JOURNAL_N.md` first. A look-across that is
+  written down is a decision; one that is not is contamination.
 
 ## The bar any new signal must clear
 
@@ -158,25 +172,37 @@ where the money is.
 
 ## What attribution must report
 
-Step 6 runs both methodologies and reports, in `FINDINGS_N.md`:
+Savvy investors do not chase past performance. They follow a **process**, an **investing thesis**
+and **data**, and attribution is what gives them all three about a book. Step 6 runs two
+methodologies and a third pass, and `FINDINGS_N.md` reports each.
 
-- **Brinson-Fachler:** cumulative alpha split into **allocation**, **selection** and
-  **interaction**. *Is the return the groups the book leans into, or the things it picks inside
-  them?*
-- **A factor model:** total excess return split into **factor exposure** and **idiosyncratic**
-  return. *How much of this is a factor fund wearing the strategy's name?*
+**First cut — Brinson-Fachler.** Active return split into **allocation** (did the book overweight
+the right groups) and **selection** (did it pick the right names inside them), plus their
+interaction. No more hand-waving about "the process worked": the exact lever that moved the needle
+is named, and that is a process you can defend, refine or fix.
+
+**Second layer — the factor model.** Realised return projected onto systematic exposures — beta,
+momentum, residual volatility, liquidity — so **idiosyncratic alpha** is separated from
+**compensated factor tilts**, taken on purpose or by accident. A book that looks like skilful
+stock-picking in the first cut can turn out to be a persistent low-beta or momentum tilt that
+happened to pay over the sample.
+
+**Third pass — Brinson-Fachler again, on what is left.** Run the first cut on the residual after
+factor exposure is stripped out. The selection story gets sharper, and it answers the question the
+first cut alone cannot: **whether the Sharpe survives once that factor turns.**
 
 **What it settles:** whether there is genuine idiosyncratic alpha — graduation criterion 2
-evaluated, not deferred.
+evaluated, not deferred. For a strategy raising outside money it is also the plainest signal of
+sophistication: allocators are not buying returns, they are buying proof you know where the
+returns come from, and showing both layers cleanly is how that proof is given.
 
 **What to expect it not to settle:** an *absolute* rule is close to invisible to a factor model
 built on *relative* factors, so a book can beat every benchmark while the model assigns roughly
-nothing to
-the factor its thesis is named after. That is a finding, not a failure. The follow-ups are
-counterfactual books the engine can already price: the same holdings with the signal switched off,
-positions equalised within each date, a random draw from the eligible pool at the same sizes, and
-the same holdings with entry dates shifted. Those four separate the exclusion filter, sizing skill,
-selection skill and timing skill.
+nothing to the factor its thesis is named after. That is a finding, not a failure. The follow-ups
+are counterfactual books the engine can already price: the same holdings with the signal switched
+off, positions equalised within each date, a random draw from the eligible pool at the same sizes,
+and the same holdings with entry dates shifted. Those four separate the exclusion filter, sizing
+skill, selection skill and timing skill.
 
 ---
 

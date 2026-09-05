@@ -40,7 +40,7 @@ wrong is worth more than a bad one.
 
 | # | Prediction | Where it comes from | What would falsify it |
 | --- | --- | --- | --- |
-| 1 | what the book should do | the analyzer section and its number | the observation that would refute it |
+| 1 | what the book should do | a `Bibliotheca/` note, or the analyzer section and its number | the observation that would refute it |
 
 Note anything you are watching but cannot predict, because nothing licenses a prediction about it.
 Costs usually belong here.
