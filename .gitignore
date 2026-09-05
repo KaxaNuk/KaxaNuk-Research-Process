@@ -9,21 +9,20 @@ apm_modules/
 apm.lock.yaml
 apm.yml
 
-# --- Stage 2: Universe -----------------------------------------------------------------------
+# --- Step 2: Universe ------------------------------------------------------------------------
 # Regenerable from Investable_Universe.csv (which IS tracked - it is the seed the whole pipeline
 # grows from) plus the data provider.
 Universe/Security_Master.csv
 Universe/Data_Issues.csv
 Universe/Provider_Cache/
 
-# --- Stage 3: Data ---------------------------------------------------------------------------
+# --- Step 3: Data ----------------------------------------------------------------------------
 # Nothing under Data/ is committed except code. Every file here is either downloaded by
-# Data/curator.py, derived by Data/refinery.py, or supplied by the user - see README.md.
+# Data/curator.py, derived by Data/refinery.py, or supplied by hand - see README.md.
 #
-# The curator downloads the per-security time series, the tradable benchmarks (AOR, SPY) and the
-# cash proxy (BIL). The index holdings and factor models attribution reads are dropped in by hand,
-# because no price provider sells them. Once a benchmarks-and-factors fabric exists the curator
-# will fetch those too, and this section will not need to change.
+# The curator downloads the per-security time series, the benchmarks and the cash proxy. The index
+# holdings and factor models attribution reads are dropped in by hand, because no price provider
+# sells them.
 Data/Curator/Time_Series/*.csv
 Data/Curator/Time_Series/*.parquet
 Data/Curator/Benchmarks/*.csv
@@ -38,10 +37,10 @@ Data/Refinery/Time_Series/*.parquet
 Data/Analyzer/Charts/
 Data/Analyzer/*.csv
 
-# --- Stages 4-6: Experiments -----------------------------------------------------------------
+# --- Steps 4-6: Experiments ------------------------------------------------------------------
 # Every artefact an experiment produces is rebuilt by its notebook: the weight files, the
-# summaries, the engine workbooks (~4.5 MB each) and the charts. None of it is committed. The
-# `.gitkeep` negations are what keep the folder skeleton itself in the clone.
+# summaries, the engine workbooks and the charts. None of it is committed. The `.gitkeep`
+# negations are what keep the folder skeleton itself in the clone.
 Experiments/*/Portfolio/*
 Experiments/*/Backtest/*
 Experiments/*/Attribution/*
@@ -68,10 +67,9 @@ Experiments/*/Attribution/*
 .vscode/
 .ipynb_checkpoints/
 
-# --- Credentials and local settings ----------------------------------------------------------
-# The templates are tracked; the filled-in files never are.
+# --- Credentials -----------------------------------------------------------------------------
+# The template is tracked; the filled-in file never is.
 Config/.env
-.devcontainer/.env
 
 # Python bytecode.
 __pycache__/

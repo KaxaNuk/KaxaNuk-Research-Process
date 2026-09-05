@@ -1,6 +1,6 @@
 [project]
 name = "kn-research-process"
-version = "0.2.0"
+version = "0.4.0"
 requires-python = ">=3.14"
 dependencies = [
     "ipykernel>=7.3.0",
@@ -22,8 +22,8 @@ notebook = [
     "jupyterlab>=4.6.3",
 ]
 
-# Ruff is configured to check the house style in `.claude/rules/`, so the rules are enforceable
-# rather than merely written down.  Run it without installing anything:
+# Ruff enforces the house style described in AGENTS.md, so the rules are checkable rather than
+# merely written down.  Run it without installing anything:
 #
 #     uvx ruff check .
 #
@@ -33,8 +33,8 @@ notebook = [
 #         forbids outright; quoted annotations are the prescribed alternative.
 #   RET - RET504 would inline `result = ...; return result`, but the guide keeps the intermediate
 #         variable on purpose, so the object survives for a debugger to look at.
-#   PL  - PLC0415 would flag the licensed-engine imports made inside a guard, which are late by
-#         necessity: the engines are optional and absent from a fresh clone.
+#   PL  - PLC0415 would flag an import made inside a guard, which the licensed engines need:
+#         they are optional and absent from a fresh clone.
 [tool.ruff]
 line-length = 100
 target-version = "py314"
@@ -56,19 +56,17 @@ ignore = [
     "SIM300",
 ]
 
-# Every notebook resolves the repository root and puts `Experiments/` on the import path before
-# importing `engine` and `panel` from it.  The import cannot come first: there is nothing to
-# import from until the path is set.
+# A notebook resolves the repository root and puts a directory on the import path before importing
+# from it.  The import cannot come first: there is nothing to import from until the path is set.
 [tool.ruff.lint.per-file-ignores]
 "*.ipynb" = ["E402"]
 
 # KaxaNuk libraries are third-party, but reading them in their own block is how you see at a
-# glance which stage of the platform a module sits on. `jump_model` is declared local because
-# neither `Data/Refinery/` nor `Experiments/` is a package: each is put on the path by the module
-# that loads it, and its siblings are imported by bare name, which Ruff would otherwise file
-# alongside numpy and pandas.
+# glance which stage of the platform a module sits on.  A module imported by bare name from a
+# directory that is not a package belongs in `known-local-folder`, or Ruff files it alongside
+# numpy and pandas.
 [tool.ruff.lint.isort]
-known-local-folder = ["jump_model", "securities_panel"]
+known-local-folder = []
 section-order = [
     "future",
     "standard-library",

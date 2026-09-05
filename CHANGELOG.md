@@ -1,47 +1,83 @@
 # Changelog
 
-Every notable change to this repository, newest first. The format follows the
-[KaxaNuk Data Curator convention](https://kaxanuk-data-curator.readthedocs.io/en/latest/release_notes/v0/index.html):
+Every notable change to this repository, newest first. The format is
 `## X.Y.Z (YYYY-MM-DD)` with `### Added / Changed / Deprecated / Fixed / Removed`, and
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html) in its numbering.
 
 ## What a version number means here
 
 This is a research repository, not a library, so there is no public API to version. What the team
-actually depends on is **the results and the pipeline that produces them**, so that is what the
-number tracks:
+depends on is **the results and the pipeline that produces them**, so that is what the number
+tracks:
 
 | Bump | Means | Triggered by |
 | --- | --- | --- |
-| **MAJOR** | **Published results are invalidated.** Anything quoted from an earlier version has to be re-derived before it can be repeated. | Changing the universe, the date window, the backtest engine or its cost model, or the definition of an existing strategy. Removing a stage. |
-| **MINOR** | **New capability; existing results still stand.** | A new experiment, signal, stage, diagnostic or document. Anything additive. |
-| **PATCH** | **Nothing about any result changes.** | Bug fixes in tooling, documentation, repository hygiene, refactors that produce byte-identical output. |
+| **MAJOR** | **Published results are invalidated.** Anything quoted from an earlier version has to be re-derived before it can be repeated | Changing the universe, the date window, the backtest engine or its cost model, or the definition of an existing strategy. Removing a stage |
+| **MINOR** | **New capability; existing results still stand** | A new experiment, signal, stage, diagnostic or document. Anything additive |
+| **PATCH** | **Nothing about any result changes** | Bug fixes in tooling, documentation, repository hygiene, refactors that produce identical output |
 
 Three conventions follow from reading it that way:
 
-- **A result that changes is a MAJOR bump even if the code change was one line.** Severity is measured
-  in what a reader has to throw away, not in the size of the diff.
+- **A result that changes is a MAJOR bump even if the code change was one line.** Severity is
+  measured in what a reader has to throw away, not in the size of the diff.
 - **Re-running the pipeline on refreshed data is not a version bump at all.** The strategy did not
   change; only the data did. Say so in the entry and leave the number alone.
-- **While on `0.x`, a result-invalidating change bumps MINOR** — the standard pre-1.0 convention. The
-  first MAJOR bump a repository built from this template ever takes will therefore be `2.0.0`.
+- **While on `0.x`, a result-invalidating change bumps MINOR** — the standard pre-1.0 convention.
 
-**1.0.0 is reserved** for the first strategy that reaches **paper trading** (step 7) with its results
-reproduced from a clean clone. Until then the leading zero is doing real work: it says the results are
-still moving.
+**1.0.0 is reserved** for the first strategy that reaches **paper trading** (step 7) with its
+results reproduced from a clean clone. Until then the leading zero is doing real work: it says the
+results are still moving.
 
 ## How to write an entry
 
 One entry per change-set, newest at the top. Under the heading, **one sentence saying what a reader
-has to do differently** — that is the part people actually read. Then the `Added / Changed / Removed`
-lists, each item written for somebody who was not in the room:
+has to do differently** — that is the part people actually read. Then the lists, each item written
+for somebody who was not in the room:
 
-- **Say what moved and why, not what file you touched.** "The regime model lives in the Refinery so a
-  penalty sweep costs no download" is an entry; "updated custom_calculations.py" is a diff.
+- **Say what moved and why, not what file you touched.** "The regime model lives in the Refinery so
+  a penalty sweep costs no download" is an entry; "updated custom_calculations.py" is a diff.
 - **Name anything that invalidates a number**, and say which number.
 - **A removal is a change-set too.** Deleting a stage that nobody could trace is worth an entry.
 
 ---
+
+## 0.4.0 (2026-09-04)
+
+**MINOR** — `main` becomes a description-only template. **There is no code on it any more:** every
+file is a short statement of what is expected in it.
+
+**What to do differently:** nothing on `main` runs. Read it to learn the shape, fill it in with your
+own idea, or `git switch example` for one strategy worked end to end.
+
+### Removed
+
+* **All executable code.** The Curator and Refinery drivers, the two calculation modules and every
+  notebook code cell are now docstrings and markdown. A template whose example code has to be
+  deleted before you can start is a template that gets started by deleting things.
+* **The four shared experiment modules**, the nine Bibliotheca notes and the lockfile — they belong
+  to a filled-in repository, and they are on `example`.
+* **The dev container** and its Docker build context. Setting the environment up is two commands,
+  and a container that has to be rebuilt whenever the process changes is a second thing to maintain.
+
+### Changed
+
+* **Every remaining file describes what is expected in it**, in the same shape: what the stage is in
+  plain words, what it produces, what it prevents, and the sections it owes. Learn the shape once.
+* **`README.md` rewritten around the eight steps**, each with its plain-words sentence, its output
+  and the failure it prevents, plus the six Lab modules mapped one per stage and the conventions
+  worth keeping when two people share a tool.
+* **`AGENTS.md` cut roughly in half.** The five ways a backtest lies are one table — the lie, what
+  the process does, what it still does not do. Everything the README covers was removed rather than
+  restated.
+* **The source-note convention moved to `Bibliotheca/BIBLIOGRAPHY.md`**, next to the notes it
+  governs. Its Part 0 keeps the lineage the process descends from, as provenance rather than notes.
+* **`Universe/Investable_Universe.csv` requires only `main_identifier`** — the name the Data Curator
+  asks a provider for. Every other column is yours, so an equity, ETF, FX, crypto or futures seed
+  runs the same process.
+* **`Config/.env.template` carries the Data Curator's provider keys**, not one.
+* **Joined classification columns are prefixed `current_`**, not suffixed `_current`, so every column
+  family is a prefix, and the prefix alone says which stage owns a column and whether it is
+  point-in-time.
 
 ## 0.3.0 (2026-09-04)
 
@@ -144,16 +180,13 @@ lineage the process descends from.
 
 ### Added
 
-* **Part 0 of `Bibliotheca/BIBLIOGRAPHY.md` — the process itself.** A lineage table from the KaxaNuk
-  deck *Intro to Investment Research*: fifteen questions the field asked in order, who answered each,
-  what it settled, and which step or rule of this process descends from it. Provenance, not notes.
-* **Two book notes**:
-  [Paleologo (2021)](Bibliotheca/Books/Paleologo_2021_Advanced_Portfolio_Management/INDEX.md) — total
-  PnL as an idiosyncratic series plus a factor series, selection/sizing/timing by counterfactual
-  books, and why a factor model built on relative factors is blind to an absolute rule; and
-  [Grinold & Kahn (2000)](Bibliotheca/Books/Grinold_Kahn_2000_Active_Portfolio_Management/INDEX.md) —
-  the information ratio, the fundamental law IR ≈ IC × √BR, and the information horizon behind the
-  analyzer's decay chart.
+* **Part 0 of `Bibliotheca/BIBLIOGRAPHY.md` — where the process comes from.** Fifteen questions the
+  field asked in order, who answered each, what it settled, and which step or rule of this process
+  descends from it. Provenance, not notes.
+* **Two book notes**: Paleologo (2021) — total PnL as an idiosyncratic series plus a factor series,
+  selection, sizing and timing by counterfactual books, and why a factor model built on relative
+  factors is blind to an absolute rule; and Grinold & Kahn (2000) — the information coefficient, the
+  fundamental law, and the information horizon behind the analyzer's decay chart.
 * Part 5 states the one control with no paper behind it — look-ahead — rather than citing a weak fit.
 
 ---
