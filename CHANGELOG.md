@@ -41,6 +41,21 @@ for somebody who was not in the room:
 
 ---
 
+## 0.5.1 (2026-09-06)
+
+**PATCH** — documentation. `SETUP.md` says what a finished setup actually leaves behind.
+
+**What to do differently:** commit `uv.lock`. `uv sync` writes it, the template ships without one on
+purpose, and your repository keeps it — it pins the versions a result came from.
+
+### Fixed
+
+* **The "what done looks like" check said `git status` would be clean; a real run leaves `uv.lock`
+  untracked.** Running the file end to end from a fresh clone is what caught it, which is the reason
+  the check is in `SETUP.md` at all.
+
+---
+
 ## 0.5.0 (2026-09-06)
 
 **MINOR** — the repository now carries its own setup instructions and declares which agent skills it

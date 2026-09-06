@@ -166,10 +166,13 @@ From the root:
 git status
 ```
 
-**It should be clean.** `apm.yml` is committed because it is a declaration, like `pyproject.toml`;
-`.venv/`, `apm_modules/`, `.claude/` and `apm.lock.yaml` are what the two commands *produced*, and
-they are ignored the way `.venv/` always is. Anything else showing up means something was written in
-the wrong place.
+**Exactly one new file should appear, and it is `uv.lock`. Commit it.** It pins the versions this
+strategy's results came from, which is why the template deliberately ships without one and your
+repository keeps one.
+
+Everything else the commands produced — `.venv/`, `apm_modules/`, `.claude/`, `apm.lock.yaml` — is
+ignored, and `apm.yml` was already committed because it is a declaration, like `pyproject.toml`.
+**Anything else showing up means something was written in the wrong place.**
 
 Then open **this folder** — not a parent of it — in PyCharm, Claude or Codex.
 
