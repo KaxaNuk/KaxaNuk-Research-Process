@@ -1,0 +1,23 @@
+# The KaxaNuk agent skills this repository wants.  Running `apm install` from the root reads this
+# file and needs no arguments - see SETUP.md step 4.  Installing them is optional: nothing in the
+# pipeline imports a skill, so the results are the same either way.
+#
+# Taking this repository over?  Rename `name` and `author` to yours, and delete the line for any
+# library you do not license - the pipeline still runs without it.
+#
+# There is deliberately no `targets` key.  The template serves Claude Code, the Claude app, Codex
+# and Cursor alike, so the target comes from `apm config set target <env>` on the machine, or from
+# `apm install --target <env>` on the command.
+name: kn-research-process
+version: 0.5.0
+description: The KN Research Process - the KaxaNuk Investment Lab's eight steps as a folder structure
+author: KaxaNuk
+dependencies:
+  apm:
+    - KaxaNuk/KaxaNuk-APM/common
+    - KaxaNuk/KaxaNuk-APM/data-curator
+    - KaxaNuk/KaxaNuk-APM/backtest-engine
+    - KaxaNuk/KaxaNuk-APM/investment-lab
+  mcp: []
+includes: auto
+scripts: {}

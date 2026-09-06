@@ -41,6 +41,51 @@ for somebody who was not in the room:
 
 ---
 
+## 0.5.0 (2026-09-06)
+
+**MINOR** — the repository now carries its own setup instructions and declares which agent skills it
+wants. No result changes; nothing in the pipeline moved.
+
+**What to do differently:** set a strategy up from [`SETUP.md`](SETUP.md) rather than from a prompt
+held in another repository. `apm install` needs no arguments, and it is a question you get asked
+rather than a step you have to run.
+
+### Added
+
+* **`SETUP.md` — the whole of setup in one file**, written so an agent can follow it end to end:
+  getting the repository (the template button, `gh repo create`, or a plain clone with a fresh
+  history), the one-folder rule, `uv sync`, the credential copy, and — last, and as a question — the
+  agent skills. It replaces the `start-a-strategy` prompt that lived in `KaxaNuk/KaxaNuk-APM`, on the
+  rule that **the instruction to install a thing belongs with that thing**. A bootstrap you can only
+  reach after installing the tool it bootstraps is a bootstrap that gets pasted from a URL.
+* **`apm.yml`, committed.** It names the KaxaNuk packages this repository wants, so `apm install`
+  takes no arguments and nobody types a package name. It carries no `targets` key on purpose: the
+  template serves Claude Code, the Claude app, Codex and Cursor alike, so the target is set on the
+  machine or passed per command.
+
+### Changed
+
+* **`.gitignore` stops ignoring `apm.yml`**, and says why: the manifest is a declaration, like
+  `pyproject.toml`, while everything APM downloads and writes — `apm_modules/`, `.claude/`,
+  `apm.lock.yaml` — is build output, ignored the way `.venv/` is. **A clean `git status` after a full
+  setup is the test** that the split is right.
+* **`AGENTS.md` opens with a *First run* block**, before anything about branches. An agent that finds
+  no `.venv/` or `apm_modules/` offers `SETUP.md` instead of starting work in a repository that has
+  not been set up, and the two rules it must not get wrong are restated there: never print a value
+  from `Config/.env`, and ask before installing the skills.
+* **`README.md`'s Setup section is three commands and a link.** One source, so the two cannot drift.
+* **Python is `>=3.12,<3.14`, and 3.13 is the one to install.** The ceiling is the Backtest
+  Engine's: it is documented for 3.12 or 3.13, and every performance figure here comes from that
+  engine, so a version it cannot be installed beside is a version that cannot finish the pipeline.
+  The Data Curator allows 3.12 to 3.14, which leaves 3.13 as the version that satisfies both. Ruff
+  targets `py313` to match. Widen it when the engine supports 3.14.
+* **`SETUP.md` says to clone somewhere short on Windows.** APM stages downloads several directories
+  below the root, so a deep synced path fails part-way through with `WinError 3: The system cannot
+  find the path specified`. The same install from a short path succeeds, which is why the message is
+  worth naming: it reads like a missing file, not like a path-length limit.
+
+---
+
 ## 0.4.1 (2026-09-05)
 
 **PATCH** — documentation. `README.md` now states the setup order and the layout it has to produce.

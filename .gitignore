@@ -1,13 +1,13 @@
 # --- Agent tooling ---------------------------------------------------------------------------
-# The AI development setup is shared across KaxaNuk repositories and installed by APM, not
-# vendored here: the manifest, its lockfile, the modules it downloads and the rules it writes
-# into .claude/ all stay out of this repository, which keeps the research tree to research.
+# apm.yml IS committed: it declares which KaxaNuk skills this repository wants, the way
+# pyproject.toml declares its Python packages - see SETUP.md step 4.  Everything APM then downloads
+# and writes is build output, ignored the way .venv/ is, so the AI setup stays per machine and the
+# research tree stays research.
 .agents/
 .claude/
 apm_modules/
 .mcp.json
 apm.lock.yaml
-apm.yml
 
 # --- Step 2: Universe ------------------------------------------------------------------------
 # Regenerable from Investable_Universe.csv (which IS tracked - it is the seed the whole pipeline

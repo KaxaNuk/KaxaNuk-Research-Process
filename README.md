@@ -18,12 +18,10 @@ same process.**
 
 **Where this lives.** `main` is public at
 [`KaxaNuk/KaxaNuk-Research-Process`](https://github.com/KaxaNuk/KaxaNuk-Research-Process). Get it
-with *Use this template* on GitHub and follow **Setup** below: four commands, every one of them run
-in the repository root, because that root is the only folder the whole thing lives in. Claude can do
-the same from the `start-a-strategy` prompt in
-[`KaxaNuk/KaxaNuk-APM`](https://github.com/KaxaNuk/KaxaNuk-APM), which copies the template and
-installs the skills into that same root — that prompt is still being written. Issues and pull
-requests are welcome: the process improves in public, the way the Data Curator did.
+with *Use this template* on GitHub, then follow [`SETUP.md`](SETUP.md) — it is written so an agent
+can do the whole thing for you, and every command in it runs in the repository root, because that
+root is the only folder the whole thing lives in. Issues and pull requests are welcome: the process
+improves in public, the way the Data Curator did.
 
 ---
 
@@ -52,6 +50,7 @@ stop being comparable.
 ## What is in here
 
 ```
+SETUP.md              how to get this repository and set it up - start here
 OBJECTIVE.md          the idea, and the status of each claim inside it
 RESULTS.md            every number this repository has measured
 AGENTS.md             how work is done here: the workflow, and the bar a result must clear
@@ -65,6 +64,7 @@ Experiments/          steps 4-6 - one folder per idea (four documents and a note
                                four modules every experiment shares
 Paper_Trading/        step 7 - the graduation gate, and the frozen rule of anything that passes
 Config/               .env.template - copy to .env and fill in your keys
+apm.yml               which KaxaNuk agent skills this repository wants - see SETUP.md step 4
 ```
 
 **Nothing under `Data/` or inside an experiment's output folders is committed.** Every file there is
@@ -188,69 +188,32 @@ from. It is a separate project, and it is being built.
 
 ## Setup
 
-**One folder is the whole project.** The repository root holds the process folders *and* the local
-setup — `.venv/`, `.claude/`, `apm_modules/`, `apm.yml`. Nothing is installed a level above it and
-nothing is nested a level below it, so opening that one folder in PyCharm or Claude gives you the
-research tree and the agent tooling at the same time, already pointing at each other.
-
-Python 3.14, [uv](https://docs.astral.sh/uv/) and GitHub Desktop, then five steps in this order.
-
-1. **Make the repository, named after the strategy.** *Use this template* on
-   [`KaxaNuk/KaxaNuk-Research-Process`](https://github.com/KaxaNuk/KaxaNuk-Research-Process) and
-   call it what the strategy is — `fcf-yield-quality`. **Do not create a folder to put it in:** the
-   repository name *is* the folder name.
-2. **Clone it.** GitHub Desktop, into wherever you keep work. Cloning into `D:\Research` gives you
-   `D:\Research\fcf-yield-quality`, and **that folder is the root** every step below runs in.
-3. **Build the environment**, from the root. `uv sync` creates `.venv/` and installs the `dev`
-   group, which is where `apm-cli` comes from — so this step has to come before step 4.
-4. **Install the agent tooling**, from the root. `apm init` writes `apm.yml`; `apm install` fetches
-   KaxaNuk's packages into `apm_modules/` and deploys their skills, commands and rules into
-   `.claude/`. All four are already in `.gitignore` — the setup is yours, not the repository's.
-5. **Copy the credential file** and fill in a data-provider key.
+**[`SETUP.md`](SETUP.md) is the whole of it**, written so an agent can follow it end to end: how to
+get the repository, the one rule about where it lives, and the four commands. What it comes down to,
+from the repository root, with Python 3.13 and [uv](https://docs.astral.sh/uv/) installed:
 
 ```bash
 uv sync
 ```
 
 ```bash
-apm init -y --target claude
-```
-
-```bash
-apm install KaxaNuk/KaxaNuk-APM/common
-```
-
-```bash
 cp Config/.env.template Config/.env
 ```
 
-The two KaxaNuk entries in `.env` are engine licences: steps 1 to 4 run without them, and steps 5
-and 6 should report what is missing and skip. **Never print a value from that file** — not into a
+```bash
+apm install
+```
+
+**One folder is the whole project.** The root holds the process folders *and* the local setup —
+`.venv/`, `.claude/`, `apm_modules/`, `apm.yml`. Nothing is installed a level above it and nothing is
+nested a level below it, so opening that one folder gives you the research tree and the agent tooling
+at once. `SETUP.md` names the failure this prevents, and how to undo it if you already have it.
+
+The third command is **optional**: it installs KaxaNuk's agent skills, declared in the committed
+`apm.yml`, and nothing in the pipeline imports a skill. The second needs a data-provider key filled
+in afterwards; the two KaxaNuk entries are engine licences, so steps 1 to 4 run without them and
+steps 5 and 6 report what is missing and skip. **Never print a value from that file** — not into a
 commit, a notebook output or a log line. An exposed key is rotated, not edited out.
-
-### What the root looks like when it is right
-
-```
-fcf-yield-quality/          <- clone here, open here, run everything here
-    .claude/                installed by APM      \
-    apm_modules/            installed by APM       |  ignored: your local setup
-    apm.yml                 written by apm init    |
-    .venv/                  written by uv sync    /
-    Bibliotheca/            \
-    Universe/                |  the process, from the template
-    Data/                    |
-    Experiments/             |
-    Paper_Trading/           |
-    Config/                 /
-    OBJECTIVE.md  RESULTS.md  AGENTS.md  CHANGELOG.md  README.md
-```
-
-**The failure to avoid is a wrapper folder.** Making an empty folder, running the APM setup in it
-and cloning the template inside it gives you two of everything: the wrapper has no
-`pyproject.toml`, so APM writes a `requirements-dev.txt` and a second `apm.yml` and `.claude/`
-there, and Claude opened at the wrapper reads that empty one and never sees the research tree. If
-you already have that layout, delete the wrapper's `apm.yml`, `apm.lock.yaml`, `apm_modules/`,
-`.claude/`, `.gitignore` and `requirements-dev.txt`, and open the repository folder itself.
 
 ---
 
@@ -281,6 +244,7 @@ trying to do, [`RESULTS.md`](RESULTS.md) says how far we got and what it cost.
 
 | Document | What it holds |
 | --- | --- |
+| [`SETUP.md`](SETUP.md) | how to get this repository, where it must live, and the four commands |
 | [`OBJECTIVE.md`](OBJECTIVE.md) | the main idea, and the status of each claim inside it |
 | [`RESULTS.md`](RESULTS.md) | the executive summary of every experiment, compiled from the `FINDINGS_N.md` files |
 | [`CHANGELOG.md`](CHANGELOG.md) | every version, newest first, and what a version number means here |

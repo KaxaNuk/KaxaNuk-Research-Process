@@ -8,6 +8,23 @@ result has to survive before anyone believes it. It does not repeat the README, 
 > description of what is expected in it. Replace this banner with your own status when you take the
 > repository over.
 
+## First run — before anything else
+
+**If `.venv/` or `apm_modules/` is missing, this repository has not been set up.** Say so, and offer
+to follow [`SETUP.md`](SETUP.md): four commands, every one of them run in the repository root, never
+a level above it. Do not start research work in a folder that has not been set up, and never create
+a folder around this one — `SETUP.md` says what that failure looks like.
+
+Three rules while doing it, here rather than only in `SETUP.md`, because this is the block you act on
+first:
+
+- **Never open, read back, print or echo `Config/.env`**, and never put a value from it into a
+  command that gets recorded. You may say which keys are still empty, **by name only**.
+- **The agent skills are a question, not a step.** Ask before running `apm install`. Nothing in the
+  pipeline imports a skill, so *no* leaves a working repository and *later* costs nothing.
+- **Skills installed by `apm install` are discoverable in a new session**, not the one that installed
+  them. Say so rather than claiming they are already active.
+
 ## How work reaches `main`
 
 | Branch | What it is | Cut from | Merges into |
