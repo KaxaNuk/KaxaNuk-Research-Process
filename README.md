@@ -18,10 +18,12 @@ same process.**
 
 **Where this lives.** `main` is public at
 [`KaxaNuk/KaxaNuk-Research-Process`](https://github.com/KaxaNuk/KaxaNuk-Research-Process). Get it
-with *Use this template* on GitHub, or ask Claude to run the `start-a-strategy` prompt from
-[`KaxaNuk/KaxaNuk-APM`](https://github.com/KaxaNuk/KaxaNuk-APM), which copies it and installs the
-skills — that prompt is still being written. Issues and pull requests are welcome: the process
-improves in public, the way the Data Curator did.
+with *Use this template* on GitHub and follow **Setup** below: four commands, every one of them run
+in the repository root, because that root is the only folder the whole thing lives in. Claude can do
+the same from the `start-a-strategy` prompt in
+[`KaxaNuk/KaxaNuk-APM`](https://github.com/KaxaNuk/KaxaNuk-APM), which copies the template and
+installs the skills into that same root — that prompt is still being written. Issues and pull
+requests are welcome: the process improves in public, the way the Data Curator did.
 
 ---
 
@@ -156,25 +158,6 @@ deciding it.
 
 ---
 
-## Setup
-
-Python 3.14 and [uv](https://docs.astral.sh/uv/), then one credential.
-
-```bash
-uv sync
-```
-
-```bash
-cp Config/.env.template Config/.env
-```
-
-Fill in a data-provider key. The two KaxaNuk entries are engine licences: steps 1 to 4 run without
-them, and steps 5 and 6 should report what is missing and skip. **Never print a value from that
-file** — not into a commit, a notebook output or a log line. An exposed key is rotated, not edited
-out.
-
----
-
 ## The tools
 
 Install once, use for every strategy.
@@ -186,10 +169,12 @@ Install once, use for every strategy.
 | **Claude** | your pair for the parts you have not written before |
 | **APM packages** | how Claude learns the six Lab modules and this process — what each does, how it is called, and what it must never be asked to do |
 
-APM is the Agent Package Manager, installed with `uv sync --group dev`. KaxaNuk's packages for it
-live at [`KaxaNuk/KaxaNuk-APM`](https://github.com/KaxaNuk/KaxaNuk-APM): the process, the Data
-Curator's calculations, and one skill per Lab module as they are written. Nothing here needs them
-to be read; a filled-in repository is faster with them.
+APM is the Agent Package Manager. `uv sync` installs the CLI, because it is in the `dev` group, and
+`apm install` fetches KaxaNuk's packages from
+[`KaxaNuk/KaxaNuk-APM`](https://github.com/KaxaNuk/KaxaNuk-APM) — the process, the Data Curator's
+calculations, and one skill per Lab module as they are written. **They install into the repository
+root, beside the process folders**, which is what Setup below does and the order it does it in.
+Nothing here needs them to be read; a filled-in repository is faster with them.
 
 ### A researcher beside the process
 
@@ -201,9 +186,78 @@ from. It is a separate project, and it is being built.
 
 ---
 
+## Setup
+
+**One folder is the whole project.** The repository root holds the process folders *and* the local
+setup — `.venv/`, `.claude/`, `apm_modules/`, `apm.yml`. Nothing is installed a level above it and
+nothing is nested a level below it, so opening that one folder in PyCharm or Claude gives you the
+research tree and the agent tooling at the same time, already pointing at each other.
+
+Python 3.14, [uv](https://docs.astral.sh/uv/) and GitHub Desktop, then five steps in this order.
+
+1. **Make the repository, named after the strategy.** *Use this template* on
+   [`KaxaNuk/KaxaNuk-Research-Process`](https://github.com/KaxaNuk/KaxaNuk-Research-Process) and
+   call it what the strategy is — `fcf-yield-quality`. **Do not create a folder to put it in:** the
+   repository name *is* the folder name.
+2. **Clone it.** GitHub Desktop, into wherever you keep work. Cloning into `D:\Research` gives you
+   `D:\Research\fcf-yield-quality`, and **that folder is the root** every step below runs in.
+3. **Build the environment**, from the root. `uv sync` creates `.venv/` and installs the `dev`
+   group, which is where `apm-cli` comes from — so this step has to come before step 4.
+4. **Install the agent tooling**, from the root. `apm init` writes `apm.yml`; `apm install` fetches
+   KaxaNuk's packages into `apm_modules/` and deploys their skills, commands and rules into
+   `.claude/`. All four are already in `.gitignore` — the setup is yours, not the repository's.
+5. **Copy the credential file** and fill in a data-provider key.
+
+```bash
+uv sync
+```
+
+```bash
+apm init -y --target claude
+```
+
+```bash
+apm install KaxaNuk/KaxaNuk-APM/common
+```
+
+```bash
+cp Config/.env.template Config/.env
+```
+
+The two KaxaNuk entries in `.env` are engine licences: steps 1 to 4 run without them, and steps 5
+and 6 should report what is missing and skip. **Never print a value from that file** — not into a
+commit, a notebook output or a log line. An exposed key is rotated, not edited out.
+
+### What the root looks like when it is right
+
+```
+fcf-yield-quality/          <- clone here, open here, run everything here
+    .claude/                installed by APM      \
+    apm_modules/            installed by APM       |  ignored: your local setup
+    apm.yml                 written by apm init    |
+    .venv/                  written by uv sync    /
+    Bibliotheca/            \
+    Universe/                |  the process, from the template
+    Data/                    |
+    Experiments/             |
+    Paper_Trading/           |
+    Config/                 /
+    OBJECTIVE.md  RESULTS.md  AGENTS.md  CHANGELOG.md  README.md
+```
+
+**The failure to avoid is a wrapper folder.** Making an empty folder, running the APM setup in it
+and cloning the template inside it gives you two of everything: the wrapper has no
+`pyproject.toml`, so APM writes a `requirements-dev.txt` and a second `apm.yml` and `.claude/`
+there, and Claude opened at the wrapper reads that empty one and never sees the research tree. If
+you already have that layout, delete the wrapper's `apm.yml`, `apm.lock.yaml`, `apm_modules/`,
+`.claude/`, `.gitignore` and `requirements-dev.txt`, and open the repository folder itself.
+
+---
+
 ## Starting your own strategy
 
-**You are already in it.** In order:
+**Setup is done, and you are already inside the thing you are filling in** — one folder, the
+process and the tooling in it. In order:
 
 1. **Put your securities in `Universe/Investable_Universe.csv`.** One row each; `main_identifier`
    is the only required column. Add whatever else your strategy groups by.

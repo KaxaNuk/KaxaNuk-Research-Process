@@ -41,6 +41,32 @@ for somebody who was not in the room:
 
 ---
 
+## 0.4.1 (2026-09-05)
+
+**PATCH** — documentation. `README.md` now states the setup order and the layout it has to produce.
+No result and no file in the pipeline changed.
+
+**What to do differently:** set a strategy up in **one** folder. The clone is the root; `uv sync`,
+`apm init` and `apm install` all run in it, and the agent tooling lands beside the process folders
+rather than in a directory above them.
+
+### Changed
+
+* **`README.md` gains an ordered Setup** — the repository named after the strategy, cloned, then
+  `uv sync`, `apm init -y --target claude`, `apm install KaxaNuk/KaxaNuk-APM/common`, then the
+  credential file. The order is a dependency: `apm-cli` arrives with the `dev` group, so the
+  environment has to exist before APM can be initialised.
+* **The setup section shows the root it should produce**, and names the failure it is there to
+  prevent: a wrapper folder holding the clone. Initialising APM in an empty wrapper writes a second
+  `apm.yml`, a second `.claude/` and a `requirements-dev.txt` that only exists because the wrapper
+  has no `pyproject.toml` — and Claude opened at the wrapper reads that empty setup and never sees
+  the research tree.
+* **"The tools" moved above "Setup"**, so the README reads install-once, then set-one-strategy-up,
+  then start it. The APM paragraph says where the packages land rather than only how the CLI
+  arrives.
+
+---
+
 ## 0.4.0 (2026-09-04)
 
 **MINOR** — `main` becomes a description-only template. **There is no code on it any more:** every
