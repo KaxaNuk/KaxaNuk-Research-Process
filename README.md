@@ -37,10 +37,6 @@ this repository.** Step 8 is the one that leaves it.
 | 7 | **Paper trading** | a dress rehearsal on data nobody has seen yet | out-of-sample evidence and an operations checklist | finding the plumbing problems on day one of funding | `Paper_Trading/` |
 | 8 | Production | real capital, real monitoring, a real drawdown policy | a funded, monitored strategy with an owner | research that stays research forever | **elsewhere** |
 
-**A stage that recomputes something an earlier stage produced has broken the process**, even when
-the number matches — because the next experiment will compute it slightly differently and the two
-stop being comparable.
-
 ---
 
 ## What is in here
