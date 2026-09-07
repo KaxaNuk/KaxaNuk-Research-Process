@@ -12,10 +12,6 @@ The universe is one CSV whose only required column is `main_identifier`, and eve
 without knowing what is in it: **equities, ETFs, FX, crypto, commodities or futures all run the
 same process.**
 
-> **Want to see it filled in?** One strategy worked end to end — the pipeline, the notebooks, the
-> measurements and a falsified prediction left in place — is on the `example` branch KaxaNuk keeps
-> beside `main`. The public template ships `main` only. It is there to be read, not built on.
-
 **Where this lives.** `main` is public at
 [`KaxaNuk/KaxaNuk-Research-Process`](https://github.com/KaxaNuk/KaxaNuk-Research-Process). Get it
 with *Use this template* on GitHub, then follow [`SETUP.md`](SETUP.md) — it is written so an agent
