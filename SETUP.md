@@ -57,6 +57,9 @@ above it and nothing is nested a level below it:
     OBJECTIVE.md  RESULTS.md  AGENTS.md  CHANGELOG.md  README.md  SETUP.md
 ```
 
+Codex keeps its copy of the skills in `.agents/` and `.codex/` rather than `.claude/`; both are
+ignored the same way.
+
 **The failure to avoid is a wrapper folder.** Making an empty folder, setting APM up in it, and then
 putting the repository inside it gives you two of everything: the wrapper has no `pyproject.toml`, so
 APM writes a `requirements-dev.txt` there beside a second `apm.yml` and a second `.claude/`. An agent

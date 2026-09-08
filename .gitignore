@@ -5,6 +5,8 @@
 # research tree stays research.
 .agents/
 .claude/
+.codex/
+.cursor/
 apm_modules/
 .mcp.json
 apm.lock.yaml
