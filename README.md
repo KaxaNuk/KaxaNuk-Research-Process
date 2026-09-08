@@ -16,8 +16,10 @@ same process.**
 [`KaxaNuk/KaxaNuk-Research-Process`](https://github.com/KaxaNuk/KaxaNuk-Research-Process). Get it
 with *Use this template* on GitHub, then follow [`SETUP.md`](SETUP.md) — it is written so an agent
 can do the whole thing for you, and every command in it runs in the repository root, because that
-root is the only folder the whole thing lives in. Issues and pull requests are welcome: the process
-improves in public, the way the Data Curator did.
+root is the only folder the whole thing lives in. Or hand it all to your assistant in one line —
+*please help install `https://github.com/KaxaNuk/KaxaNuk-Research-Process`* — and it asks you for
+the strategy's name and does the rest. Issues and pull requests are welcome: the process improves in
+public, the way the Data Curator did.
 
 ---
 
@@ -56,7 +58,7 @@ Experiments/          steps 4-6 - one folder per idea (four documents and a note
                                four modules every experiment shares
 Paper_Trading/        step 7 - the graduation gate, and the frozen rule of anything that passes
 Config/               .env.template - copy to .env and fill in your keys
-apm.yml               which KaxaNuk agent skills this repository wants - see SETUP.md step 4
+apm.yml               the KaxaNuk agent skills this repository wants, one line - see SETUP.md step 4
 ```
 
 **Nothing under `Data/` or inside an experiment's output folders is committed.** Every file there is
@@ -182,7 +184,8 @@ from. It is a separate project, and it is being built.
 
 **[`SETUP.md`](SETUP.md) is the whole of it**, written so an agent can follow it end to end: how to
 get the repository, the one rule about where it lives, and the four commands. What it comes down to,
-from the repository root, with Python 3.13 and [uv](https://docs.astral.sh/uv/) installed:
+from the repository root, with [uv](https://docs.astral.sh/uv/) installed — it fetches Python 3.13
+itself:
 
 ```bash
 uv sync
@@ -193,7 +196,7 @@ cp Config/.env.template Config/.env
 ```
 
 ```bash
-apm install
+uv run apm install --target claude
 ```
 
 **One folder is the whole project.** The root holds the process folders *and* the local setup —
@@ -202,7 +205,8 @@ nested a level below it, so opening that one folder gives you the research tree 
 at once. `SETUP.md` names the failure this prevents, and how to undo it if you already have it.
 
 The third command is **optional**: it installs KaxaNuk's agent skills, declared in the committed
-`apm.yml`, and nothing in the pipeline imports a skill. The second needs a data-provider key filled
+`apm.yml`, and nothing in the pipeline imports a skill. `--target codex` if that is what you use;
+`uv run` because `apm` lives in `.venv/` and is not on a fresh terminal's path. The second needs a data-provider key filled
 in afterwards; the two KaxaNuk entries are engine licences, so steps 1 to 4 run without them and
 steps 5 and 6 report what is missing and skip. **Never print a value from that file** — not into a
 commit, a notebook output or a log line. An exposed key is rotated, not edited out.

@@ -41,6 +41,37 @@ for somebody who was not in the room:
 
 ---
 
+## 0.6.0 (2026-09-06)
+
+**MINOR** — one prompt sets a strategy up from nothing. *Please help install
+`https://github.com/KaxaNuk/KaxaNuk-Research-Process`* is now enough for an agent with no other
+context, and the manifest names one package so the template cannot go stale.
+
+**What to do differently:** the skills command is `uv run apm install --target claude` (or `codex`),
+not a bare `apm install`, and there is nothing to install by hand before `uv sync` — not even Python.
+
+### Changed
+
+* **`SETUP.md` was run as an agent would run it, and rewritten where it broke.** Handed only the
+  URL, an agent does not know the strategy's name — it now asks, and decides the root from what the
+  current folder holds. `apm` lives inside `.venv/` and is not on a fresh terminal's path, so every
+  skills command is `uv run apm …`. The fresh-history sequence is given in PowerShell as well as
+  bash, because that is what the Claude app and Codex drive on Windows. A first commit on a machine
+  that has never committed fails for want of a git identity; the agent asks for one and sets it for
+  the repository only. Prerequisites shrink to git and uv, each with its one-line installer — `uv`
+  downloads Python 3.13 itself. A hand-over paragraph says what the agent reports and where it stops.
+* **`apm.yml` names one package, `kaxanuk`.** It is every KaxaNuk package under one name, and it
+  resolves transitively — verified. The template listed four packages by hand and was already stale:
+  `attribution-analysis` had shipped and a fresh install missed it. Replace the line with the packages
+  you want if you want fewer.
+* **The skills question has an answer when the request already gave one.** *Install it and the
+  skills* is consent and the agent runs it; a bare *set this up* still gets asked. `AGENTS.md` and
+  `SETUP.md` say the same rule.
+* **A plain clone ends with no remote, and `SETUP.md` now says so** — GitHub Desktop, *Add existing
+  repository*, *Publish*. The user's to do, not the agent's.
+
+---
+
 ## 0.5.1 (2026-09-06)
 
 **PATCH** — documentation. `SETUP.md` says what a finished setup actually leaves behind.

@@ -20,8 +20,10 @@ first:
 
 - **Never open, read back, print or echo `Config/.env`**, and never put a value from it into a
   command that gets recorded. You may say which keys are still empty, **by name only**.
-- **The agent skills are a question, not a step.** Ask before running `apm install`. Nothing in the
-  pipeline imports a skill, so *no* leaves a working repository and *later* costs nothing.
+- **The agent skills are a question unless the request already answered it.** *Install it and the
+  skills* or *install everything* is consent — run `uv run apm install --target <the agent you are>`.
+  A bare *set this up* is not — ask first, in one sentence. Nothing in the pipeline imports a skill,
+  so *no* leaves a working repository and *later* costs nothing.
 - **Skills installed by `apm install` are discoverable in a new session**, not the one that installed
   them. Say so rather than claiming they are already active.
 
