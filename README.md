@@ -21,6 +21,15 @@ root is the only folder the whole thing lives in. Or hand it all to your assista
 the strategy's name and does the rest. Issues and pull requests are welcome: the process improves in
 public, the way the Data Curator did.
 
+**To install paste this into Claude or Codex**
+
+```
+Please help me install this repo: https://github.com/KaxaNuk/KaxaNuk-Research-Process
+```
+
+**It clones the repo and walks you through the setup. You get the research process as a folder 
+structure, with the reference library that goes with it.**
+
 ---
 
 ## Eight steps, one repo
