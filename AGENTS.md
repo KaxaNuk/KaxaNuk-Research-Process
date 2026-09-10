@@ -32,23 +32,26 @@ first:
 | Branch | What it is | Cut from | Merges into |
 | --- | --- | --- | --- |
 | `main` | **the template** — the process and the contracts, with no strategy in them | — | — |
-| `example` | one strategy worked end to end, for reading rather than building on | `main` | never |
+| `example` | the same repository with every subfolder and file the process expects, each describing what goes in it. For reading and copying, never building on | `main` | never |
 | `issues/<number>` | one per issue on the GitHub Project. Where all work happens | `main` | `main` |
 
 Use `issues/27-B` and `issues/27-C` when one issue needs a second attempt or splits into parallel
 lines of work: same issue, same discussion, separate history. **`example` never merges back** —
-everything in it that belongs to the *process* is on `main` already, and the rest is a strategy
-nobody else should inherit. When the process changes, the example is rebuilt on top of it.
+`main` is the shape, and the shape is written down once — the *What is in here* table in the
+template's `README.md` at `KaxaNuk/KaxaNuk-Research-Process`; a strategy's own README replaces that
+file and links there. The files themselves live only on `example`, and when the process changes,
+`example` changes to match.
 
 Two things follow for anyone starting from this repository. **Generating a new repository from the
 template copies `main` only** — the `example` branch stays behind unless every branch is asked for,
-which is the intended default: a new project should not inherit a strategy. And **the issue
-branches below are a recommendation**, there to keep project management simple, not a gate.
+which is the intended default: a new project takes the files it needs from `example` one at a time,
+or lets the `experiment-lifecycle` skill scaffold them. And **the issue branches below are a
+recommendation**, there to keep project management simple, not a gate.
 
-**`main` is public.** It lives at `KaxaNuk/KaxaNuk-Research-Process`, and issues and pull requests
-from anyone land there — the process improves in public, the way the Data Curator did. `example`
-stays in KaxaNuk's private repository and is rebuilt on top of the public `main` when the process
-changes. Publishing is one push of `main` to the public remote; nothing else crosses.
+**`main` and `example` are both public**, at `KaxaNuk/KaxaNuk-Research-Process`, and issues and pull
+requests from anyone land there — the process improves in public, the way the Data Curator did. A
+strategy actually worked end to end stays in KaxaNuk's private repositories; the public `example` is
+the shape with every file described, not a strategy.
 
 ### The issue exists before the branch
 

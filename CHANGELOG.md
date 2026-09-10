@@ -41,6 +41,37 @@ for somebody who was not in the room:
 
 ---
 
+## 0.7.0 (2026-09-10)
+
+**MINOR** — `main` is the shape and nothing else: six folders and the documents at the root. Every
+file the process expects inside those folders moved to the public `example` branch, unchanged.
+
+**What to do differently:** `main` no longer ships `Experiment_1`, the drivers, the notebooks or the
+shared modules. Bring a file across from `example` when you need it — `README.md` gives the one
+command — or let the `experiment-lifecycle` skill scaffold an experiment.
+
+### Removed
+
+* **Everything below the six folders**, moved to `example` as it was: `Bibliotheca/`'s index,
+  `Knowledge/`, `Notes/`, `Papers/` and `Books/`; `Universe/`'s seed and notebook; `Data/`'s three
+  drivers, the two `custom_calculations.py` and the data directories; `Experiments/`' four shared
+  modules and `Experiment_1/`; `Paper_Trading/`'s gate and scripts. `Config/.env.template` stays,
+  because setup needs it. A reader opening `main` now sees the shape in one screen, and a reader
+  who wants the files finds all of them on one branch rather than half here and half there.
+
+### Changed
+
+* **`README.md`'s *What is in here* is the one place the folder contents are written down** — a
+  table per folder saying which step owns it, what belongs in it and what is committed. The old
+  tree listed files that are no longer on `main`.
+* **`README.md`'s Setup section is a pointer to `SETUP.md`**, with no commands of its own. Two
+  copies of the same commands had already started to differ.
+* **`example` is public, in this repository, beside `main`.** `README.md`, `SETUP.md` and
+  `AGENTS.md` said it was private; it holds no strategy, so there was nothing to keep private. A
+  strategy worked end to end still stays in KaxaNuk's own repositories.
+
+---
+
 ## 0.6.0 (2026-09-06)
 
 **MINOR** — one prompt sets a strategy up from nothing. *Please help install

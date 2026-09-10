@@ -12,7 +12,7 @@
 # There is deliberately no `targets` key.  The template serves Claude Code, the Claude app, Codex
 # and Cursor alike, so the target is passed on the command.
 name: kn-research-process
-version: 0.6.0
+version: 0.7.0
 description: The KN Research Process - the KaxaNuk Investment Lab's eight steps as a folder structure
 author: KaxaNuk
 dependencies:

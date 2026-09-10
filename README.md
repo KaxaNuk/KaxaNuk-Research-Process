@@ -4,31 +4,25 @@
 folder structure, with the conventions that let two people share a tool without
 explaining it first.
 
-**There is no code on `main`.** Every file here is a short description of what is expected in it —
-what that stage produces, what it prevents, and where its logic belongs. Clone it, fill it in with
-your own idea, and you have a repository whose shape is already agreed.
+**`main` is the shape and nothing else.** Six folders and the documents at the root. Every file the
+process expects *inside* those folders — the drivers, the notebooks, the four documents of an
+experiment, the shared modules — is on the [`example`](../../tree/example) branch, each one a short
+description of what is expected in it. Read `example`, copy from it, and build on `main`.
 
 The universe is one CSV whose only required column is `main_identifier`, and every stage reads it
 without knowing what is in it: **equities, ETFs, FX, crypto, commodities or futures all run the
 same process.**
 
-**Where this lives.** `main` is public at
-[`KaxaNuk/KaxaNuk-Research-Process`](https://github.com/KaxaNuk/KaxaNuk-Research-Process). Get it
-with *Use this template* on GitHub, then follow [`SETUP.md`](SETUP.md) — it is written so an agent
-can do the whole thing for you, and every command in it runs in the repository root, because that
-root is the only folder the whole thing lives in. Or hand it all to your assistant in one line —
-*please help install `https://github.com/KaxaNuk/KaxaNuk-Research-Process`* — and it asks you for
-the strategy's name and does the rest. Issues and pull requests are welcome: the process improves in
-public, the way the Data Curator did.
+**To install, paste this into Claude or Codex:**
 
-**To install paste this into Claude or Codex**
-
-```
+```text
 Please help me install this repo: https://github.com/KaxaNuk/KaxaNuk-Research-Process
 ```
 
-**It clones the repo and walks you through the setup. You get the research process as a folder 
-structure, with the reference library that goes with it.**
+It asks you for the strategy's name, clones the repository into one folder, builds the environment
+and — if you want them — installs the KaxaNuk agent skills. [`SETUP.md`](SETUP.md) is what it
+follows, and it is written so a person can read it in two minutes too. Issues and pull requests are
+welcome: the process improves in public, the way the Data Curator did.
 
 ---
 
@@ -52,27 +46,45 @@ this repository.** Step 8 is the one that leaves it.
 
 ## What is in here
 
+What `main` ships:
+
 ```
 SETUP.md              how to get this repository and set it up - start here
 OBJECTIVE.md          the idea, and the status of each claim inside it
 RESULTS.md            every number this repository has measured
 AGENTS.md             how work is done here: the workflow, and the bar a result must clear
 CHANGELOG.md          every version, and what a version number means here
+apm.yml               the KaxaNuk agent skills this repository wants, one line
+pyproject.toml        the environment: Python 3.13, the open-source libraries, uv-managed
 
-Bibliotheca/          step 1 - one note per source, and BIBLIOGRAPHY.md as the index
-Universe/             step 2 - Investable_Universe.csv (the seed) and universe.ipynb
-Data/                 step 3 - curator.py, refinery.py, analyzer.ipynb, and the two
-                               custom_calculations.py where your columns go
-Experiments/          steps 4-6 - one folder per idea (four documents and a notebook), and the
-                               four modules every experiment shares
-Paper_Trading/        step 7 - the graduation gate, and the frozen rule of anything that passes
+Bibliotheca/          step 1
+Universe/             step 2
+Data/                 step 3
+Experiments/          steps 4-6
+Paper_Trading/        step 7
 Config/               .env.template - copy to .env and fill in your keys
-apm.yml               the KaxaNuk agent skills this repository wants, one line - see SETUP.md step 4
 ```
 
-**Nothing under `Data/` or inside an experiment's output folders is committed.** Every file there is
-downloaded, derived, or dropped in by hand. A regenerable file is not a backed-up file: discarding
-all changes removes every one of them — `Config/.env` included, and that one cannot be regenerated.
+What goes in each folder — and this table is the only place it is written down, so it is the one
+to keep current:
+
+| Folder | Step | What belongs in it | Committed |
+| --- | --- | --- | --- |
+| `Bibliotheca/` | 1 | `BIBLIOGRAPHY.md`, the index of sources. `Papers/` and `Books/`, one note per source with its frontmatter. `Knowledge/`, the researcher's compiled `INDEX.md` and `LOG.md`, never edited by hand. `Notes/` for the rest | everything — it is the reasoning |
+| `Universe/` | 2 | `Investable_Universe.csv`, **the seed**: one row per security, `main_identifier` the only required column, every other column yours. `universe.ipynb`, which profiles what the curator downloaded and writes `Security_Master.csv` and `Data_Issues.csv` | the seed and the notebook; the two outputs and `Provider_Cache/` are regenerated, so ignored |
+| `Data/` | 3 | `curator.py`, `refinery.py`, `analyzer.ipynb` — the three drivers. `Curator/custom_calculations.py` for `c_*` columns and `Refinery/custom_calculations.py` for `r_*`. `Curator/Time_Series/`, `Benchmarks/`, `Factors/` and `Refinery/Time_Series/` for what is downloaded or dropped in by hand; `Analyzer/` for charts and the signal table | code only. **Every data file is ignored** — downloaded, derived or dropped in, all of it regenerable |
+| `Experiments/` | 4–6 | The four shared modules — `securities_panel.py`, `portfolio_construction.py`, `backtest_engine.py`, `attribution_analysis.py`. One `Experiment_N/` per idea: `BLUEPRINT_N.md`, `BRAINSTORMING_N.md`, `JOURNAL_N.md`, `FINDINGS_N.md`, the notebook, and its `Portfolio/`, `Backtest/` and `Attribution/` output folders | the documents, the notebook with outputs stripped, the modules. The output folders are rebuilt by the notebook, so ignored |
+| `Paper_Trading/` | 7 | `BITACORA.md`, what graduation means and the gate. `daily_update.py`. `Paper_Trading_N/paper_trading_N.py`, the frozen rule of anything that passed | everything |
+| `Config/` | — | `.env.template`, copied to `.env` and filled in with a data-provider key and the two engine licences | the template. **`.env` never** — and it cannot be regenerated, so discarding all changes loses it |
+
+**Every one of those files exists on [`example`](../../tree/example)**, as a description of what is
+expected in it. To bring one into a strategy repository that has only `main`:
+
+```bash
+git fetch https://github.com/KaxaNuk/KaxaNuk-Research-Process example && git checkout FETCH_HEAD -- Experiments/Experiment_1
+```
+
+Or let the `experiment-lifecycle` skill scaffold it, which is what the agent skills are for.
 
 ---
 
@@ -145,8 +157,8 @@ Two rules follow, and one exception worth knowing:
 
 Everything specific to a strategy lives in its notebook, where a reader can see it. Four modules are
 shared between experiments — one per Lab library — for one reason: **if they differed between
-experiments, comparing experiments would be meaningless.** Each ships beside the notebook as a
-description of what it must do; `example` has them filled in.
+experiments, comparing experiments would be meaningless.** On `example`, each sits beside the
+notebook as a description of what it must do.
 
 | Module | Owns |
 | --- | --- |
@@ -169,15 +181,13 @@ Install once, use for every strategy.
 | --- | --- |
 | **GitHub Desktop** | where your work lives, and how you get it back after you break it |
 | **PyCharm** | the editor, the interpreter and the terminal in one window |
-| **Claude** | your pair for the parts you have not written before |
-| **APM packages** | how Claude learns the six Lab modules and this process — what each does, how it is called, and what it must never be asked to do |
+| **Claude** or **Codex** | your pair for the parts you have not written before |
+| **APM packages** | how the agent learns the six Lab modules and this process — what each does, how it is called, and what it must never be asked to do |
 
-APM is the Agent Package Manager. `uv sync` installs the CLI, because it is in the `dev` group, and
-`apm install` fetches KaxaNuk's packages from
-[`KaxaNuk/KaxaNuk-APM`](https://github.com/KaxaNuk/KaxaNuk-APM) — the process, the Data Curator's
-calculations, and one skill per Lab module as they are written. **They install into the repository
-root, beside the process folders**, which is what Setup below does and the order it does it in.
-Nothing here needs them to be read; a filled-in repository is faster with them.
+APM is the Agent Package Manager. `uv sync` installs the CLI, and `uv run apm install` fetches
+KaxaNuk's packages from [`KaxaNuk/KaxaNuk-APM`](https://github.com/KaxaNuk/KaxaNuk-APM) — the
+process, one skill per Lab library, and the house rules — into the repository root, beside the
+process folders. Nothing here needs them to be read; a filled-in repository is faster with them.
 
 ### A researcher beside the process
 
@@ -191,34 +201,9 @@ from. It is a separate project, and it is being built.
 
 ## Setup
 
-**[`SETUP.md`](SETUP.md) is the whole of it**, written so an agent can follow it end to end: how to
-get the repository, the one rule about where it lives, and the four commands. What it comes down to,
-from the repository root, with [uv](https://docs.astral.sh/uv/) installed — it fetches Python 3.13
-itself:
-
-```bash
-uv sync
-```
-
-```bash
-cp Config/.env.template Config/.env
-```
-
-```bash
-uv run apm install --target claude
-```
-
-**One folder is the whole project.** The root holds the process folders *and* the local setup —
-`.venv/`, `.claude/`, `apm_modules/`, `apm.yml`. Nothing is installed a level above it and nothing is
-nested a level below it, so opening that one folder gives you the research tree and the agent tooling
-at once. `SETUP.md` names the failure this prevents, and how to undo it if you already have it.
-
-The third command is **optional**: it installs KaxaNuk's agent skills, declared in the committed
-`apm.yml`, and nothing in the pipeline imports a skill. `--target codex` if that is what you use;
-`uv run` because `apm` lives in `.venv/` and is not on a fresh terminal's path. The second needs a data-provider key filled
-in afterwards; the two KaxaNuk entries are engine licences, so steps 1 to 4 run without them and
-steps 5 and 6 report what is missing and skip. **Never print a value from that file** — not into a
-commit, a notebook output or a log line. An exposed key is rotated, not edited out.
+**[`SETUP.md`](SETUP.md) is the whole of it, and nothing here repeats it** — so the two cannot
+drift. It covers getting the repository, the one folder it has to live in, the environment, the keys,
+and the agent skills, each with the command an agent runs and the mistake it must not make.
 
 ---
 
@@ -238,7 +223,8 @@ process and the tooling in it. In order:
 5. **Write `BLUEPRINT_1.md` before the rule.** A hypothesis edited after its test is not a
    hypothesis.
 
-**To see it filled in**: the `example` branch, where KaxaNuk keeps it beside `main`.
+The files those steps name are on `example`, not on `main` — the *What is in here* table above says
+how to bring one across, and the `experiment-lifecycle` skill scaffolds an experiment for you.
 
 ---
 
@@ -249,18 +235,18 @@ trying to do, [`RESULTS.md`](RESULTS.md) says how far we got and what it cost.
 
 | Document | What it holds |
 | --- | --- |
-| [`SETUP.md`](SETUP.md) | how to get this repository, where it must live, and the four commands |
+| [`SETUP.md`](SETUP.md) | how to get this repository, where it must live, and the commands |
 | [`OBJECTIVE.md`](OBJECTIVE.md) | the main idea, and the status of each claim inside it |
 | [`RESULTS.md`](RESULTS.md) | the executive summary of every experiment, compiled from the `FINDINGS_N.md` files |
 | [`CHANGELOG.md`](CHANGELOG.md) | every version, newest first, and what a version number means here |
 | [`AGENTS.md`](AGENTS.md) | **how work is done** — the workflow, the restrictions, and the bar a result has to clear |
-| [`Bibliotheca/BIBLIOGRAPHY.md`](Bibliotheca/BIBLIOGRAPHY.md) | the index of sources, each linking to its note |
-| [`Paper_Trading/BITACORA.md`](Paper_Trading/BITACORA.md) | what graduation means, and the gate |
 
 Four documents inside every `Experiments/Experiment_N/`, and the split between them is the whole
 point: `BLUEPRINT` is frozen so a result cannot quietly reshape the question it was meant to answer,
 `JOURNAL` is append-only so the path is recoverable, `FINDINGS` is rewritten so there is one current
-answer, and `BRAINSTORMING` looks forward so planning is never mistaken for history.
+answer, and `BRAINSTORMING` looks forward so planning is never mistaken for history. `Bibliotheca/`
+has its index in `BIBLIOGRAPHY.md` and `Paper_Trading/` its gate in `BITACORA.md` — both on
+`example`.
 
 ---
 
@@ -268,8 +254,8 @@ answer, and `BRAINSTORMING` looks forward so planning is never mistaken for hist
 
 | Branch | What it is |
 | --- | --- |
-| `main` | this — the process, with nothing in it. Public at `KaxaNuk/KaxaNuk-Research-Process` |
-| `example` | one strategy worked end to end, for reading rather than building on. Kept by KaxaNuk beside `main`, not in the public template |
+| `main` | this — the shape of the process: six folders and the documents at the root. What *Use this template* copies |
+| `example` | the same repository with every subfolder and file the process expects, each describing what goes in it. Public, beside `main`. Read it and copy from it; never build on it |
 | `issues/<number>` | one per issue on the GitHub Project, cut from `main` and merged back into it. Where all work happens |
 
 **[`AGENTS.md`](AGENTS.md) is next**: the workflow, the bar any new signal has to clear, and the

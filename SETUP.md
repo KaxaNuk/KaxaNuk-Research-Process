@@ -22,7 +22,9 @@ Open a **new** terminal after installing either, so it is on the path. `git --ve
 > **For the agent, before anything else.** If you were given only the URL, you are missing two things
 > and must ask for the first: **the strategy's name** — it becomes the folder and repository name, so
 > `fcf-yield-quality`, not `Experiment` — and **where to put it**, which defaults to the folder you are
-> in. Then decide the root by looking at that folder, and say which folder you chose:
+> in. A third is optional: **one sentence on the idea**, if the user has it ready — it seeds the README
+> in step 5, and a placeholder is fine if not. Then decide the root by looking at that folder, and say
+> which folder you chose:
 >
 > - it is **empty** → it is the root;
 > - it already holds `Bibliotheca/`, `Universe/` and `Experiments/` → the repository exists, go to step 2;
@@ -113,8 +115,10 @@ In PowerShell, which is what the Claude app and Codex drive on Windows:
 Remove-Item -Recurse -Force .git; git init; git add -A; git commit -m "Start from the KN Research Process template"
 ```
 
-Only `main` is copied by any of the three. The `example` branch — one strategy worked end to end — is
-kept by KaxaNuk for reading, and is not part of a new strategy.
+Only `main` is copied by any of the three, and `main` is the shape: six folders and the documents at
+the root. The `example` branch — the same repository with every subfolder and file the process
+expects, each describing what goes in it — stays behind on purpose. Read it and copy from it;
+`README.md` says how. Never build on it.
 
 > **For the agent.** Three things go wrong here, and none is a reason to stop.
 >
@@ -206,6 +210,45 @@ The packages, and what each is for, are listed at
 
 ---
 
+## Step 5 — Make the README the strategy's
+
+The `README.md` you cloned describes the KN Research Process — the template, not your strategy. A
+strategy repository's README describes **the strategy**: what it is, what it claims, where it
+stands. Replace the whole file with this, filled in, and leave the process to the link:
+
+```markdown
+# <strategy-name>
+
+<one sentence on the idea — or: The objective is not written yet; see OBJECTIVE.md.>
+
+> **Status: set up, nothing measured.** Replace this line as the strategy moves — it is the same
+> banner `AGENTS.md` carries.
+
+Built on the [KN Research Process](https://github.com/KaxaNuk/KaxaNuk-Research-Process): eight
+steps as a folder structure. That repository's README says what each folder is for and where each
+kind of logic goes, and this one does not repeat it.
+
+| Read | For |
+| --- | --- |
+| [`OBJECTIVE.md`](OBJECTIVE.md) | the idea, and the status of each claim inside it |
+| [`RESULTS.md`](RESULTS.md) | every number this repository has measured, and what it cost |
+| [`AGENTS.md`](AGENTS.md) | how work is done here, and the bar a result has to clear |
+| [`SETUP.md`](SETUP.md) | how this repository is set up on a new machine |
+```
+
+Then commit it together with `uv.lock`, the other file the setup itself produced:
+
+```bash
+git add README.md uv.lock && git commit -m "README: <strategy-name>"
+```
+
+> **For the agent.** The name is the one you asked for at the start; the sentence too, if the user
+> gave one — **never invent a thesis**, use the placeholder. Everything else in the block is fixed.
+> Do not keep the template's README under another name: the process lives upstream, and a copy here
+> is a copy that drifts.
+
+---
+
 ## What "done" looks like
 
 From the root:
@@ -214,13 +257,12 @@ From the root:
 git status
 ```
 
-**Exactly one new file should appear, and it is `uv.lock`. Commit it.** It pins the versions this
-strategy's results came from, which is why the template deliberately ships without one and your
-repository keeps one.
-
-Everything else the commands produced — `.venv/`, `apm_modules/`, `.claude/`, `apm.lock.yaml` — is
-ignored, and `apm.yml` was already committed because it is a declaration, like `pyproject.toml`.
-**Anything else showing up means something was written in the wrong place.**
+**It should be clean.** Step 5 committed the two things the setup itself changed: the README, and
+`uv.lock` — which pins the versions this strategy's results will come from, and is why the template
+ships without one and your repository keeps one. Everything else the commands produced — `.venv/`,
+`apm_modules/`, `.claude/`, `apm.lock.yaml` — is ignored, and `apm.yml` was already committed
+because it is a declaration, like `pyproject.toml`. **Anything showing up means something was
+written in the wrong place.**
 
 **If you took the plain-clone path, the repository exists only on this machine.** Nothing is lost
 and nothing is wrong — but it is not backed up and nobody else can see it. In GitHub Desktop, *Add*
@@ -230,8 +272,9 @@ to do, not the agent's.
 Then open **this folder** — not a parent of it — in PyCharm, Claude or Codex.
 
 > **For the agent — the hand-over.** Say the absolute path of the root, that it is the whole project
-> and the folder to open, which `.env` keys are still empty by name, whether the skills were installed
-> and that they appear in a new session, and whether the repository has a remote yet. Then stop.
+> and the folder to open, that the README is now the strategy's, which `.env` keys are still empty
+> by name, whether the skills were installed and that they appear in a new session, and whether the
+> repository has a remote yet. Then stop.
 > Starting research work is a different request.
 
 ---
