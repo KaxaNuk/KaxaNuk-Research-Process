@@ -87,6 +87,8 @@ idea  ->  issue on the Project board  ->  issues/<number> cut from main  ->  PR 
 | Document | Who writes it | Changes when |
 | --- | --- | --- |
 | `OBJECTIVE.md` | a person, first | almost never — a change here means a *different* strategy |
+| the notes in `Bibliotheca/` | a person, or a researcher with `read` — one per paper, one per chapter of a book somebody chose, after a plan and a go | a source is read. A later note corrects an earlier one with a callout above the claim, never by smoothing it away |
+| `Bibliotheca/BIBLIOGRAPHY.md` | a person adds the leads; whoever writes a note adds its row | a source is added, or read |
 | `RESULTS.md` | the AI, from the findings files | a `FINDINGS_N.md` changes |
 | `CHANGELOG.md` | whoever lands a change-set | any change-set lands |
 | `AGENTS.md` | anyone | the process changes |

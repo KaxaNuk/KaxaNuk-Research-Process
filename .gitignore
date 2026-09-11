@@ -11,6 +11,13 @@ apm_modules/
 .mcp.json
 apm.lock.yaml
 
+# --- Step 1: Bibliotheca ---------------------------------------------------------------------
+# The extracts a researcher's script pulls out of the PDFs - one file per chapter, so a book can be
+# read a chapter at a time. They are the publisher's words under the publisher's copyright, and
+# they come back with one command. The PDFs themselves are already ignored by the binary rule
+# below; the notes ARE committed, because they are the reasoning.
+Bibliotheca/Extracts/
+
 # --- Step 2: Universe ------------------------------------------------------------------------
 # Regenerable from Investable_Universe.csv (which IS tracked - it is the seed the whole pipeline
 # grows from) plus the data provider.

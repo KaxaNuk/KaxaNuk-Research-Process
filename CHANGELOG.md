@@ -41,6 +41,35 @@ for somebody who was not in the room:
 
 ---
 
+## 0.7.1 (2026-09-11)
+
+**PATCH** — what a `Bibliotheca/` holds, now that a researcher writes its notes a chapter at a
+time. No result changes.
+
+**What to do differently:** keep the PDFs beside their notes and let git ignore them, along with
+`Bibliotheca/Extracts/`, where the researcher's script leaves a book's chapters as text. A book is
+a folder — `Books/Author_Year_Title/INDEX.md` for the chapter table, one file per chapter read —
+and `Bibliotheca/Knowledge/` is gone: the notes beside the sources are the library, `BIBLIOGRAPHY.md`
+is its index and `Bibliotheca/LOG.md` its record. The files themselves are on
+[`example`](../../tree/example).
+
+### Added
+
+* **`AGENTS.md` says who writes a note:** a person, or a researcher with `read`, after a plan and a
+  go; whoever writes a note adds its row to `BIBLIOGRAPHY.md`. It was the one step-1 document the
+  table did not name.
+* **`.gitignore` keeps the PDFs and the extracts out**, as step 1's own section. Licensed material
+  is not redistributed by a clone, and the extracts regenerate with one command.
+
+### Changed
+
+* **`README.md`'s `Bibliotheca/` row describes the folder as it is now** — notes beside their PDFs,
+  a book as a folder of chapters, `LOG.md` — and its researcher section says what the companion
+  actually does here rather than that it is being built. `KaxaNuk/KaxaNuk-Researcher` 0.3.0 is the
+  version that writes these notes.
+
+---
+
 ## 0.7.0 (2026-09-10)
 
 **MINOR** — `main` is the shape and nothing else: six folders and the documents at the root. Every

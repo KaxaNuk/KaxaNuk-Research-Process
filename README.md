@@ -70,7 +70,7 @@ to keep current:
 
 | Folder | Step | What belongs in it | Committed |
 | --- | --- | --- | --- |
-| `Bibliotheca/` | 1 | `BIBLIOGRAPHY.md`, the index of sources. `Papers/` and `Books/`, one note per source with its frontmatter. `Knowledge/`, the researcher's compiled `INDEX.md` and `LOG.md`, never edited by hand. `Notes/` for the rest | everything — it is the reasoning |
+| `Bibliotheca/` | 1 | `BIBLIOGRAPHY.md`, the index of sources and the leads. `Papers/`, one note per paper, and `Books/`, one folder per book — its `INDEX.md` of chapters and one note per chapter somebody chose to read — each beside the PDF it came from. `LOG.md`, what was read here and when. `Notes/` for clippings and transcripts | the notes and the indexes — they are the reasoning. The PDFs and `Extracts/` are ignored: licensed material, and the extracts regenerate |
 | `Universe/` | 2 | `Investable_Universe.csv`, **the seed**: one row per security, `main_identifier` the only required column, every other column yours. `universe.ipynb`, which profiles what the curator downloaded and writes `Security_Master.csv` and `Data_Issues.csv` | the seed and the notebook; the two outputs and `Provider_Cache/` are regenerated, so ignored |
 | `Data/` | 3 | `curator.py`, `refinery.py`, `analyzer.ipynb` — the three drivers. `Curator/custom_calculations.py` for `c_*` columns and `Refinery/custom_calculations.py` for `r_*`. `Curator/Time_Series/`, `Benchmarks/`, `Factors/` and `Refinery/Time_Series/` for what is downloaded or dropped in by hand; `Analyzer/` for charts and the signal table | code only. **Every data file is ignored** — downloaded, derived or dropped in, all of it regenerable |
 | `Experiments/` | 4–6 | The four shared modules — `securities_panel.py`, `portfolio_construction.py`, `backtest_engine.py`, `attribution_analysis.py`. One `Experiment_N/` per idea: `BLUEPRINT_N.md`, `BRAINSTORMING_N.md`, `JOURNAL_N.md`, `FINDINGS_N.md`, the notebook, and its `Portfolio/`, `Backtest/` and `Attribution/` output folders | the documents, the notebook with outputs stripped, the modules. The output folders are rebuilt by the notebook, so ignored |
@@ -192,10 +192,13 @@ process folders. Nothing here needs them to be read; a filled-in repository is f
 ### A researcher beside the process
 
 [`KaxaNuk/KaxaNuk-Researcher`](https://github.com/KaxaNuk/KaxaNuk-Researcher) is a companion you
-name and teach — one per person, not per strategy. It keeps its own library of what you have
-read, reads this repository's `Bibliotheca/`, and drafts the claims in `OBJECTIVE.md` and the
-hypothesis in each `BLUEPRINT_N.md` from those notes, every prediction citing the note it came
-from. It is a separate project, and it is being built.
+name and teach — one per person, not per strategy. It keeps its own library of what you have read;
+in this repository it writes the notes in `Bibliotheca/` with `read` — a script pulls a book's
+table of contents out of the PDF, you pick the chapters that serve a claim in `OBJECTIVE.md`, and
+it writes one note per chapter with its row in `BIBLIOGRAPHY.md`, after a plan and your go — and
+drafts the claims in `OBJECTIVE.md` and the hypothesis in each `BLUEPRINT_N.md` from those notes,
+every prediction citing the note it came from. A note its own library already holds comes across
+without reading the PDF twice. It is a separate project.
 
 ---
 
