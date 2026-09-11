@@ -12,11 +12,15 @@ hypothesis, in the repo, dated. **It prevents** backtesting a hunch you cannot d
 ```
 Bibliotheca/
 ├── BIBLIOGRAPHY.md                  # this file — the index, grouped by what a source bears on
+├── LOG.md                           # append-only: what was read here, and when
 ├── Papers/
-│   └── Author_Year_Title.md         # one note per paper
-└── Books/
-    └── Author_Year_Title/
-        └── INDEX.md                 # one note per book, with per-chapter sections
+│   └── Author_Year_Title.md         # one note per paper, beside its PDF (gitignored)
+├── Books/
+│   └── Author_Year_Title/
+│       ├── INDEX.md                 # the book's index: every chapter, and what became of it
+│       └── NN_Chapter_Title.md      # one note per chapter read; none for a chapter nobody chose
+├── Notes/                           # clippings and transcripts, raw; their notes go in Papers/
+└── Extracts/                        # the PDFs' chapters as text, pulled by the researcher's script; gitignored
 ```
 
 **A source listed without a note is a *lead*, not a citation.** It is here because somebody thought
@@ -29,16 +33,18 @@ download papers, books or datasets without asking.** Links go here; files arrive
 
 ## What a note looks like
 
-Every note opens with the same four fields as YAML frontmatter — `source` (where it lives),
-`citation` (with the date the link was last checked), `local_copy` (whether a PDF sits beside the
-note, gitignored) and `read` (the date it was read into this repository, and what was read — the
-whole paper, or an abstract). Frontmatter because a tool can index it: the Investment Lab will
-read these fields, and the links between notes, to show what cites what.
+Every note opens with the same four fields as YAML frontmatter — `source` (where it lives outside
+this repository — a DOI, a URL, a publisher; never invented), `citation` (with the date the link was
+last checked), `local_copy` (the PDF beside the note, by path, gitignored — or `none`) and `read`
+(the date it was read into this repository, and what was read — the whole paper, or the chapters).
+A fifth, `tags`, is optional; a researcher's home library uses it. Frontmatter because a tool can
+index it: the Investment Lab will read these fields, and the links between notes, to show what
+cites what.
 
 | Note | Body |
 | --- | --- |
-| **Paper** | *What it says*, in the authors' terms — then *what it implies for this strategy*, as a blockquote |
-| **Book** | one section per idea, each headed by the claim that chapter makes, each with a blockquoted implication; then a distillation table and *what this book does not settle for us* |
+| **Paper** | a first line saying what was read; `## Why it is here`, naming the claim in `OBJECTIVE.md` by number; then *what it says* — one heading per claim, in the authors' terms — and under each, *what it implies for this strategy*, as a blockquote; last, `## What it changes`: three to seven bullets against that claim, and one line on what it does not settle |
+| **Book** | a folder. `INDEX.md` holds the distillation table — every chapter, its pages, its status (*read*, *skimmed*, *skipped*, *to come*), the claim it serves, the link to its note — and *what this book does not settle for us*; then one file per chapter read, in the paper's shape. Nothing is written for a chapter nobody chose |
 
 Four rules separate a note from a summary:
 
@@ -64,6 +70,12 @@ to draft the claims in [`../OBJECTIVE.md`](../OBJECTIVE.md) and the thesis and p
 `BLUEPRINT_N.md`. **Every prediction it writes cites the note it came from**, and a source without
 a note cannot be cited: it is a lead, and the note is written first. That is what makes the
 hypothesis defensible afterwards — each line of it points back to something somebody read.
+
+Yours writes the notes with `read`: a script pulls the table of contents out of the PDF, the
+researcher shows it to you and asks which chapters serve which claim, reads only those, and writes
+one note per chapter, its row in this file and a line in `LOG.md` — after a plan and your go. A note
+its home library already holds comes across without re-reading the PDF; only the implications are
+written anew, for this strategy's claims.
 
 > **Read a source because you have a question, not because it is a good source.** Part 1 is empty on
 > purpose: it fills as *your* idea raises questions. Parts 2 to 5 are seeded with the standard
