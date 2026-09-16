@@ -41,6 +41,35 @@ for somebody who was not in the room:
 
 ---
 
+## 0.7.2 (2026-09-16)
+
+**PATCH** — the order a strategy is built in starts with the objective, before any paper. No result
+changes.
+
+**What to do differently:** start a strategy with `OBJECTIVE.md` — the idea and its claims — and
+read for those claims before choosing the investable universe, which is now step 3 of the order
+rather than the first thing done.
+
+### Changed
+
+* **`README.md`'s *Starting your own strategy* is the order of work, in eight steps.** The objective
+  before any paper; the objective fine-tuned by reading for each claim, the sources that argue
+  against it included; the investable universe; the data, in the order the Data stage already gave;
+  `BLUEPRINT_1.md` before the rule, every prediction citing a note or an analyzer measurement; the
+  broad reading and brainstorming; the cycle of portfolio construction, backtest and attribution
+  until it is finished; and every finished cycle into `RESULTS.md`, kept or rejected. It listed the
+  universe first, but the claims decide what the universe has to contain, and reading with no claim
+  to read for has no stopping condition.
+* **Step 1 of the eight is the idea and its claims first, then the literature that argues with
+  them**, where it read *a literature review with a thesis at the end of it* — the order this change
+  reverses. Its row names `OBJECTIVE.md` beside `Bibliotheca/`.
+* **`SETUP.md`'s last paragraph** names the objective as the first thing to do, where it named the
+  universe.
+* [`example`](../../tree/example) takes the same text, and its `BIBLIOGRAPHY.md` plain-words line
+  to match.
+
+---
+
 ## 0.7.1 (2026-09-11)
 
 **PATCH** — what a `Bibliotheca/` holds, now that a researcher writes its notes a chapter at a

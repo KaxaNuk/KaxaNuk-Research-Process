@@ -282,6 +282,6 @@ Then open **this folder** — not a parent of it — in PyCharm, Claude or Codex
 ## Next
 
 [`README.md`](README.md) says what the repository is and where each kind of logic goes;
-[`AGENTS.md`](AGENTS.md) says how work is done in it. The five things to do first are in the
-*Starting your own strategy* section of the README, and the first is putting your securities in
-`Universe/Investable_Universe.csv`.
+[`AGENTS.md`](AGENTS.md) says how work is done in it. The order to work in is the *Starting your
+own strategy* section of the README, and the first thing in it is `OBJECTIVE.md` — the idea and its
+claims, before any paper is read.

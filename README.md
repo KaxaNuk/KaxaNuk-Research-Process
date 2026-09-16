@@ -33,7 +33,7 @@ this repository.** Step 8 is the one that leaves it.
 
 | # | Step | In plain words | It produces | It prevents | Where |
 | --- | --- | --- | --- | --- | --- |
-| 1 | **Bibliotheca** | a literature review with a thesis at the end of it | a referenced hypothesis, in the repo, dated | backtesting a hunch you cannot defend afterwards | `Bibliotheca/` |
+| 1 | **Bibliotheca** | the idea and its claims first, then the literature that argues with them | a referenced hypothesis, in the repo, dated | backtesting a hunch you cannot defend afterwards | `OBJECTIVE.md`, `Bibliotheca/` |
 | 2 | **Universe** | the eligible list, rebuilt for each date rather than for today | a point-in-time membership table | survivorship bias — testing on the winners that survived | `Universe/` |
 | 3 | **Data** | curation, then refinery, then analysis — in that order | a reproducible dataset, and the evidence a feature carries signal | beautiful results that came from broken inputs | `Data/` |
 | 4 | **Portfolio** | how much of what, and how often you change your mind | a weighting scheme with position and turnover limits | a good signal in a portfolio nobody could hold | `Experiments/Experiment_N/` |
@@ -213,18 +213,32 @@ and the agent skills, each with the command an agent runs and the mistake it mus
 ## Starting your own strategy
 
 **Setup is done, and you are already inside the thing you are filling in** — one folder, the
-process and the tooling in it. In order:
+process and the tooling in it. In order, and **the objective comes before any paper**: reading with
+no claim to read for has no stopping condition, and a claim written after the reading is an
+observation wearing a hypothesis's clothes.
 
-1. **Put your securities in `Universe/Investable_Universe.csv`.** One row each; `main_identifier`
-   is the only required column. Add whatever else your strategy groups by.
-2. **Write `OBJECTIVE.md`** — the idea, and the claims inside it, *before* anything is measured.
-3. **Write your `c_*` and `r_*` columns** into the two `custom_calculations.py`, and fill in the
-   Curator and Refinery drivers that call the libraries.
-4. **Run steps 2 and 3**, in this order: curator, then `universe.ipynb`, then refinery, then
-   `analyzer.ipynb`. The universe notebook sits *between* the two Data commands, because it
-   profiles what the curator downloaded and writes the master the refinery joins.
-5. **Write `BLUEPRINT_1.md` before the rule.** A hypothesis edited after its test is not a
-   hypothesis.
+1. **Write `OBJECTIVE.md`** — the idea in one sentence, and the claims inside it, *before* any paper
+   is read and before anything is measured. Each claim's evidence starts as the question that would
+   settle it.
+2. **Fine-tune the objective.** Read for each claim's question, the sources that argue against it
+   included — one note per source in `Bibliotheca/` — then rewrite each claim's evidence from the
+   notes.
+3. **Choose the investable universe.** Put your securities in `Universe/Investable_Universe.csv`,
+   one row each; `main_identifier` is the only required column. Add whatever else your strategy
+   groups by. The claims decide what the universe has to contain, which is why it comes after them.
+4. **Build the data.** Write your `c_*` and `r_*` columns into the two `custom_calculations.py`,
+   fill in the Curator and Refinery drivers that call the libraries, and run steps 2 and 3 in this
+   order: curator, then `universe.ipynb`, then refinery, then `analyzer.ipynb`. The universe
+   notebook sits *between* the two Data commands, because it profiles what the curator downloaded
+   and writes the master the refinery joins.
+5. **Write `BLUEPRINT_1.md` before the rule.** Every prediction cites a note from step 2 or an
+   analyzer measurement. A hypothesis edited after its test is not a hypothesis.
+6. **Search for papers and brainstorm** — the broad reading, for what the blueprint left open, and
+   `BRAINSTORMING_1.md` for what to try next.
+7. **Run the cycle** — portfolio construction, backtest, attribution — until it is finished,
+   rewriting `FINDINGS_1.md` as its results change.
+8. **Send every finished cycle to `RESULTS.md`**, kept or rejected. The rejected result is reported
+   as loudly as the promising one; *What is closed* is what stops the next person repeating it.
 
 The files those steps name are on `example`, not on `main` — the *What is in here* table above says
 how to bring one across, and the `experiment-lifecycle` skill scaffolds an experiment for you.
