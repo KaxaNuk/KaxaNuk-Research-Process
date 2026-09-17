@@ -1,16 +1,9 @@
 # KN Research Process
 
-**A template to speed up the investment research process.** KaxaNuk's eight steps as a
-folder structure, with the conventions that let two people share a tool without
-explaining it first.
-
-**`main` is the shape and nothing else.** Six folders and the documents at the root. Every file the
-process expects *inside* those folders — the drivers, the notebooks, the four documents of an
-experiment, the shared modules — is on the [`example`](../../tree/example) branch, each a
-description of what is expected in it, worked through for one strategy, `liquid-momentum`. What
-belongs to that strategy sits between example markers; the seed in `Universe/` and the notes under
-`Bibliotheca/Papers/` are files of its own. Read `example`, copy the shape from it, delete what is
-the strategy's, and build on `main`.
+**A template for researching an investment strategy with the KaxaNuk Investment Lab.** Its eight
+steps as a folder structure, with the conventions that let two people share a tool without
+explaining it first. Building the data needs a data-provider key; the backtest and attribution,
+steps 5 and 6, also need the licensed Backtest Engine and Attribution Analysis.
 
 The universe is one CSV whose only required column is `main_identifier`, and every stage reads it
 without knowing what is in it: **equities, ETFs, FX, crypto, commodities or futures all run the
@@ -25,14 +18,19 @@ Please help me install this repo: https://github.com/KaxaNuk/KaxaNuk-Research-Pr
 It asks you for the strategy's name, clones the repository into one folder, builds the environment
 and — if you want them — installs the KaxaNuk agent skills. [`SETUP.md`](SETUP.md) is what it
 follows, and it is written so a person can read it in two minutes too. Issues and pull requests are
-welcome: the process improves in public, the way the Data Curator did.
+welcome: the process improves in public, the way KaxaNuk's open-source Data Curator did.
+
+This branch, `main`, is the shape: six folders and the documents at the root. Every file the process
+expects inside those folders is on the [`example`](../../tree/example) branch, worked through for
+one strategy, `liquid-momentum`; *What is in here* says how to copy one across and what to delete,
+the seed in `Universe/` included.
 
 ---
 
 ## Eight steps, one repo
 
-Each stage owns its outputs and reads only from the stage above it. **Steps 1 to 7 are the Lab, and
-this repository.** Step 8 is the one that leaves it.
+Each stage owns its outputs and reads only from the stage above it. **Steps 1 to 7 are the KaxaNuk
+Investment Lab, and this repository.** Step 8 is the one that leaves it.
 
 | # | Step | In plain words | It produces | It prevents | Where |
 | --- | --- | --- | --- | --- | --- |
@@ -44,6 +42,105 @@ this repository.** Step 8 is the one that leaves it.
 | 6 | **Attribution** | which part of the return did you actually earn? | a factor and idiosyncratic breakdown of performance | selling factor beta as if it were alpha | `Experiments/Experiment_N/Attribution/` |
 | 7 | **Paper trading** | a dress rehearsal on data nobody has seen yet | out-of-sample evidence and an operations checklist | finding the plumbing problems on day one of funding | `Paper_Trading/` |
 | 8 | Production | real capital, real monitoring, a real drawdown policy | a funded, monitored strategy with an owner | research that stays research forever | **elsewhere** |
+
+---
+
+## The tools
+
+Install once, use for every strategy.
+
+| Tool | Job |
+| --- | --- |
+| **GitHub Desktop** | where your work lives, and how you get it back after you break it |
+| **PyCharm** | the editor, the interpreter and the terminal in one window |
+| **Claude** or **Codex** | your pair for the parts you have not written before |
+| **APM packages** | how the agent learns the six Lab modules and this process — what each does, how it is called, and what it must never be asked to do |
+
+APM is the Agent Package Manager. `uv sync` installs the CLI, and `uv run apm install` fetches
+KaxaNuk's packages from [`KaxaNuk/KaxaNuk-APM`](https://github.com/KaxaNuk/KaxaNuk-APM) — the
+process, one skill per Lab library as they are written, and the house rules — into the repository
+root, beside the process folders. Nothing here needs them to be read; a filled-in repository is
+faster with them.
+
+### A researcher beside the process
+
+[`KaxaNuk/KaxaNuk-Researcher`](https://github.com/KaxaNuk/KaxaNuk-Researcher) is a separate project:
+a companion you name and teach, one per person rather than per strategy, with its own library of
+what you have read. It drafts the claims in `OBJECTIVE.md` from your words before any paper is read.
+It writes the notes in `Bibliotheca/` with `read`: a script pulls a book's table of contents out of
+the PDF, you pick the chapters that serve a claim, and after a plan and your go it writes one note
+per chapter with its row in `BIBLIOGRAPHY.md`; a note its own library already holds comes across
+without reading the PDF twice. It then rewrites each claim's evidence from those notes, and drafts
+the hypothesis in each `BLUEPRINT_N.md`, every prediction citing the note it came from.
+
+---
+
+## Setup
+
+**[`SETUP.md`](SETUP.md) is the whole of it, and nothing here repeats it** — so the two cannot
+drift. It covers getting the repository, the one folder it has to live in, the environment, the keys,
+and the agent skills, each with the command an agent runs and the mistake it must not make.
+
+---
+
+## Starting your own strategy
+
+Once setup is done, work in this order. Its eight items are the order of work, not the eight steps
+above: item 3, the universe, is step 2. `OBJECTIVE.md` and `RESULTS.md` are already in your
+repository; every other file the items name — the seed, the drivers, the notebooks, `BLUEPRINT_1.md`
+and its siblings — is on `example`. *What is in here* below says how to bring one across and what
+to strip, or the `experiment-lifecycle` skill scaffolds an experiment. **The objective comes before
+any paper**: reading with no claim to read for has no stopping condition, and a claim written after
+the reading is an observation wearing a hypothesis's clothes.
+
+1. **Write `OBJECTIVE.md`** — the idea in one sentence, and the claims inside it, *before* any paper
+   is read and before anything is measured. Each claim's evidence starts as the question that would
+   settle it.
+2. **Fine-tune the objective.** Read for each claim's question, the sources that argue against it
+   included — one note per paper, one per chapter of a book, in `Bibliotheca/` — then rewrite each
+   claim's evidence from the notes.
+3. **Choose the investable universe.** Put your securities in `Universe/Investable_Universe.csv`,
+   one row each and **delisted names included**: a list of today's names has already deleted
+   everything that failed. `main_identifier` is the only required column; add whatever else your
+   strategy groups by. The claims decide what the universe has to contain, which is why it comes
+   after them.
+4. **Build the data.** Write your `c_*` and `r_*` columns into the two `custom_calculations.py`,
+   fill in the Curator and Refinery drivers that call the libraries, and run the Universe and Data
+   steps in this order: curator, then `universe.ipynb`, then refinery, then `analyzer.ipynb`. The
+   universe notebook sits *between* the two Data commands, because it profiles what the curator
+   downloaded and writes the master the refinery joins.
+5. **Choose the benchmark, then write `BLUEPRINT_1.md` before the rule.** Experiment 1 is the
+   benchmark, a real strategy with a real return, so choosing it is the first entry of
+   `BRAINSTORMING_1.md`. Every prediction in the blueprint cites a `Bibliotheca/` note from item 2,
+   or an analyzer measurement; a hypothesis edited after its test is not a hypothesis.
+6. **Search for papers and brainstorm** — the broad reading, for what the blueprint left open, and
+   `BRAINSTORMING_1.md` for what to try next.
+7. **Run the cycle** — portfolio construction, backtest, attribution — until it is finished,
+   rewriting `FINDINGS_1.md` as its results change.
+8. **Send every finished cycle to `RESULTS.md`**, kept or rejected. The rejected result is reported
+   as loudly as the promising one; *What is closed* is what stops the next person repeating it.
+
+---
+
+## The documents
+
+**Two files answer "is this worth anything?"** — [`OBJECTIVE.md`](OBJECTIVE.md) says what we are
+trying to do, [`RESULTS.md`](RESULTS.md) says how far we got and what it cost.
+
+| Document | What it holds |
+| --- | --- |
+| [`SETUP.md`](SETUP.md) | how to get this repository, where it must live, and the commands |
+| [`OBJECTIVE.md`](OBJECTIVE.md) | the main idea, and the status of each claim inside it |
+| [`RESULTS.md`](RESULTS.md) | the executive summary of every experiment, compiled from the `FINDINGS_N.md` files |
+| [`CHANGELOG.md`](CHANGELOG.md) | every version, newest first, and what a version number means here |
+| [`AGENTS.md`](AGENTS.md) | **how work is done** — the workflow, the restrictions, and the bar a result has to clear |
+
+Four documents inside every `Experiments/Experiment_N/`, and the split between them is the whole
+point: `BLUEPRINT` is frozen so a result cannot quietly reshape the question it was meant to answer,
+`JOURNAL` is append-only so the path is recoverable, `FINDINGS` is rewritten so there is one current
+answer, and `BRAINSTORMING` looks forward so planning is never mistaken for history. `Bibliotheca/`
+has its index in `BIBLIOGRAPHY.md` and `Paper_Trading/` its gate in `BITACORA.md` — both on
+`example`.
 
 ---
 
@@ -80,47 +177,50 @@ to keep current:
 | `Paper_Trading/` | 7 | `BITACORA.md`, what graduation means and the gate. `daily_update.py`. `Paper_Trading_N/paper_trading_N.py`, the frozen rule of anything that passed | everything |
 | `Config/` | — | `.env.template`, copied to `.env` and filled in with a data-provider key and the two engine licences | the template. **`.env` never** — and it cannot be regenerated, so discarding all changes loses it |
 
-**Every one of those files exists on [`example`](../../tree/example)**, as a description of what is
-expected in it with the worked strategy's own lines beside it, between the example markers
-`AGENTS.md` names — `<!-- example: begin -->` and `<!-- example: end -->` in Markdown,
-`# --- example: begin ---` in Python, `# EXAMPLE-ONLY CELL` on a notebook cell. To bring one into a
-strategy repository that has only `main`:
+**Every one of those files exists on [`example`](../../tree/example)**, except `Bibliotheca/Books/`
+and `Notes/`, which appear with their first note. Each is a description of what is expected in it,
+with the worked strategy's own lines beside it between the example markers `AGENTS.md` names:
+`<!-- example: begin -->` and `<!-- example: end -->` in Markdown, `# --- example: begin ---` in
+Python, `# EXAMPLE-ONLY CELL` on a notebook cell. To bring one into a strategy repository that has
+only `main`:
 
 ```bash
-git fetch https://github.com/KaxaNuk/KaxaNuk-Research-Process example && git checkout FETCH_HEAD -- Experiments/Experiment_1
+git fetch https://github.com/KaxaNuk/KaxaNuk-Research-Process example
+git checkout FETCH_HEAD -- Experiments/Experiment_1
 ```
 
-Then delete everything between the markers — that is what they are there for — and, under
-`Bibliotheca/`, the notes and the log entries, which are the strategy's whole files. Or let the
-`experiment-lifecycle` skill — it ships in the `investment-lab` package, which `kaxanuk` brings in —
-scaffold it, which is what the agent skills are for.
+Then delete everything between the markers — that is what they are there for — and the files that
+are the strategy's whole: the seed in `Universe/` and, under `Bibliotheca/`, the notes and the
+entries in `LOG.md`. Or let the `experiment-lifecycle` skill — it ships in the `investment-lab`
+package, which `kaxanuk` brings in — scaffold it.
 
 ---
 
 ## The six Lab modules
 
-One module per stage, each reading the previous module's output, so you can enter the pipeline
-wherever your work already is.
+Six modules across steps 3 to 6, each reading the previous one's output, so you can enter the
+pipeline wherever your work already is.
 
-| Module | # | What it does |
+| Module | Step | What it does |
 | --- | --- | --- |
-| **Data Curator** | 1 | pulls raw market and fundamental data from any provider and aligns it on one calendar |
-| **Data Refinery** | 2 | cleans, adjusts and reshapes the curated data into analysis-ready series |
+| **Data Curator** | 3 | pulls raw market and fundamental data from any provider and aligns it on one calendar |
+| **Data Refinery** | 3 | cleans, adjusts and reshapes the curated data into analysis-ready series |
 | **Data Analyzer** | 3 | builds features and tests whether they carry signal, before you model anything |
 | **Portfolio Construction** | 4 | turns a signal into weights, position limits and a rebalancing rule |
 | **Backtest Engine** | 5 | runs the rules over history with costs and no look-ahead, and returns the track record |
 | **Attribution Analysis** | 6 | splits the return into known factor exposure and the part that is actually yours |
 
-**Two doors.** The platform drives the same pipeline from a workspace instead of a terminal — build
-a universe, download data, construct a portfolio, run a backtest and attribution, each step tracked
-to completion. The other door is `pip install`: the open-source libraries are public on
-[PyPI](https://pypi.org/project/kaxanuk.data-curator/) and
-[GitHub](https://github.com/KaxaNuk), no account and no platform login required.
+**Two doors.** KaxaNuk's platform drives the same pipeline from a workspace instead of a terminal —
+build a universe, download data, construct a portfolio, run a backtest and attribution, each step
+tracked to completion. The other door is `pip install`: the open-source libraries are public on
+[PyPI](https://pypi.org/project/kaxanuk.data-curator/) and [GitHub](https://github.com/KaxaNuk), no
+account and no platform login required, and `uv sync` installs the Data Curator.
 
 The **licensed** engines — Backtest Engine and Attribution Analysis — are deliberately absent from
-`pyproject.toml`, so their index URLs and keys never enter version control. Install them by hand,
-and **guard their imports**: every notebook that uses one should report what is missing and skip, so
-the pipeline still runs and produces its portfolio deliverables. It produces no results, by design.
+`pyproject.toml`, so their index URLs and keys never enter version control. Install them by hand, as
+the `backtest-engine-runs` and `attribution-analysis-runs` skills describe, and **guard their
+imports**: a notebook that uses one reports what is missing and skips, so the pipeline still builds
+its portfolios and produces no backtest or attribution results until the engines are there.
 
 ---
 
@@ -165,8 +265,8 @@ Two rules follow, and one exception worth knowing:
 
 ### The four shared modules
 
-Everything specific to a strategy lives in its notebook, where a reader can see it. Four modules are
-shared between experiments — one per Lab library — for one reason: **if they differed between
+Everything specific to a strategy lives in its notebook, where a reader can see it. Four Python
+modules in `Experiments/` are shared between experiments for one reason: **if they differed between
 experiments, comparing experiments would be meaningless.** On `example`, each sits beside the
 notebook as a description of what it must do.
 
@@ -180,106 +280,6 @@ notebook as a description of what it must do.
 **A strategy column is named in exactly two kinds of place: a notebook's setup cell, and the rule.**
 Never in a shared module, so a signal cannot become every later experiment's default without anyone
 deciding it.
-
----
-
-## The tools
-
-Install once, use for every strategy.
-
-| Tool | Job |
-| --- | --- |
-| **GitHub Desktop** | where your work lives, and how you get it back after you break it |
-| **PyCharm** | the editor, the interpreter and the terminal in one window |
-| **Claude** or **Codex** | your pair for the parts you have not written before |
-| **APM packages** | how the agent learns the six Lab modules and this process — what each does, how it is called, and what it must never be asked to do |
-
-APM is the Agent Package Manager. `uv sync` installs the CLI, and `uv run apm install` fetches
-KaxaNuk's packages from [`KaxaNuk/KaxaNuk-APM`](https://github.com/KaxaNuk/KaxaNuk-APM) — the
-process, one skill per Lab library as they are written, and the house rules — into the repository
-root, beside the process folders. Nothing here needs them to be read; a filled-in repository is
-faster with them.
-
-### A researcher beside the process
-
-[`KaxaNuk/KaxaNuk-Researcher`](https://github.com/KaxaNuk/KaxaNuk-Researcher) is a companion you
-name and teach — one per person, not per strategy. It keeps its own library of what you have read;
-in this repository it writes the notes in `Bibliotheca/` with `read` — a script pulls a book's
-table of contents out of the PDF, you pick the chapters that serve a claim in `OBJECTIVE.md`, and
-it writes one note per chapter with its row in `BIBLIOGRAPHY.md`, after a plan and your go — and
-drafts the claims in `OBJECTIVE.md` from your words before any paper is read, then rewrites their
-evidence from those notes, and the hypothesis in each `BLUEPRINT_N.md`, every prediction citing the
-note it came from. A note its own library already holds comes across without reading the PDF twice.
-It is a separate project.
-
----
-
-## Setup
-
-**[`SETUP.md`](SETUP.md) is the whole of it, and nothing here repeats it** — so the two cannot
-drift. It covers getting the repository, the one folder it has to live in, the environment, the keys,
-and the agent skills, each with the command an agent runs and the mistake it must not make.
-
----
-
-## Starting your own strategy
-
-**Setup is done, and you are already inside the thing you are filling in** — one folder, the
-process and the tooling in it. In order, and **the objective comes before any paper**: reading with
-no claim to read for has no stopping condition, and a claim written after the reading is an
-observation wearing a hypothesis's clothes.
-
-1. **Write `OBJECTIVE.md`** — the idea in one sentence, and the claims inside it, *before* any paper
-   is read and before anything is measured. Each claim's evidence starts as the question that would
-   settle it.
-2. **Fine-tune the objective.** Read for each claim's question, the sources that argue against it
-   included — one note per paper, one per chapter of a book, in `Bibliotheca/` — then rewrite each
-   claim's evidence from the notes.
-3. **Choose the investable universe.** Put your securities in `Universe/Investable_Universe.csv`,
-   one row each; `main_identifier` is the only required column. Add whatever else your strategy
-   groups by. The claims decide what the universe has to contain, which is why it comes after them.
-4. **Build the data.** Write your `c_*` and `r_*` columns into the two `custom_calculations.py`,
-   fill in the Curator and Refinery drivers that call the libraries, and run process steps 2 and 3
-   — Universe and Data — in this order: curator, then `universe.ipynb`, then refinery, then
-   `analyzer.ipynb`. The universe notebook sits *between* the two Data commands, because it profiles
-   what the curator downloaded and writes the master the refinery joins.
-5. **Write `BLUEPRINT_1.md` before the rule.** Every prediction cites a `Bibliotheca/` note from the
-   reading in 2 above, or an analyzer measurement. A hypothesis edited after its test is not a
-   hypothesis. One entry comes early: the first entry of `BRAINSTORMING_1.md`, choosing the
-   benchmark, is written before `BLUEPRINT_1.md`, because Experiment 1 is the benchmark.
-6. **Search for papers and brainstorm** — the broad reading, for what the blueprint left open, and
-   `BRAINSTORMING_1.md` for what to try next.
-7. **Run the cycle** — portfolio construction, backtest, attribution — until it is finished,
-   rewriting `FINDINGS_1.md` as its results change.
-8. **Send every finished cycle to `RESULTS.md`**, kept or rejected. The rejected result is reported
-   as loudly as the promising one; *What is closed* is what stops the next person repeating it.
-
-The files inside the folders those steps name — the seed, the drivers, the notebooks,
-`BLUEPRINT_1.md` and its siblings — are on `example`, not on `main`; `OBJECTIVE.md` and `RESULTS.md`
-are already here. The *What is in here* table above says how to bring one across and what to strip,
-and the `experiment-lifecycle` skill scaffolds an experiment for you.
-
----
-
-## The documents
-
-**Two files answer "is this worth anything?"** — [`OBJECTIVE.md`](OBJECTIVE.md) says what we are
-trying to do, [`RESULTS.md`](RESULTS.md) says how far we got and what it cost.
-
-| Document | What it holds |
-| --- | --- |
-| [`SETUP.md`](SETUP.md) | how to get this repository, where it must live, and the commands |
-| [`OBJECTIVE.md`](OBJECTIVE.md) | the main idea, and the status of each claim inside it |
-| [`RESULTS.md`](RESULTS.md) | the executive summary of every experiment, compiled from the `FINDINGS_N.md` files |
-| [`CHANGELOG.md`](CHANGELOG.md) | every version, newest first, and what a version number means here |
-| [`AGENTS.md`](AGENTS.md) | **how work is done** — the workflow, the restrictions, and the bar a result has to clear |
-
-Four documents inside every `Experiments/Experiment_N/`, and the split between them is the whole
-point: `BLUEPRINT` is frozen so a result cannot quietly reshape the question it was meant to answer,
-`JOURNAL` is append-only so the path is recoverable, `FINDINGS` is rewritten so there is one current
-answer, and `BRAINSTORMING` looks forward so planning is never mistaken for history. `Bibliotheca/`
-has its index in `BIBLIOGRAPHY.md` and `Paper_Trading/` its gate in `BITACORA.md` — both on
-`example`.
 
 ---
 

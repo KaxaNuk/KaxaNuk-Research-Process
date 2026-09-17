@@ -5,7 +5,7 @@ Claude, Codex, Cursor — can follow it end to end when all it was told is *plea
 `https://github.com/KaxaNuk/KaxaNuk-Research-Process`*, and so a person can read it in two minutes.
 
 **If the folder you are in already contains `Bibliotheca/`, `Universe/` and `Experiments/`, you have
-the repository.** Skip to step 2.
+the repository:** check the two tools below, then skip to step 2.
 
 ## What you need first
 
@@ -39,35 +39,15 @@ Open a **new** terminal after installing either, so it is on the path. `git --ve
 
 ## The rule: one folder is the whole project
 
-The repository root holds the process folders **and** the local setup. Nothing is installed a level
-above it and nothing is nested a level below it:
+Clone into one folder, open that folder, and run every command in it: nothing installed a level
+above it, nothing nested a level below. What setup writes there — `.venv/`, `apm_modules/`,
+`apm.lock.yaml`, and `.claude/` or, for Codex, `.agents/` and `.codex/` — is ignored; `uv.lock`,
+which `uv sync` writes, is committed, and `apm.yml` comes committed with the template.
 
-```
-<the root>/               <- clone here, open here, run everything here
-    .claude/              installed by apm install    \
-    apm_modules/          installed by apm install     |  ignored: yours, not the repository's
-    apm.lock.yaml         written by apm install       |
-    .venv/                written by uv sync          /
-    uv.lock               written by uv sync - committed, it pins what a result came from
-    apm.yml               committed with the template - it declares which skills to install
-    Bibliotheca/          \
-    Universe/              |
-    Data/                  |  the process
-    Experiments/           |
-    Paper_Trading/         |
-    Config/               /
-    OBJECTIVE.md  RESULTS.md  AGENTS.md  CHANGELOG.md  README.md  SETUP.md
-```
-
-Codex keeps its copy of the skills in `.agents/` and `.codex/` rather than `.claude/`; both are
-ignored the same way.
-
-**The failure to avoid is a wrapper folder.** Making an empty folder, setting APM up in it, and then
-putting the repository inside it gives you two of everything: the wrapper has no `pyproject.toml`, so
-APM writes a `requirements-dev.txt` there beside a second `apm.yml` and a second `.claude/`. An agent
-opened at the wrapper reads that empty setup and never sees the research tree.
-
-If you already have that layout, delete the wrapper's `apm.yml`, `apm.lock.yaml`, `apm_modules/`,
+**The failure to avoid is a wrapper folder**: APM set up in an empty folder with the repository put
+inside it. The wrapper has no `pyproject.toml`, so APM writes `requirements-dev.txt`, a second
+`apm.yml` and a second `.claude/` there, and an agent opened at the wrapper never sees the research
+tree. If you have that layout, delete the wrapper's `apm.yml`, `apm.lock.yaml`, `apm_modules/`,
 `.claude/`, `.agents/`, `.mcp.json` and `requirements-dev.txt`, then move the repository folder up
 and open it directly.
 
@@ -75,8 +55,9 @@ and open it directly.
 
 ## Step 1 — Get the repository
 
-Name it after the strategy. **Do not create a folder to put it in:** the repository name is the
-folder name, and that folder is the root.
+Name it after the strategy: the repository name is the folder name, and that folder is the root.
+The button and the CLI create it for you; for a plain clone, make that one empty folder yourself —
+never a folder around it.
 
 **On Windows, clone somewhere short.** `D:\Research\...` is fine; a deep synced path such as
 `C:\Users\<you>\OneDrive\Documents\Projects\...` is not. APM stages its downloads in a
@@ -96,7 +77,7 @@ gh repo create <strategy-name> --template KaxaNuk/KaxaNuk-Research-Process --pri
 ```
 
 **Or a plain clone with a fresh history** — the way an agent with only a URL will usually go. Run
-it from inside the empty root; the `.` at the end is what keeps the clone from making a folder
+it from inside that empty folder; the `.` at the end keeps the clone from making another folder
 inside it:
 
 ```bash
@@ -115,10 +96,10 @@ In PowerShell, which is what the Claude app and Codex drive on Windows:
 Remove-Item -Recurse -Force .git; git init; git add -A; git commit -m "Start from the KN Research Process template"
 ```
 
-Only `main` is copied by any of the three, and `main` is the shape: six folders and the documents at
-the root. The `example` branch — one strategy, `liquid-momentum`, worked through the same folders
-and files the process expects, its own lines between example markers — stays behind on purpose.
-Read it and copy the shape from it; `README.md` says how, and what to strip. Never build on it.
+Only `main` is copied by any of the three, on purpose. The `example` branch, one strategy worked
+through the same folders, stays behind; the
+[template's README](https://github.com/KaxaNuk/KaxaNuk-Research-Process) says how to copy a file from
+it and what to strip. Never build on it.
 
 > **For the agent.** Three things go wrong here, and none is a reason to stop.
 >
@@ -140,9 +121,9 @@ From the root:
 uv sync
 ```
 
-That creates `.venv/` and installs the pipeline. **If Python 3.13 is not on the machine, `uv`
-downloads it** — there is nothing to install by hand. It also installs the `dev` group, which is
-where the `apm` command in step 4 comes from, so this step has to come first.
+That creates `.venv/` and installs the pipeline. **If neither Python 3.12 nor 3.13 is on the
+machine, `uv` downloads 3.13** — there is nothing to install by hand. It also installs the `dev`
+group, which is where the `apm` command in step 4 comes from, so this step has to come first.
 
 **Why 3.13 and not the newest.** The Backtest Engine is documented for Python 3.12 or 3.13, and every
 performance figure in this process comes from that engine, so the ceiling is its, not ours. The Data
@@ -156,8 +137,10 @@ Curator allows 3.12 to 3.14, which makes 3.13 the version that satisfies both.
 cp Config/.env.template Config/.env
 ```
 
-Fill in a data-provider key. The two KaxaNuk entries are engine licences: steps 1 to 4 of the process
-run without them, and steps 5 and 6 report what is missing and skip.
+Fill in the key for your data provider; the template has a line for FMP, Sharadar and LSEG.
+`KNBE_API_KEY_KAXANUK` and `KNAA_API_KEY_KAXANUK` are the Backtest Engine and Attribution Analysis
+licences: the process runs without them up to portfolio construction, and the backtest and
+attribution report what is missing and skip.
 
 > **For the agent.** Never open, read back, print or echo `Config/.env`, and never put a value from it
 > in a command that gets recorded. You may say **which keys are still empty, by name only** — and you
@@ -167,9 +150,10 @@ run without them, and steps 5 and 6 report what is missing and skip.
 
 ## Step 4 — The agent skills
 
-KaxaNuk publishes its AI skills as APM packages: how each Lab library that has a package is called,
-how an experiment is structured, how attribution is read, and the house rules on branches, style and
-changelogs. The committed `apm.yml` names the set, so the command takes no package names.
+KaxaNuk publishes its agent skills — what Claude or Codex learns about this process and the Lab
+libraries — as packages for APM, the Agent Package Manager: how each library that has a package is
+called, how an experiment is structured, how attribution is read, and the house rules on branches,
+style and changelogs. The committed `apm.yml` names the set, so the command takes no package names.
 
 **Nothing in the pipeline imports a skill.** The repository runs, the notebooks run and the results
 are the same whether or not this step happens — so *no* is a real answer, and *later* costs nothing.
@@ -200,15 +184,9 @@ anything else a repository keeps there.
 **Want only some of them?** `apm.yml` names one package, `kaxanuk`, which is every KaxaNuk package
 under one name. Replace that line with the packages you want — `common`, `data-curator`,
 `backtest-engine`, `attribution-analysis`, `investment-lab` — and install again. `investment-lab` is
-the one that carries the `experiment-lifecycle` skill the README leans on. Somebody who licenses
-only the Attribution Analysis library, and has no research process at all, does not need this
-repository: in their own project, with `apm-cli` on the path or in that project's `dev` group,
-
-```bash
-apm install KaxaNuk/KaxaNuk-APM/attribution-analysis --target claude
-```
-
-The packages, and what each is for, are listed at
+the one that carries the `experiment-lifecycle` skill the template's README leans on. In a project
+of your own with `apm` on the path, `apm install KaxaNuk/KaxaNuk-APM/<package> --target claude`
+installs one package with no `uv run`. The packages, and what each is for, are listed at
 [`KaxaNuk/KaxaNuk-APM`](https://github.com/KaxaNuk/KaxaNuk-APM).
 
 ---
@@ -224,12 +202,14 @@ stands. Replace the whole file with this, filled in, and leave the process to th
 
 <one sentence on the idea — or: The objective is not written yet; see OBJECTIVE.md.>
 
-> **Status: set up, nothing measured.** Replace this line as the strategy moves — it is the same
-> banner `AGENTS.md` carries.
+> **Status: set up, nothing measured.** Replace this line as the strategy moves, and the banner at
+> the top of `AGENTS.md` with it.
 
 Built on the [KN Research Process](https://github.com/KaxaNuk/KaxaNuk-Research-Process): eight
-steps as a folder structure. That repository's README says what each folder is for and where each
-kind of logic goes, and this one does not repeat it.
+steps as a folder structure. That repository's README says what each folder is for, where each
+kind of logic goes and, under *Starting your own strategy*, the order to work in; this one does not
+repeat it. **Next:** [`OBJECTIVE.md`](OBJECTIVE.md), the idea and its claims, before any paper is
+read.
 
 | Read | For |
 | --- | --- |
@@ -239,16 +219,20 @@ kind of logic goes, and this one does not repeat it.
 | [`SETUP.md`](SETUP.md) | how this repository is set up on a new machine |
 ```
 
-Then commit it together with `uv.lock`, the other file the setup itself produced:
+Put the same status line in place of the banner at the top of `AGENTS.md`, and rename `name` and
+`author` in `apm.yml` to the strategy's and yours. Then commit them together with `uv.lock`, the
+other file the setup itself produced:
 
 ```bash
-git add README.md uv.lock && git commit -m "README: <strategy-name>"
+git add README.md AGENTS.md apm.yml uv.lock
+git commit -m "README: <strategy-name>"
 ```
 
 > **For the agent.** The name is the one you asked for at the start; the sentence too, if the user
-> gave one — **never invent a thesis**, use the placeholder. Everything else in the block is fixed.
-> Do not keep the template's README under another name: the process lives upstream, and a copy here
-> is a copy that drifts.
+> gave one — **never invent a thesis**, use the placeholder. `author` in `apm.yml` is the user's
+> name: ask if you do not have it, never invent it. Everything else in the block is fixed. Do not
+> keep the template's README under another name: the process lives upstream, and a copy here is a
+> copy that drifts.
 
 ---
 
@@ -260,12 +244,11 @@ From the root:
 git status
 ```
 
-**It should be clean.** Step 5 committed the two things the setup itself changed: the README, and
-`uv.lock` — which pins the versions this strategy's results will come from, and is why the template
-ships without one and your repository keeps one. Everything else the commands produced — `.venv/`,
-`apm_modules/`, `.claude/`, `apm.lock.yaml` — is ignored, and `apm.yml` was already committed
-because it is a declaration, like `pyproject.toml`. **Anything showing up means something was
-written in the wrong place.**
+**It should be clean.** Step 5 committed what the setup itself changed: the README, the `AGENTS.md`
+banner, `apm.yml`'s name and author, and `uv.lock` — which pins the versions this strategy's results
+will come from, and is why the template ships without one and your repository keeps one. Everything
+else the commands produced — `.venv/`, `apm_modules/`, `.claude/`, `apm.lock.yaml` — is ignored.
+**Anything showing up means something was written in the wrong place.**
 
 **If you took the plain-clone path, the repository exists only on this machine.** Nothing is lost
 and nothing is wrong — but it is not backed up and nobody else can see it. In GitHub Desktop, *Add*
@@ -276,17 +259,15 @@ Then open **this folder** — not a parent of it — in PyCharm, Claude or Codex
 
 > **For the agent — the hand-over.** Say the absolute path of the root, that it is the whole project
 > and the folder to open, that the README is now the strategy's, which `.env` keys are still empty
-> by name, whether the skills were installed and that they appear in a new session, and whether the
-> repository has a remote yet. Then stop.
+> by name, whether the skills were installed and that they appear in a new session, whether the
+> repository has a remote yet, and that the next step is `OBJECTIVE.md`. Then stop.
 > Starting research work is a different request.
 
 ---
 
 ## Next
 
-[`AGENTS.md`](AGENTS.md) says how work is done here. Your `README.md` is the strategy's now and
-links to the template's, at
-[`KaxaNuk/KaxaNuk-Research-Process`](https://github.com/KaxaNuk/KaxaNuk-Research-Process), which
-says what the repository is and where each kind of logic goes. The order to work in is the
-*Starting your own strategy* section of that README, and the first thing in it is `OBJECTIVE.md` —
-the idea and its claims, before any paper is read.
+The first thing to write is `OBJECTIVE.md`: the idea and its claims, before any paper is read. The
+order after it is *Starting your own strategy* in the
+[template's README](https://github.com/KaxaNuk/KaxaNuk-Research-Process), which also says where each
+kind of logic goes; [`AGENTS.md`](AGENTS.md) says how work is done here.

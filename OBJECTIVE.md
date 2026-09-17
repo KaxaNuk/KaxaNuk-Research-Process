@@ -8,16 +8,17 @@
 > of predictions; a claim written after the reading, or added after a result, is an observation
 > wearing a hypothesis's clothes.
 >
-> Everything in italics below is guidance. Replace it, then delete this blockquote.
+> Everything in italics below is guidance: replace it, keep the plain text, then delete this
+> blockquote.
 
 ## The main idea
 
 > *One sentence somebody outside the team could repeat: what the strategy owns, why, and the
 > plain-language feature it owns it by.*
 
-*Two or three sentences naming the signal and the sizing in the panel's own vocabulary — the `c_*`
-or `r_*` column each one reads. Neither half needs to be clever; both need to be explainable in a
-sentence, because that is what lets attribution later say which half earned the return.*
+*Two or three sentences naming the signal and the sizing; the column each reads goes under "Where
+each half is named". Neither half needs to be clever; both need to be explainable in a sentence,
+because that is what lets attribution later say which half earned the return.*
 
 ## The objective
 
@@ -25,8 +26,8 @@ sentence, because that is what lets attribution later say which half earned the 
 not a Sharpe; it is a rule simple enough that when it works we can say *why*, and when it fails we
 can say *which part* failed.
 
-*The one design constraint every experiment respects.* For example, radical simplicity: complexity
-is added one lever at a time, and each addition must beat the simpler baseline to earn its place.
+*The one design constraint every experiment respects. For example, radical simplicity: complexity
+is added one lever at a time, and each addition must beat the simpler baseline to earn its place.*
 
 ## The claims inside that sentence
 
@@ -45,9 +46,9 @@ benchmarks through the engine) · **confirmed as a factor** (attribution assigns
 **unexplained** (confirmed as a book, not as a factor — the usual state, and the interesting one) ·
 **true by construction**.
 
-Give each claim a short section below saying what the evidence is — at first the question that would
-settle it, then the `Bibliotheca/` notes read for it, then `RESULTS.md` once something is measured —
-and which test would settle what is still open.
+*Give each claim a short section below saying what the evidence is — at first the question that
+would settle it, then the `Bibliotheca/` notes read for it, then `RESULTS.md` once something is
+measured — and which test would settle what is still open.*
 
 ## What is not claimed
 
@@ -56,6 +57,12 @@ and which test would settle what is still open.
 - **Not that this is out of sample.** Nothing is, until an experiment reaches step 7.
 - *Anything a reader might assume the strategy claims and would be wrong to. They will assume it
   anyway if you do not say.*
+
+## Where each half is named
+
+*Which column carries each half, and the stage that owns it: a `c_*` column is built in the
+Curator, an `r_*` column in the Refinery, as the template's README sets out under "Where each kind
+of logic goes".*
 
 ---
 
