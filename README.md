@@ -217,10 +217,13 @@ tracked to completion. The other door is `pip install`: the open-source librarie
 account and no platform login required, and `uv sync` installs the Data Curator.
 
 The **licensed** engines — Backtest Engine and Attribution Analysis — are deliberately absent from
-`pyproject.toml`, so their index URLs and keys never enter version control. Install them by hand, as
-the `backtest-engine-runs` and `attribution-analysis-runs` skills describe, and **guard their
-imports**: a notebook that uses one reports what is missing and skips, so the pipeline still builds
-its portfolios and produces no backtest or attribution results until the engines are there.
+`pyproject.toml`, so their index URLs and keys never enter version control. **Portfolio Construction**
+is absent too: it is KaxaNuk's own library, not distributed publicly yet. Install each by hand, as the
+`portfolio-construction-runs`, `backtest-engine-runs` and `attribution-analysis-runs` skills describe,
+and **guard their imports**: a notebook that uses one reports what is missing and skips. Without
+Portfolio Construction an equal-weight book still needs nothing but the eligible set; without the
+engines the pipeline still builds its portfolios and produces no backtest or attribution results
+until they are there.
 
 ---
 
@@ -273,9 +276,9 @@ notebook as a description of what it must do.
 | Module | Owns |
 | --- | --- |
 | `securities_panel.py` | reading the refined files, stitching renamed securities into one position, pivoting to `dates x securities` |
-| `portfolio_construction.py` | turning an eligible set into weights — the seam the Portfolio Construction library replaces |
-| `backtest_engine.py` | writing the weight file, running the engine, reading results back, aligning variants onto one window |
-| `attribution_analysis.py` | shaping the hand-supplied index and factor files into what the attribution library reads, and saying what is missing before it tries |
+| `portfolio_construction.py` | turning an eligible set into weights through one signature, one rebalance date at a time on a history cut before it — the Portfolio Construction library called inside it where it is installed |
+| `backtest_engine.py` | writing the weight file, running the engine, reading results back — the book's daily weights among them — and aligning variants onto one window |
+| `attribution_analysis.py` | shaping the hand-supplied index and factor files, and the book's daily weights from the backtest, into what the attribution library reads — it rejects a file with only the rebalance dates — and saying what is missing before it tries |
 
 **A strategy column is named in exactly two kinds of place: a notebook's setup cell, and the rule.**
 Never in a shared module, so a signal cannot become every later experiment's default without anyone
