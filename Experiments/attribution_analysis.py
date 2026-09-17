@@ -8,10 +8,15 @@ Runs inside an experiment notebook, section 5, after the backtest.
 
 What is expected here:
 
-- Say what is present.  The library needs four inputs the pipeline does not produce: an index's
-  daily holdings and its daily returns in `Data/Curator/Benchmarks/`, one or more factor-return
-  files in `Data/Curator/Factors/`, and the book from step 5.  Check for them first and report the
-  gap in a sentence, so a clone with no licence and no index files pays nothing to find out.
+- Say what is present.  The library needs four inputs: an index's daily holdings and its daily
+  returns in `Data/Curator/Benchmarks/`, one or more factor-return files in
+  `Data/Curator/Factors/`, and the book from step 5.  Check for them first and report the gap in a
+  sentence, so a clone with no licence and no index files pays nothing to find out.
+- Take the book as a daily series, from `Backtest/`, never from `Portfolio/portfolio_weights.csv`.
+  The library rejects a weight file that is not daily once it spans a year, and the rebalance-date
+  file the engine read is exactly what it refuses.  The book it attributes is the one the engine
+  held each trading day, drift and the cash proxy included; the benchmark's holdings follow the
+  same rule.
 - Shape the hand-supplied files into the layout the library auto-detects: benchmark weights and a
   benchmark return series, both horizontal -- securities down, dates across -- with no nulls.
   Getting the orientation wrong does not fail; it makes the loader read the attribution transposed

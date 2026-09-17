@@ -191,8 +191,9 @@ what they write is ignored the way `.claude/` is, except `.github/`, which Copil
 anything else a repository keeps there.
 
 **Want only some of them?** `apm.yml` names one package, `kaxanuk`, which is every KaxaNuk package
-under one name. Replace that line with the packages you want — `common`, `data-curator`,
-`backtest-engine`, `attribution-analysis`, `investment-lab` — and install again. `investment-lab` is
+under one name. Replace that line with the packages you want — `common`, `universe`, `data-curator`,
+`portfolio-construction`, `backtest-engine`, `attribution-analysis`, `investment-lab` — and install
+again. `investment-lab` is
 the one that carries the `experiment-lifecycle` skill the template's README leans on. In a project
 of your own with `apm` on the path, `apm install KaxaNuk/KaxaNuk-APM/<package> --target claude`
 installs one package with no `uv run`. The packages, and what each is for, are listed at

@@ -14,10 +14,10 @@ What is expected here:
   proxy -- going to cash pays commission and earns the bill yield, as it does in life.  A security
   that changed identifier mid-history occupies two rows, each non-zero only while that listing was
   live.
-- Run the licensed engine and read its results back: the daily series it marks, and its summary
-  statistics.  Import it inside a guard -- it installs from a licensed index, not PyPI -- and report
-  and skip when it is absent, so a clone without a licence still produces everything except the
-  numbers.
+- Run the licensed engine and read its results back: the daily series it marks, the book's daily
+  weights as it held them -- the input step 6 needs -- and its summary statistics.  Import it
+  inside a guard -- it installs from a licensed index, not PyPI -- and report and skip when it is
+  absent, so a clone without a licence still produces everything except the numbers.
 - Name the benchmarks a strategy is reported against, in one place, and clip the window to the
   shortest of them up front rather than discovering it as an error.
 - Align every variant of an experiment onto one common window before ranking them.  A variant that
@@ -27,8 +27,8 @@ There is deliberately no second, lighter simulator here or anywhere.  One that d
 engine lets the reader pick the number they prefer, and every figure quoted in `RESULTS.md` comes
 through this module.
 
-It produces `Backtest/` -- the engine's workbook and the series drawn from it -- for `FINDINGS_N.md`
-to record.
+It produces `Backtest/` -- the engine's workbook and the series drawn from it, the daily weights
+among them -- for `FINDINGS_N.md` to record and `attribution_analysis.py` to read.
 
 It prevents paper returns that real trading would have erased, and a difference in cost model or
 window showing up as strategy skill.

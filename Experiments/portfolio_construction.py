@@ -1,7 +1,7 @@
 """
 Portfolio construction -- step 4 of 8, the second shared module.  Turns the set of securities a
-rule calls eligible into the weights a book holds, and is the seam the KaxaNuk Portfolio
-Construction library replaces.
+rule calls eligible into the weights a book holds, calling the KaxaNuk Portfolio Construction
+library where it is installed.
 
 In plain words: how much of what, and how often you change your mind.
 
@@ -12,10 +12,15 @@ What is expected here is one function signature and a few things behind it:
 
 - The signature.  Given the securities eligible today and a returns history that has already been
   cut off before today, return one weight per security, summing to at most 1.0.  Every weighting
-  scheme -- equal weight, inverse volatility, a minimum-variance optimiser, hierarchical risk
-  parity, a call into the library -- is the same shape, so swapping one for another is one line in
-  the rule cell and nothing else in the notebook moves.  That is what makes two experiments
-  comparable rather than merely adjacent.
+  scheme -- equal weight, or any sizing method the library registers: inverse volatility, risk
+  parity, hierarchical risk parity, a minimum-variance optimiser -- is the same shape, so swapping
+  one for another is one line in the rule cell and nothing else in the notebook moves.  That is what
+  makes two experiments comparable rather than merely adjacent.
+- The library inside the signature, never around it.  Build one of its methods per rebalance date,
+  on the history already cut: a method that estimates from returns uses whatever history it was
+  built with, and the library's own pipeline builds each method once for every date.  Import it
+  inside a guard -- it is KaxaNuk's own library, installed by hand -- and report and skip a method
+  that needs it when it is absent.  Equal weight needs nothing.
 - At most one, not exactly one.  A strategy that can go to cash cannot satisfy the stricter form;
   the residual becomes a real, priced cash position when the weight file is written.
 - The constraints every scheme respects, switched off by default: a maximum weight, a minimum

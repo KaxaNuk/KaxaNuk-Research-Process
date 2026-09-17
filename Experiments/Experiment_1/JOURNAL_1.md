@@ -381,4 +381,29 @@ leaves open.
     - **The published `experiment-lifecycle` skill still lists the universe before the objective.**
       The template's README, *Starting your own strategy*, holds over it.
 
+## 2026-09-17 — step 4 names its library, and step 6 reads a daily book
+
+- **Idea / question:** two Lab libraries changed what this repository's later steps can promise.
+  KaxaNuk's Portfolio Construction library exists, and Attribution Analysis published its
+  documentation, which says the weights it reads must be a daily series.
+- **What we tried / considered:** the Portfolio Construction source at 1.28.0, installed and run on
+  made-up data outside this repository; every page of the attribution documentation, build 0.2.0;
+  the step 4 to 6 module descriptions and the notebook read against both.
+- **Outcome / decision:**
+    - **Process 0.7.5 comes across** in `SETUP.md`, `apm.yml`, `pyproject.toml` and
+      `CHANGELOG.md`, identical to `main` outside the markers.
+    - **`portfolio_construction.py` calls the library inside its one signature**, one rebalance date
+      at a time on the history before it: the library's methods that estimate from returns use
+      whatever history they are built with. For `liquid-momentum` nothing changes — its sizing is
+      equal weight, which needs no library — and the sizing question of 2026-09-16 stands.
+    - **Step 6 will read the book's daily weights from `Backtest/`**, never
+      `Portfolio/portfolio_weights.csv`, which holds only the rebalance dates and which the
+      attribution library rejects. `attribution_analysis.py`, `backtest_engine.py` and the
+      notebook's handoff table say so.
+- **Open threads:**
+    - **The attribution library computes Brinson-Fachler per asset**, while `AGENTS.md` and section 5
+      of the notebook describe allocation as overweighting groups. Unresolved; it has to be settled
+      before step 6 reports an allocation number as a group bet.
+    - **The five design questions of 2026-09-16 stand**, unchanged.
+
 <!-- example: end -->

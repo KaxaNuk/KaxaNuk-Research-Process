@@ -41,6 +41,33 @@ for somebody who was not in the room:
 
 ---
 
+## 0.7.5 (2026-09-17)
+
+**PATCH** — steps 4 and 6 describe the libraries as they now are: Portfolio Construction exists and is
+called inside step 4's one signature, and Attribution Analysis, whose documentation is now public,
+reads a daily book. No result changes.
+
+**What to do differently:** in step 6, hand the attribution library the book's daily weights from the
+backtest, never `Portfolio/portfolio_weights.csv`. In step 4, build a Portfolio Construction method one
+rebalance date at a time, on a history cut before that date. If you trimmed `apm.yml` to some
+packages, `universe` and `portfolio-construction` can now be named.
+
+### Changed
+
+* **`portfolio_construction.py` calls the Portfolio Construction library inside its one signature**
+  where the library is installed, instead of being the seam a future library would replace. The
+  library is KaxaNuk's own and not distributed publicly yet, so it stays out of `pyproject.toml` like
+  the engines, installed by hand and imported behind a guard. Its methods that estimate from a returns
+  history use whatever history they are built with, so the module builds one per rebalance date on
+  the history before it.
+* **The attribution reads the book's daily weights.** Attribution Analysis 0.2.0 rejects a weight file
+  that is not a daily series once it spans a year, so `backtest_engine.py` reads the book's daily
+  weights back from the engine and `attribution_analysis.py` shapes them. The README's four shared
+  modules say so; on `example` the module descriptions and the notebook's handoff table do too.
+* **`SETUP.md` step 4 and `apm.yml` list the published packages** — `common`, `universe`,
+  `data-curator`, `portfolio-construction`, `backtest-engine`, `attribution-analysis` and
+  `investment-lab` — in the order of the steps they serve.
+
 ## 0.7.4 (2026-09-17)
 
 **PATCH** — the template reads in the order a newcomer needs it, and a repository made from it says
