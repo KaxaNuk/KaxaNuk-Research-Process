@@ -41,6 +41,70 @@ for somebody who was not in the room:
 
 ---
 
+## 0.7.3 (2026-09-16)
+
+**PATCH** — the public `example` is the worked strategy, and the documents stop contradicting each
+other about it and about the order of work. No result changes.
+
+**What to do differently:** read `example` as `liquid-momentum` worked through the process, its own
+lines between example markers; copy the shape from it and delete what is the strategy's — the
+fenced content, the seed, the notes under `Bibliotheca/Papers/` and the entries in
+`Bibliotheca/LOG.md`. Set nothing up twice: a repository with `.venv/` is set up, with or without
+`apm_modules/`.
+
+### Changed
+
+* **`example` holds `liquid-momentum`.** 0.7.0 said it held no strategy; it now carries one, worked
+  through the process step by step, public beside `main`, so the shape can be read rather than
+  imagined. `README.md`, `SETUP.md` and `AGENTS.md` describe the branch that way, name the example
+  markers, and say what to strip when a file is brought across.
+* **`OBJECTIVE.md`'s header says before any paper is read**, where it said before the backtest —
+  the later deadline let the reading come before the claims — and its guidance names what a claim's
+  evidence is at each step: the question that would settle it, then the notes, then `RESULTS.md`.
+* **The researcher paragraph in `README.md` follows the order of work**: the claims are drafted from
+  the owner's words before any paper, and their evidence rewritten from the notes afterwards. It
+  said the claims were drafted from the notes.
+* **The eight steps say which numbering they use.** Item 4 runs *process* steps 2 and 3 — Universe
+  and Data — and item 5 cites a note from the reading in item 2, so the two numberings no longer
+  read as one. Item 5 names the one entry that comes early: `BRAINSTORMING_1.md`'s benchmark
+  choice, before `BLUEPRINT_1.md`, because Experiment 1 is the benchmark.
+* **`experiment-lifecycle` is named with the package that carries it**, `investment-lab`, in
+  `README.md` and `SETUP.md`; a reader who trims `kaxanuk` to a subset can now keep it. `apm.yml`,
+  `README.md` and `SETUP.md` promise one skill package per Lab library *as each is written* — three
+  of the six libraries have one today.
+* **A column with a setting an experiment will sweep lives in the Refinery**, whether it is fitted
+  or a window. `README.md`'s prefix table and its rule admitted only a rank, a breadth reading or a
+  fitted model to `r_*`, and sent every other per-security quantity to the Curator — where a sweep
+  costs a download.
+* **Graduation criterion 3 demands what the process produces**: the trial count published beside
+  the winner, and the sign-off saying whether the deflated figure was also computed. It demanded a
+  deflated count no stage computes, and `FINDINGS_N.md` gains the section `RESULTS.md` compiles the
+  count from. The step descriptions on `example` stop contradicting the README: the universe
+  notebook talks to the provider too, a window to sweep lives in the Refinery, the null VWAP is one
+  provider's habit rather than every provider's, `Universe/Charts/` is gone, and step 8 is funding,
+  wherever the desk is.
+* [`example`](../../tree/example) takes the same text, and its notes, notebooks and journal stop
+  saying the branch is private or that a filled-in copy is elsewhere.
+
+### Fixed
+
+* **The first-run test in `AGENTS.md` is `.venv/` alone.** It also named `apm_modules/`, so a
+  repository whose owner answered *no* to the skills — which `SETUP.md` calls a working repository —
+  was reported as not set up in every session. The same block says *the commands in it*, not *four
+  commands*: the count depends on whether the clone and the README step are included.
+* **`.gitignore` names `CLAUDE.local.md`** — the per-machine fallback KaxaNuk-Researcher's
+  invitation describes, which holds an absolute path to one machine — and the folders the other
+  APM targets write: `.gemini/`, `.opencode/`, `.windsurf/`. `SETUP.md` invites those targets and
+  then says anything else in `git status` is a mistake.
+* **`SETUP.md`'s example for a project that is not built from this template** no longer prefixes
+  `apm` with `uv run`, which only works inside this repository's `.venv/`.
+* **`SETUP.md`'s last paragraph points at the template's README** for the order of work, since
+  step 5 replaces the strategy's README with one that links there.
+* **`apm.yml` and `pyproject.toml` carry the changelog's number.** 0.7.1 and 0.7.2 left them at
+  0.7.0.
+
+---
+
 ## 0.7.2 (2026-09-16)
 
 **PATCH** — the order a strategy is built in starts with the objective, before any paper. No result

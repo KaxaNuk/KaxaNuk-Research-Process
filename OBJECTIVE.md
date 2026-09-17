@@ -4,8 +4,9 @@
 > their status. The first thing a CIO reads and the last thing that changes: a change here means a
 > *different* strategy, not a better version of this one.
 >
-> **Write it before the backtest.** The claims table is a set of predictions, and a claim added
-> after a result is an observation wearing a hypothesis's clothes.
+> **Write it before any paper is read, and before anything is measured.** The claims table is a set
+> of predictions; a claim written after the reading, or added after a result, is an observation
+> wearing a hypothesis's clothes.
 >
 > Everything in italics below is guidance. Replace it, then delete this blockquote.
 
@@ -44,8 +45,9 @@ benchmarks through the engine) · **confirmed as a factor** (attribution assigns
 **unexplained** (confirmed as a book, not as a factor — the usual state, and the interesting one) ·
 **true by construction**.
 
-Give each claim a short section below saying what the evidence is, citing `RESULTS.md`, and which
-test would settle what is still open.
+Give each claim a short section below saying what the evidence is — at first the question that would
+settle it, then the `Bibliotheca/` notes read for it, then `RESULTS.md` once something is measured —
+and which test would settle what is still open.
 
 ## What is not claimed
 

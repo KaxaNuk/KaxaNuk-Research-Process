@@ -10,9 +10,10 @@ result has to survive before anyone believes it. It does not repeat the README, 
 
 ## First run — before anything else
 
-**If `.venv/` or `apm_modules/` is missing, this repository has not been set up.** Say so, and offer
-to follow [`SETUP.md`](SETUP.md): four commands, every one of them run in the repository root, never
-a level above it. Do not start research work in a folder that has not been set up, and never create
+**If `.venv/` is missing, this repository has not been set up.** Say so, and offer to follow
+[`SETUP.md`](SETUP.md): the commands in it, every one of them run in the repository root, never a
+level above it. A missing `apm_modules/` means only that the skills were not installed, which
+`SETUP.md` allows. Do not start research work in a folder that has not been set up, and never create
 a folder around this one — `SETUP.md` says what that failure looks like.
 
 Three rules while doing it, here rather than only in `SETUP.md`, because this is the block you act on
@@ -32,26 +33,29 @@ first:
 | Branch | What it is | Cut from | Merges into |
 | --- | --- | --- | --- |
 | `main` | **the template** — the process and the contracts, with no strategy in them | — | — |
-| `example` | the same repository with every subfolder and file the process expects, each describing what goes in it. For reading and copying, never building on | `main` | never |
+| `example` | one strategy, `liquid-momentum`, worked through the process step by step — the documents filled in as far as the work has reached, the later steps described until they are run, the strategy's own lines between example markers. For reading and copying, never building on | `main` | never |
 | `issues/<number>` | one per issue on the GitHub Project. Where all work happens | `main` | `main` |
 
 Use `issues/27-B` and `issues/27-C` when one issue needs a second attempt or splits into parallel
 lines of work: same issue, same discussion, separate history. **`example` never merges back** —
 `main` is the shape, and the shape is written down once — the *What is in here* table in the
 template's `README.md` at `KaxaNuk/KaxaNuk-Research-Process`; a strategy's own README replaces that
-file and links there. The files themselves live only on `example`, and when the process changes,
-`example` changes to match.
+file and links there. The files themselves live only on `example`, worked through for one strategy
+with its own lines between example markers, and when the process changes, `example` takes the change
+file by file.
 
 Two things follow for anyone starting from this repository. **Generating a new repository from the
 template copies `main` only** — the `example` branch stays behind unless every branch is asked for,
-which is the intended default: a new project takes the files it needs from `example` one at a time,
-or lets the `experiment-lifecycle` skill scaffold them. And **the issue branches below are a
-recommendation**, there to keep project management simple, not a gate.
+which is the intended default: a new project takes the files it needs from `example` one at a time
+and deletes what is the strategy's — everything between the example markers, the seed, the notes
+under `Bibliotheca/Papers/` and the entries in `Bibliotheca/LOG.md` — or lets the
+`experiment-lifecycle` skill scaffold them. And **the issue branches below are a recommendation**,
+there to keep project management simple, not a gate.
 
 **`main` and `example` are both public**, at `KaxaNuk/KaxaNuk-Research-Process`, and issues and pull
-requests from anyone land there — the process improves in public, the way the Data Curator did. A
-strategy actually worked end to end stays in KaxaNuk's private repositories; the public `example` is
-the shape with every file described, not a strategy.
+requests from anyone land there — the process improves in public, the way the Data Curator did. The
+public `example` is one strategy, `liquid-momentum`, worked through so the shape can be read rather
+than imagined; a strategy of your own stays in your own repository.
 
 ### The issue exists before the branch
 

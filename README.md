@@ -6,8 +6,11 @@ explaining it first.
 
 **`main` is the shape and nothing else.** Six folders and the documents at the root. Every file the
 process expects *inside* those folders — the drivers, the notebooks, the four documents of an
-experiment, the shared modules — is on the [`example`](../../tree/example) branch, each one a short
-description of what is expected in it. Read `example`, copy from it, and build on `main`.
+experiment, the shared modules — is on the [`example`](../../tree/example) branch, each a
+description of what is expected in it, worked through for one strategy, `liquid-momentum`. What
+belongs to that strategy sits between example markers; the seed in `Universe/` and the notes under
+`Bibliotheca/Papers/` are files of its own. Read `example`, copy the shape from it, delete what is
+the strategy's, and build on `main`.
 
 The universe is one CSV whose only required column is `main_identifier`, and every stage reads it
 without knowing what is in it: **equities, ETFs, FX, crypto, commodities or futures all run the
@@ -78,13 +81,19 @@ to keep current:
 | `Config/` | — | `.env.template`, copied to `.env` and filled in with a data-provider key and the two engine licences | the template. **`.env` never** — and it cannot be regenerated, so discarding all changes loses it |
 
 **Every one of those files exists on [`example`](../../tree/example)**, as a description of what is
-expected in it. To bring one into a strategy repository that has only `main`:
+expected in it with the worked strategy's own lines beside it, between the example markers
+`AGENTS.md` names — `<!-- example: begin -->` and `<!-- example: end -->` in Markdown,
+`# --- example: begin ---` in Python, `# EXAMPLE-ONLY CELL` on a notebook cell. To bring one into a
+strategy repository that has only `main`:
 
 ```bash
 git fetch https://github.com/KaxaNuk/KaxaNuk-Research-Process example && git checkout FETCH_HEAD -- Experiments/Experiment_1
 ```
 
-Or let the `experiment-lifecycle` skill scaffold it, which is what the agent skills are for.
+Then delete everything between the markers — that is what they are there for — and, under
+`Bibliotheca/`, the notes and the log entries, which are the strategy's whole files. Or let the
+`experiment-lifecycle` skill — it ships in the `investment-lab` package, which `kaxanuk` brings in —
+scaffold it, which is what the agent skills are for.
 
 ---
 
@@ -128,7 +137,7 @@ But when we want to share a tool, some names have to mean the same thing in both
 | --- | --- | --- | --- |
 | `m_*` | the provider, via the Curator | raw market data | never — it is what arrived |
 | `c_*` | `Data/Curator/custom_calculations.py` | **one security's own history** | you need a new per-security quantity |
-| `r_*` | `Data/Refinery/custom_calculations.py` | **securities against each other, per date** | you need a rank, a breadth reading, or a fitted model |
+| `r_*` | `Data/Refinery/custom_calculations.py` | **securities against each other, per date** | you need a rank, a breadth reading, or a column with a setting an experiment will sweep — a fitted model, or a window |
 | `current_*` | `Data/refinery.py`, joined from the security master | **today's classification — not point-in-time** | you group or report by something new. Never select on it |
 
 Two rules follow, and one exception worth knowing:
@@ -137,9 +146,10 @@ Two rules follow, and one exception worth knowing:
 - **Widening the Curator's schema forces a refetch of every identifier.** That is deliberate — it
   is what stops a folder holding a mix of schemas — but it means the Curator is the wrong home for
   anything you intend to tune.
-- **So a fitted column lives in the Refinery even when it is per-security.** Its settings are
-  exactly what an experiment sweeps, and **a sweep must never cost a download.** Its *inputs* —
-  arithmetic with nothing to tune — stay in the Curator.
+- **So a column with a setting to sweep — fitted, or a window such as a twelve-month return's —
+  lives in the Refinery even when it is per-security.** Its settings are exactly what an experiment
+  sweeps, and **a sweep must never cost a download.** Its *inputs* — arithmetic with nothing to
+  tune — stay in the Curator.
 
 ### The names
 
@@ -186,8 +196,9 @@ Install once, use for every strategy.
 
 APM is the Agent Package Manager. `uv sync` installs the CLI, and `uv run apm install` fetches
 KaxaNuk's packages from [`KaxaNuk/KaxaNuk-APM`](https://github.com/KaxaNuk/KaxaNuk-APM) — the
-process, one skill per Lab library, and the house rules — into the repository root, beside the
-process folders. Nothing here needs them to be read; a filled-in repository is faster with them.
+process, one skill per Lab library as they are written, and the house rules — into the repository
+root, beside the process folders. Nothing here needs them to be read; a filled-in repository is
+faster with them.
 
 ### A researcher beside the process
 
@@ -196,9 +207,10 @@ name and teach — one per person, not per strategy. It keeps its own library of
 in this repository it writes the notes in `Bibliotheca/` with `read` — a script pulls a book's
 table of contents out of the PDF, you pick the chapters that serve a claim in `OBJECTIVE.md`, and
 it writes one note per chapter with its row in `BIBLIOGRAPHY.md`, after a plan and your go — and
-drafts the claims in `OBJECTIVE.md` and the hypothesis in each `BLUEPRINT_N.md` from those notes,
-every prediction citing the note it came from. A note its own library already holds comes across
-without reading the PDF twice. It is a separate project.
+drafts the claims in `OBJECTIVE.md` from your words before any paper is read, then rewrites their
+evidence from those notes, and the hypothesis in each `BLUEPRINT_N.md`, every prediction citing the
+note it came from. A note its own library already holds comes across without reading the PDF twice.
+It is a separate project.
 
 ---
 
@@ -221,18 +233,20 @@ observation wearing a hypothesis's clothes.
    is read and before anything is measured. Each claim's evidence starts as the question that would
    settle it.
 2. **Fine-tune the objective.** Read for each claim's question, the sources that argue against it
-   included — one note per source in `Bibliotheca/` — then rewrite each claim's evidence from the
-   notes.
+   included — one note per paper, one per chapter of a book, in `Bibliotheca/` — then rewrite each
+   claim's evidence from the notes.
 3. **Choose the investable universe.** Put your securities in `Universe/Investable_Universe.csv`,
    one row each; `main_identifier` is the only required column. Add whatever else your strategy
    groups by. The claims decide what the universe has to contain, which is why it comes after them.
 4. **Build the data.** Write your `c_*` and `r_*` columns into the two `custom_calculations.py`,
-   fill in the Curator and Refinery drivers that call the libraries, and run steps 2 and 3 in this
-   order: curator, then `universe.ipynb`, then refinery, then `analyzer.ipynb`. The universe
-   notebook sits *between* the two Data commands, because it profiles what the curator downloaded
-   and writes the master the refinery joins.
-5. **Write `BLUEPRINT_1.md` before the rule.** Every prediction cites a note from step 2 or an
-   analyzer measurement. A hypothesis edited after its test is not a hypothesis.
+   fill in the Curator and Refinery drivers that call the libraries, and run process steps 2 and 3
+   — Universe and Data — in this order: curator, then `universe.ipynb`, then refinery, then
+   `analyzer.ipynb`. The universe notebook sits *between* the two Data commands, because it profiles
+   what the curator downloaded and writes the master the refinery joins.
+5. **Write `BLUEPRINT_1.md` before the rule.** Every prediction cites a `Bibliotheca/` note from the
+   reading in 2 above, or an analyzer measurement. A hypothesis edited after its test is not a
+   hypothesis. One entry comes early: the first entry of `BRAINSTORMING_1.md`, choosing the
+   benchmark, is written before `BLUEPRINT_1.md`, because Experiment 1 is the benchmark.
 6. **Search for papers and brainstorm** — the broad reading, for what the blueprint left open, and
    `BRAINSTORMING_1.md` for what to try next.
 7. **Run the cycle** — portfolio construction, backtest, attribution — until it is finished,
@@ -240,8 +254,10 @@ observation wearing a hypothesis's clothes.
 8. **Send every finished cycle to `RESULTS.md`**, kept or rejected. The rejected result is reported
    as loudly as the promising one; *What is closed* is what stops the next person repeating it.
 
-The files those steps name are on `example`, not on `main` — the *What is in here* table above says
-how to bring one across, and the `experiment-lifecycle` skill scaffolds an experiment for you.
+The files inside the folders those steps name — the seed, the drivers, the notebooks,
+`BLUEPRINT_1.md` and its siblings — are on `example`, not on `main`; `OBJECTIVE.md` and `RESULTS.md`
+are already here. The *What is in here* table above says how to bring one across and what to strip,
+and the `experiment-lifecycle` skill scaffolds an experiment for you.
 
 ---
 
@@ -272,7 +288,7 @@ has its index in `BIBLIOGRAPHY.md` and `Paper_Trading/` its gate in `BITACORA.md
 | Branch | What it is |
 | --- | --- |
 | `main` | this — the shape of the process: six folders and the documents at the root. What *Use this template* copies |
-| `example` | the same repository with every subfolder and file the process expects, each describing what goes in it. Public, beside `main`. Read it and copy from it; never build on it |
+| `example` | one strategy, `liquid-momentum`, worked through the same folders and files the process expects — the documents filled in as far as the work has reached, the later steps as descriptions until they are run, the strategy's own lines between example markers. Public, beside `main`. Read it and copy the shape from it; never build on it |
 | `issues/<number>` | one per issue on the GitHub Project, cut from `main` and merged back into it. Where all work happens |
 
 **[`AGENTS.md`](AGENTS.md) is next**: the workflow, the bar any new signal has to clear, and the
