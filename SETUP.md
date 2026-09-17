@@ -76,8 +76,8 @@ message. The same install run from a short path succeeds.
 
 **The button.** *Use this template* on
 [`KaxaNuk/KaxaNuk-Research-Process`](https://github.com/KaxaNuk/KaxaNuk-Research-Process), then clone
-it with GitHub Desktop. Cloning into `D:\Research` gives you `D:\Research\fcf-yield-quality`, and
-that is the root. This is the way that records the template relationship on GitHub.
+it with GitHub Desktop, or with `git clone` from the command line. Cloning into `D:\Research` gives
+you `D:\Research\fcf-yield-quality`, and that is the root. This is the way that records the template relationship on GitHub.
 
 **The GitHub CLI**, which records it the same way, if `gh` is installed and signed in:
 
@@ -262,10 +262,12 @@ else the commands produced — `.venv/`, `apm_modules/`, `.claude/`, `apm.lock.y
 
 **If you took the plain-clone path, the repository exists only on this machine.** Nothing is lost
 and nothing is wrong — but it is not backed up and nobody else can see it. In GitHub Desktop, *Add*
-→ *Add existing repository*, then *Publish repository*. That is the whole of it, and it is the user's
-to do, not the agent's.
+→ *Add existing repository*, then *Publish repository*. From the git command line, create an empty
+repository on GitHub, then `git remote add origin <its URL>` and `git push -u origin HEAD`. Either is
+the whole of it, and it is the user's to do, not the agent's.
 
-Then open **this folder** — not a parent of it — in PyCharm, Claude or Codex.
+Then open **this folder** — not a parent of it — in your editor, PyCharm or VS Code, and in your
+assistant, Claude or Codex.
 
 > **For the agent — the hand-over.** Say the absolute path of the root, that it is the whole project
 > and the folder to open, that the README is now the strategy's, which `.env` keys are still empty

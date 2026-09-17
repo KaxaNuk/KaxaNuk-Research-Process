@@ -41,6 +41,25 @@ for somebody who was not in the room:
 
 ---
 
+## 0.7.6 (2026-09-17)
+
+**PATCH** — the tools are three jobs with a choice for each, not a fixed list. No result changes.
+
+**What to do differently:** nothing, if you use GitHub Desktop, PyCharm and Claude. Otherwise pick
+one tool per job — the git command line for GitHub Desktop, VS Code for PyCharm, Codex for Claude —
+and follow the same steps.
+
+### Changed
+
+* **`README.md`'s *The tools* is three jobs, one tool for each, either option doing the job**:
+  versions, in GitHub Desktop or the git command line; code and debug, in Claude or Codex; read and
+  run, in PyCharm or VS Code, whose free editions are enough. It named GitHub Desktop and PyCharm as
+  though there were no alternative. The APM packages leave the table for the paragraph below it:
+  they come on top of whichever assistant is picked, not as a pick of their own.
+* **`SETUP.md` offers the same choice wherever it names a tool**: step 1 clones with GitHub Desktop or
+  `git clone`; *What "done" looks like* publishes a plain clone from GitHub Desktop or from the git
+  command line, and opens the folder in PyCharm or VS Code and in Claude or Codex.
+
 ## 0.7.5 (2026-09-17)
 
 **PATCH** — steps 4 and 6 describe the libraries as they now are: Portfolio Construction exists and is
