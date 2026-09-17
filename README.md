@@ -47,20 +47,20 @@ Investment Lab, and this repository.** Step 8 is the one that leaves it.
 
 ## The tools
 
-Install once, use for every strategy.
+Three jobs, one tool for each — either option does the job. Install once, use for every strategy.
 
-| Tool | Job |
-| --- | --- |
-| **GitHub Desktop** | where your work lives, and how you get it back after you break it |
-| **PyCharm** | the editor, the interpreter and the terminal in one window |
-| **Claude** or **Codex** | your pair for the parts you have not written before |
-| **APM packages** | how the agent learns the six Lab modules and this process — what each does, how it is called, and what it must never be asked to do |
+| Job | What it is for | Pick one |
+| --- | --- | --- |
+| **Versions** | where your work lives, and how you get it back after you break it | [GitHub Desktop](https://desktop.github.com), or the [git](https://git-scm.com) command line |
+| **Code and debug** | your pair for the parts you have not written before | [Claude](https://claude.ai/download), or [Codex](https://openai.com/codex) |
+| **Read and run** | where you write and run Python; the free editions are enough | [PyCharm](https://www.jetbrains.com/pycharm/), or [VS Code](https://code.visualstudio.com) |
 
-APM is the Agent Package Manager. `uv sync` installs the CLI, and `uv run apm install` fetches
-KaxaNuk's packages from [`KaxaNuk/KaxaNuk-APM`](https://github.com/KaxaNuk/KaxaNuk-APM) — the
-process, one skill per Lab library as they are written, and the house rules — into the repository
-root, beside the process folders. Nothing here needs them to be read; a filled-in repository is
-faster with them.
+**On top of whichever assistant you pick, the APM packages** teach it the six Lab modules and this
+process — what each does, how it is called, and what it must never be asked to do. APM is the Agent
+Package Manager. `uv sync` installs the CLI, and `uv run apm install` fetches KaxaNuk's packages from
+[`KaxaNuk/KaxaNuk-APM`](https://github.com/KaxaNuk/KaxaNuk-APM) — the process, one skill per Lab
+library as they are written, and the house rules — into the repository root, beside the process
+folders. Nothing here needs them to be read; a filled-in repository is faster with them.
 
 ### A researcher beside the process
 
