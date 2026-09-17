@@ -41,6 +41,157 @@ for somebody who was not in the room:
 
 ---
 
+## 0.7.3 (2026-09-16)
+
+**PATCH** — the public `example` is the worked strategy, and the documents stop contradicting each
+other about it and about the order of work. No result changes.
+
+**What to do differently:** read `example` as `liquid-momentum` worked through the process, its own
+lines between example markers; copy the shape from it and delete what is the strategy's — the
+fenced content, the seed, the notes under `Bibliotheca/Papers/` and the entries in
+`Bibliotheca/LOG.md`. Set nothing up twice: a repository with `.venv/` is set up, with or without
+`apm_modules/`.
+
+### Changed
+
+* **`example` holds `liquid-momentum`.** 0.7.0 said it held no strategy; it now carries one, worked
+  through the process step by step, public beside `main`, so the shape can be read rather than
+  imagined. `README.md`, `SETUP.md` and `AGENTS.md` describe the branch that way, name the example
+  markers, and say what to strip when a file is brought across.
+* **`OBJECTIVE.md`'s header says before any paper is read**, where it said before the backtest —
+  the later deadline let the reading come before the claims — and its guidance names what a claim's
+  evidence is at each step: the question that would settle it, then the notes, then `RESULTS.md`.
+* **The researcher paragraph in `README.md` follows the order of work**: the claims are drafted from
+  the owner's words before any paper, and their evidence rewritten from the notes afterwards. It
+  said the claims were drafted from the notes.
+* **The eight steps say which numbering they use.** Item 4 runs *process* steps 2 and 3 — Universe
+  and Data — and item 5 cites a note from the reading in item 2, so the two numberings no longer
+  read as one. Item 5 names the one entry that comes early: `BRAINSTORMING_1.md`'s benchmark
+  choice, before `BLUEPRINT_1.md`, because Experiment 1 is the benchmark.
+* **`experiment-lifecycle` is named with the package that carries it**, `investment-lab`, in
+  `README.md` and `SETUP.md`; a reader who trims `kaxanuk` to a subset can now keep it. `apm.yml`,
+  `README.md` and `SETUP.md` promise one skill package per Lab library *as each is written* — three
+  of the six libraries have one today.
+* **A column with a setting an experiment will sweep lives in the Refinery**, whether it is fitted
+  or a window. `README.md`'s prefix table and its rule admitted only a rank, a breadth reading or a
+  fitted model to `r_*`, and sent every other per-security quantity to the Curator — where a sweep
+  costs a download.
+* **Graduation criterion 3 demands what the process produces**: the trial count published beside
+  the winner, and the sign-off saying whether the deflated figure was also computed. It demanded a
+  deflated count no stage computes, and `FINDINGS_N.md` gains the section `RESULTS.md` compiles the
+  count from. The step descriptions on `example` stop contradicting the README: the universe
+  notebook talks to the provider too, a window to sweep lives in the Refinery, the null VWAP is one
+  provider's habit rather than every provider's, `Universe/Charts/` is gone, and step 8 is funding,
+  wherever the desk is.
+* `example` takes the same text, and its notes, notebooks and journal stop saying the branch is
+  private or that a filled-in copy is elsewhere.
+
+### Fixed
+
+* **The first-run test in `AGENTS.md` is `.venv/` alone.** It also named `apm_modules/`, so a
+  repository whose owner answered *no* to the skills — which `SETUP.md` calls a working repository —
+  was reported as not set up in every session. The same block says *the commands in it*, not *four
+  commands*: the count depends on whether the clone and the README step are included.
+* **`.gitignore` names `CLAUDE.local.md`** — the per-machine fallback KaxaNuk-Researcher's
+  invitation describes, which holds an absolute path to one machine — and the folders the other
+  APM targets write: `.gemini/`, `.opencode/`, `.windsurf/`. `SETUP.md` invites those targets and
+  then says anything else in `git status` is a mistake.
+* **`SETUP.md`'s example for a project that is not built from this template** no longer prefixes
+  `apm` with `uv run`, which only works inside this repository's `.venv/`.
+* **`SETUP.md`'s last paragraph points at the template's README** for the order of work, since
+  step 5 replaces the strategy's README with one that links there.
+* **`apm.yml` and `pyproject.toml` carry the changelog's number.** 0.7.1 and 0.7.2 left them at
+  0.7.0.
+
+---
+
+## 0.7.2 (2026-09-16)
+
+**PATCH** — the order a strategy is built in starts with the objective, before any paper. No result
+changes.
+
+**What to do differently:** start a strategy with `OBJECTIVE.md` — the idea and its claims — and
+read for those claims before choosing the investable universe, which is now step 3 of the order
+rather than the first thing done.
+
+### Changed
+
+* **`README.md`'s *Starting your own strategy* is the order of work, in eight steps.** The objective
+  before any paper; the objective fine-tuned by reading for each claim, the sources that argue
+  against it included; the investable universe; the data, in the order the Data stage already gave;
+  `BLUEPRINT_1.md` before the rule, every prediction citing a note or an analyzer measurement; the
+  broad reading and brainstorming; the cycle of portfolio construction, backtest and attribution
+  until it is finished; and every finished cycle into `RESULTS.md`, kept or rejected. It listed the
+  universe first, but the claims decide what the universe has to contain, and reading with no claim
+  to read for has no stopping condition.
+* **Step 1 of the eight is the idea and its claims first, then the literature that argues with
+  them**, where it read *a literature review with a thesis at the end of it* — the order this change
+  reverses. Its row names `OBJECTIVE.md` beside `Bibliotheca/`.
+* **`SETUP.md`'s last paragraph** names the objective as the first thing to do, where it named the
+  universe.
+* `example` takes the same text, and its `BIBLIOGRAPHY.md` plain-words line to match.
+
+---
+
+## 0.7.1 (2026-09-11)
+
+**PATCH** — what a `Bibliotheca/` holds, now that a researcher writes its notes a chapter at a
+time. No result changes.
+
+**What to do differently:** keep the PDFs beside their notes and let git ignore them, along with
+`Bibliotheca/Extracts/`, where the researcher's script leaves a book's chapters as text. A book is
+a folder — `Books/Author_Year_Title/INDEX.md` for the chapter table, one file per chapter read —
+and `Bibliotheca/Knowledge/` is gone: the notes beside the sources are the library, `BIBLIOGRAPHY.md`
+is its index and `Bibliotheca/LOG.md` its record. The files themselves are on `example`.
+
+### Added
+
+* **`AGENTS.md` says who writes a note:** a person, or a researcher with `read`, after a plan and a
+  go; whoever writes a note adds its row to `BIBLIOGRAPHY.md`. It was the one step-1 document the
+  table did not name.
+* **`.gitignore` keeps the PDFs and the extracts out**, as step 1's own section. Licensed material
+  is not redistributed by a clone, and the extracts regenerate with one command.
+
+### Changed
+
+* **`README.md`'s `Bibliotheca/` row describes the folder as it is now** — notes beside their PDFs,
+  a book as a folder of chapters, `LOG.md` — and its researcher section says what the companion
+  actually does here rather than that it is being built. `KaxaNuk/KaxaNuk-Researcher` 0.3.0 is the
+  version that writes these notes.
+
+---
+
+## 0.7.0 (2026-09-10)
+
+**MINOR** — `main` is the shape and nothing else: six folders and the documents at the root. Every
+file the process expects inside those folders moved to the public `example` branch, unchanged.
+
+**What to do differently:** `main` no longer ships `Experiment_1`, the drivers, the notebooks or the
+shared modules. Bring a file across from `example` when you need it — `README.md` gives the one
+command — or let the `experiment-lifecycle` skill scaffold an experiment.
+
+### Removed
+
+* **Everything below the six folders**, moved to `example` as it was: `Bibliotheca/`'s index,
+  `Knowledge/`, `Notes/`, `Papers/` and `Books/`; `Universe/`'s seed and notebook; `Data/`'s three
+  drivers, the two `custom_calculations.py` and the data directories; `Experiments/`' four shared
+  modules and `Experiment_1/`; `Paper_Trading/`'s gate and scripts. `Config/.env.template` stays,
+  because setup needs it. A reader opening `main` now sees the shape in one screen, and a reader
+  who wants the files finds all of them on one branch rather than half here and half there.
+
+### Changed
+
+* **`README.md`'s *What is in here* is the one place the folder contents are written down** — a
+  table per folder saying which step owns it, what belongs in it and what is committed. The old
+  tree listed files that are no longer on `main`.
+* **`README.md`'s Setup section is a pointer to `SETUP.md`**, with no commands of its own. Two
+  copies of the same commands had already started to differ.
+* **`example` is public, in this repository, beside `main`.** `README.md`, `SETUP.md` and
+  `AGENTS.md` said it was private; it holds no strategy, so there was nothing to keep private. A
+  strategy worked end to end still stays in KaxaNuk's own repositories.
+
+---
+
 ## 0.6.0 (2026-09-06)
 
 **MINOR** — one prompt sets a strategy up from nothing. *Please help install

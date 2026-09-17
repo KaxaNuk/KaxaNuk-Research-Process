@@ -11,8 +11,9 @@ A backtest tells you what a rule *would* have done; paper trading tells you what
 prices, with live universe changes, and with the delistings and corporate actions a historical file
 has already tidied up.
 
-Step 8, Production, is not here: a strategy leaves this repository when it joins the KN Fund
-allocation.
+Step 8, Production, is not here: a strategy leaves this repository when it is funded — real
+capital, real monitoring, a real drawdown policy, the README's step 8 — and where that is depends on
+whose desk it is.
 
 > **This file is the gate, not a log.** `JOURNAL_N.md` means an append-only dated record inside an
 > experiment folder; this document is a contract — what graduation means and what has to be true
@@ -32,7 +33,7 @@ Strong backtest results are necessary and **not sufficient**. All five must hold
 | --- | --- | --- |
 | 1 | **Beats the benchmarks on risk-adjusted return** — above every benchmark it reports against, *and* above its own control row, over the same window | A strategy that only beats the index on raw return is usually just carrying more risk |
 | 2 | **Attribution shows idiosyncratic alpha in both layers** — selection in the Brinson-Fachler cut, a residual the factor model cannot explain, and a selection story that survives the third pass on residual returns | If the return decomposes entirely into known factors, the honest product is a cheaper factor fund, not this |
-| 3 | **Conclusions survive parameter perturbation, and the trial count is deflated** | A result that appears at one threshold and vanishes at the next is a sweep artefact. Read the direction across a sweep, never the single best cell |
+| 3 | **Conclusions survive parameter perturbation, and the trial count is published beside the winner** | A result that appears at one threshold and vanishes at the next is a sweep artefact. Read the direction across a sweep, never the single best cell. Publishing N is the minimum — the five ways a backtest lies in [`../AGENTS.md`](../AGENTS.md), row 3 — and the sign-off states whether the deflated figure was also computed |
 | 4 | **Costs and capacity are modelled and stated** — turnover, commission, and any assumption the engine does *not* model, borrow cost above all | The gap between a backtest and a fill is where strategies die |
 | 5 | **Explicit sign-off** | Graduation is a decision, not a threshold that trips automatically |
 
@@ -81,6 +82,6 @@ When one does, record it here: which experiment, which variant, which criteria i
 above all — which it does not and why. **The blocking items are the content of this section, not the
 passing ones.**
 
-**`Paper_Trading_1/` is named for the experiment it would mirror.** If Experiment 1 is your
-benchmark, its graduation is not applicable and this folder is renamed for the experiment that
-actually graduates. The convention is right; the number is a placeholder until then.
+**`Paper_Trading_1/` is named for the experiment it would mirror.** Experiment 1 is the benchmark,
+so its graduation is not applicable and this folder is renamed for the experiment that actually
+graduates. The convention is right; the number is a placeholder until then.

@@ -2,8 +2,9 @@
 # (or `--target codex`) reads this file and needs no package names - see SETUP.md step 4.  Installing
 # them is optional: nothing in the pipeline imports a skill, so the results are the same either way.
 #
-# `kaxanuk` is every KaxaNuk package under one name - the house rules and one skill package per
-# Investment Lab library - so this file never goes stale when a package is added.  Want only some?
+# `kaxanuk` is every KaxaNuk package under one name - the house rules, the process, and one skill
+# package per Investment Lab library as each is written - so this file never goes stale when a
+# package is added.  Want only some?
 # Replace that line with the ones you want: common, data-curator, backtest-engine,
 # attribution-analysis, investment-lab.
 #
@@ -12,7 +13,7 @@
 # There is deliberately no `targets` key.  The template serves Claude Code, the Claude app, Codex
 # and Cursor alike, so the target is passed on the command.
 name: kn-research-process
-version: 0.6.0
+version: 0.7.3
 description: The KN Research Process - the KaxaNuk Investment Lab's eight steps as a folder structure
 author: KaxaNuk
 dependencies:

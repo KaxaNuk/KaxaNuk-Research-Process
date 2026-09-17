@@ -113,8 +113,9 @@ In PowerShell, which is what the Claude app and Codex drive on Windows:
 Remove-Item -Recurse -Force .git; git init; git add -A; git commit -m "Start from the KN Research Process template"
 ```
 
-Only `main` is copied by any of the three. The `example` branch — one strategy worked end to end — is
-kept by KaxaNuk for reading, and is not part of a new strategy.
+Only `main` is copied by any of the three. The `example` branch — one strategy, `liquid-momentum`,
+worked through the process step by step, its own lines between example markers — is public beside
+`main` for reading, and is not part of a new strategy.
 
 > **For the agent.** Three things go wrong here, and none is a reason to stop.
 >
@@ -163,9 +164,9 @@ run without them, and steps 5 and 6 report what is missing and skip.
 
 ## Step 4 — The agent skills
 
-KaxaNuk publishes its AI skills as APM packages: how each Lab library is called, how an experiment
-is structured, how attribution is read, and the house rules on branches, style and changelogs. The
-committed `apm.yml` names the set, so the command takes no package names.
+KaxaNuk publishes its AI skills as APM packages: how each Lab library that has a package is called,
+how an experiment is structured, how attribution is read, and the house rules on branches, style and
+changelogs. The committed `apm.yml` names the set, so the command takes no package names.
 
 **Nothing in the pipeline imports a skill.** The repository runs, the notebooks run and the results
 are the same whether or not this step happens — so *no* is a real answer, and *later* costs nothing.
@@ -189,16 +190,19 @@ uv run apm install --target codex
 `uv run` is not decoration: `apm` lives inside `.venv/` and is not on the path of a fresh terminal,
 so a bare `apm install` says *command not found* on the very machine this file is for. Other targets
 — `cursor`, `copilot`, `windsurf` and the rest — are in
-[APM's target catalogue](https://github.com/microsoft/apm/blob/main/docs/src/content/docs/concepts/primitives-and-targets.md#target-catalogue).
+[APM's target catalogue](https://github.com/microsoft/apm/blob/main/docs/src/content/docs/concepts/primitives-and-targets.md#target-catalogue);
+what they write is ignored the way `.claude/` is, except `.github/`, which Copilot shares with
+anything else a repository keeps there.
 
 **Want only some of them?** `apm.yml` names one package, `kaxanuk`, which is every KaxaNuk package
 under one name. Replace that line with the packages you want — `common`, `data-curator`,
-`backtest-engine`, `attribution-analysis`, `investment-lab` — and install again. Somebody who
-licenses only the Attribution Analysis library, and has no research process at all, does not need
-this repository: in their own project,
+`backtest-engine`, `attribution-analysis`, `investment-lab` — and install again. `investment-lab` is
+the one that carries the `experiment-lifecycle` skill the README leans on. Somebody who licenses
+only the Attribution Analysis library, and has no research process at all, does not need this
+repository: in their own project, with `apm-cli` on the path or in that project's `dev` group,
 
 ```bash
-uv run apm install KaxaNuk/KaxaNuk-APM/attribution-analysis --target claude
+apm install KaxaNuk/KaxaNuk-APM/attribution-analysis --target claude
 ```
 
 The packages, and what each is for, are listed at
@@ -239,6 +243,6 @@ Then open **this folder** — not a parent of it — in PyCharm, Claude or Codex
 ## Next
 
 [`README.md`](README.md) says what the repository is and where each kind of logic goes;
-[`AGENTS.md`](AGENTS.md) says how work is done in it. The five things to do first are in the
-*Starting your own strategy* section of the README, and the first is putting your securities in
-`Universe/Investable_Universe.csv`.
+[`AGENTS.md`](AGENTS.md) says how work is done in it. The order to work in is the *Starting your
+own strategy* section of the README, and the first thing in it is `OBJECTIVE.md` — the idea and its
+claims, before any paper is read.

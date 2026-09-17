@@ -4,8 +4,9 @@
 strategy is shaped the way it is. [`../OBJECTIVE.md`](../OBJECTIVE.md) states what we believe, and
 this folder is where those beliefs are supposed to come from.
 
-**In plain words:** a literature review with a thesis at the end of it. **It produces** a referenced
-hypothesis, in the repo, dated. **It prevents** backtesting a hunch you cannot defend afterwards.
+**In plain words:** the literature that argues with the claims in `OBJECTIVE.md`, read after they
+are written. **It produces** a referenced hypothesis, in the repo, dated. **It prevents**
+backtesting a hunch you cannot defend afterwards.
 
 ## How this folder works
 
@@ -22,6 +23,10 @@ Bibliotheca/
 ├── Notes/                           # clippings and transcripts, raw; their notes go in Papers/
 └── Extracts/                        # the PDFs' chapters as text, pulled by the researcher's script; gitignored
 ```
+
+**A folder appears when its first note does.** Nothing empty is committed here, so `Books/` and any
+`Notes/` you want are directories you create on the day you have something to put in them. The shape
+above is the convention, not a skeleton to keep swept.
 
 **A source listed without a note is a *lead*, not a citation.** It is here because somebody thought
 it would answer a question this repository has. Nothing may be claimed on its authority until it has
@@ -53,8 +58,9 @@ Four rules separate a note from a summary:
 2. **A heading states the source's claim, never our verdict.** Our verdict lives in the blockquote,
    where it can change when a result moves; a heading carrying a verdict rots silently.
 3. **Record contradictions as contradictions.** When a source says to do the opposite of what we do,
-   that stays visible rather than being smoothed into agreement. It is usually the most useful line
-   in the note.
+   that stays visible rather than being smoothed into agreement. When a later note contradicts an
+   earlier one, the older claim stays and gets a `> [!WARNING]` callout above it naming the newer
+   note by link. It is usually the most useful line in the note.
 4. **Never invent a URL or a page number.** A missing link is recorded as a task, because a gap
    phrased as a task gets closed and one phrased as a fact does not. A wrong citation is worse than
    none.
@@ -66,10 +72,11 @@ available elsewhere.**
 
 A researcher — a person, or yours from
 [`KaxaNuk/KaxaNuk-Researcher`](https://github.com/KaxaNuk/KaxaNuk-Researcher) — reads these notes
-to draft the claims in [`../OBJECTIVE.md`](../OBJECTIVE.md) and the thesis and predictions in each
-`BLUEPRINT_N.md`. **Every prediction it writes cites the note it came from**, and a source without
-a note cannot be cited: it is a lead, and the note is written first. That is what makes the
-hypothesis defensible afterwards — each line of it points back to something somebody read.
+to fine-tune the claims in [`../OBJECTIVE.md`](../OBJECTIVE.md), which were written before any of
+them, and to draft the thesis and predictions in each `BLUEPRINT_N.md`. **Every prediction it
+writes cites the note it came from**, and a source without a note cannot be cited: it is a lead,
+and the note is written first. That is what makes the hypothesis defensible afterwards — each line
+of it points back to something somebody read.
 
 Yours writes the notes with `read`: a script pulls the table of contents out of the PDF, the
 researcher shows it to you and asks which chapters serve which claim, reads only those, and writes
@@ -77,9 +84,16 @@ one note per chapter, its row in this file and a line in `LOG.md` — after a pl
 its home library already holds comes across without re-reading the PDF; only the implications are
 written anew, for this strategy's claims.
 
-> **Read a source because you have a question, not because it is a good source.** Part 1 is empty on
-> purpose: it fills as *your* idea raises questions. Parts 2 to 5 are seeded with the standard
-> reading behind the later steps — leads, none of them read yet.
+> **Read a source because you have a question, not because it is a good source.** Part 1 starts
+> empty and fills as *your* idea raises questions. Parts 2 to 5 are seeded with the standard reading
+> behind the later steps — leads, none of them read yet.
+>
+> <!-- example: begin -->
+> **On this branch Part 1 is filled in**, by the worked example in
+> [`../OBJECTIVE.md`](../OBJECTIVE.md). Six notes, and two of the six argue against the strategy.
+> That ratio is not an accident and not modesty: a Part 1 where every source agrees with you is a
+> Part 1 assembled to support a conclusion rather than to reach one.
+> <!-- example: end -->
 
 ---
 
@@ -111,12 +125,45 @@ what they changed is the process itself.
 ## Part 1 — The core idea
 
 The evidence under the claims in `OBJECTIVE.md` themselves — **including the sources that argue
-against them**. This is the part of the bibliography that should argue with you, and it is empty
+against them**. This is the part of the bibliography that should argue with you, and it stays empty
 until your strategy has a question of its own.
+
+<!-- example: begin -->
+
+The worked example is `liquid-momentum`: the most heavily traded stocks with a positive
+twelve-month return, equally weighted. Its three claims are in
+[`../OBJECTIVE.md`](../OBJECTIVE.md), and every one of them points back into this table.
+
+**The signal — does momentum exist, and over what window?**
 
 | Source | What it bears on |
 | --- | --- |
-| | |
+| [Jegadeesh & Titman (1993)](Papers/Jegadeesh_Titman_1993_Buying_Winners_Selling_Losers.md) — *Returns to Buying Winners and Selling Losers* | **claim 1 rests on this.** Three-to-twelve-month formation earns significant returns not explained by systematic risk; part of it dissipates over the following two years, which is why holding is short |
+| [Jegadeesh (1990)](Papers/Jegadeesh_1990_Predictable_Behavior_Of_Security_Returns.md) — *Evidence of Predictable Behavior of Security Returns* | **the note that changed the design.** One-month returns reverse, so the formation window ends a month before the trade: `r_momentum_12_1`, not `r_momentum_12_0` |
+| [Asness, Moskowitz & Pedersen (2013)](Papers/Asness_Moskowitz_Pedersen_2013_Value_And_Momentum_Everywhere.md) — *Value and Momentum Everywhere* | why 12-1 is **inherited rather than searched** — the anti-snooping defence in *what is not claimed*. Also why the same idea would travel to other asset classes |
+
+**The screen — what does restricting to liquid names do to it?** *Both of these argue against the
+strategy, and both are why claim 3 is worded as a cost.*
+
+| Source | What it bears on |
+| --- | --- |
+| [Lesmond, Schill & Zhou (2004)](Papers/Lesmond_Schill_Zhou_2004_Illusory_Nature_Of_Momentum_Profits.md) — *The Illusory Nature of Momentum Profits* | **the strongest argument against this design.** Momentum profits concentrate in high-cost, thinly traded names — the ones the screen removes — and costs prevent execution |
+| [Ibbotson, Chen, Kim & Hu (2013)](Papers/Ibbotson_Chen_Kim_Hu_2013_Liquidity_As_An_Investment_Style.md) — *Liquidity as an Investment Style* | liquidity is a compensated style and the *less* liquid end has earned more. The screen selects the low-return end deliberately, buying capacity rather than alpha |
+
+**The risk — what does the bad period look like?**
+
+| Source | What it bears on |
+| --- | --- |
+| [Daniel & Moskowitz (2016)](Papers/Daniel_Moskowitz_2016_Momentum_Crashes.md) — *Momentum Crashes* | rare, severe losses in rebounds after declines, driven by a short leg this book does not have. Sets a **prediction** about our drawdown shape rather than a number to inherit |
+
+**Leads — no note, so nothing may be claimed on them.**
+
+| Source | What it bears on |
+| --- | --- |
+| Korajczyk & Sadka (2004) — *Are Momentum Profits Robust to Trading Costs?* | the counterweight to Lesmond, Schill & Zhou: how much capital momentum absorbs before costs erase it. **The highest-value unread source in this folder.** *No note yet.* |
+| Novy-Marx (2012) — *Is Momentum Really Momentum?* | argues the intermediate-horizon past return drives the effect, not the recent one — which would change the window. A later experiment. *No note yet.* |
+
+<!-- example: end -->
 
 ## Part 2 — Universe and data: what is investable, and what the data does to you
 

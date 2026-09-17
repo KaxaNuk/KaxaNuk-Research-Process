@@ -4,15 +4,23 @@
 file says **how work is done in it**: who writes each document, the restrictions, and the bar a
 result has to survive before anyone believes it. It does not repeat the README, so read that first.
 
-> **Status: the template.** No strategy, no data, no result, and no code — every file is a
-> description of what is expected in it. Replace this banner with your own status when you take the
-> repository over.
+<!-- example: begin -->
+
+> **Status: `liquid-momentum`, the worked example — objective written, reading for its claims in
+> progress.** `OBJECTIVE.md` and six notes at abstract level exist, and the fine-tuning pass of the
+> objective from those notes is still owed; `Universe/Investable_Universe.csv` holds a seed of 788
+> identifiers and no dated membership; everything from `Data/` on is still the template's
+> description. `Experiments/Experiment_1/JOURNAL_1.md` is the record. Starting your own: rewrite
+> this banner as your own status — it is the same banner your README carries.
+
+<!-- example: end -->
 
 ## First run — before anything else
 
-**If `.venv/` or `apm_modules/` is missing, this repository has not been set up.** Say so, and offer
-to follow [`SETUP.md`](SETUP.md): four commands, every one of them run in the repository root, never
-a level above it. Do not start research work in a folder that has not been set up, and never create
+**If `.venv/` is missing, this repository has not been set up.** Say so, and offer to follow
+[`SETUP.md`](SETUP.md): the commands in it, every one of them run in the repository root, never a
+level above it. A missing `apm_modules/` means only that the skills were not installed, which
+`SETUP.md` allows. Do not start research work in a folder that has not been set up, and never create
 a folder around this one — `SETUP.md` says what that failure looks like.
 
 Three rules while doing it, here rather than only in `SETUP.md`, because this is the block you act on
@@ -32,23 +40,28 @@ first:
 | Branch | What it is | Cut from | Merges into |
 | --- | --- | --- | --- |
 | `main` | **the template** — the process and the contracts, with no strategy in them | — | — |
-| `example` | one strategy worked end to end, for reading rather than building on | `main` | never |
+| `example` | one strategy, `liquid-momentum`, worked through the process step by step — the documents filled in as far as the work has reached, the later steps described until they are run, the strategy's own lines between example markers. For reading and copying, never building on | `main` | never |
 | `issues/<number>` | one per issue on the GitHub Project. Where all work happens | `main` | `main` |
 
 Use `issues/27-B` and `issues/27-C` when one issue needs a second attempt or splits into parallel
 lines of work: same issue, same discussion, separate history. **`example` never merges back** —
 everything in it that belongs to the *process* is on `main` already, and the rest is a strategy
-nobody else should inherit. When the process changes, the example is rebuilt on top of it.
+nobody else should inherit. When the process changes, `example` takes the change file by file, never
+by merging `main` into it.
 
 Two things follow for anyone starting from this repository. **Generating a new repository from the
 template copies `main` only** — the `example` branch stays behind unless every branch is asked for,
-which is the intended default: a new project should not inherit a strategy. And **the issue
+which is the intended default: a new project should not inherit a strategy. It takes the files it
+needs from `example` one at a time and deletes what is the strategy's — everything between the
+example markers, the seed, the notes under `Bibliotheca/Papers/` and the entries in
+`Bibliotheca/LOG.md` — or lets the `experiment-lifecycle` skill scaffold them. And **the issue
 branches below are a recommendation**, there to keep project management simple, not a gate.
 
-**`main` is public.** It lives at `KaxaNuk/KaxaNuk-Research-Process`, and issues and pull requests
-from anyone land there — the process improves in public, the way the Data Curator did. `example`
-stays in KaxaNuk's private repository and is rebuilt on top of the public `main` when the process
-changes. Publishing is one push of `main` to the public remote; nothing else crosses.
+**`main` and `example` are both public**, at `KaxaNuk/KaxaNuk-Research-Process`, and issues and pull
+requests from anyone land there — the process improves in public, the way the Data Curator did.
+`example` is one strategy, `liquid-momentum`, worked through the shape so it can be read rather than
+imagined; a strategy of your own stays in your own repository. Publishing is a push of either branch;
+nothing else crosses.
 
 ### The issue exists before the branch
 
@@ -84,6 +97,8 @@ idea  ->  issue on the Project board  ->  issues/<number> cut from main  ->  PR 
 | Document | Who writes it | Changes when |
 | --- | --- | --- |
 | `OBJECTIVE.md` | a person, first | almost never — a change here means a *different* strategy |
+| the notes in `Bibliotheca/` | a person, or a researcher with `read` — one per paper, one per chapter of a book somebody chose, after a plan and a go | a source is read. A later note corrects an earlier one with a callout above the claim, never by smoothing it away |
+| `Bibliotheca/BIBLIOGRAPHY.md` | a person adds the leads; whoever writes a note adds its row | a source is added, or read |
 | `RESULTS.md` | the AI, from the findings files | a `FINDINGS_N.md` changes |
 | `CHANGELOG.md` | whoever lands a change-set | any change-set lands |
 | `AGENTS.md` | anyone | the process changes |

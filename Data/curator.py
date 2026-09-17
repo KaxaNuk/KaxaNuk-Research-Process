@@ -1,6 +1,8 @@
 """
-Data Curator -- step 3 of 8, block 1 of 3.  The only file in this repository that talks to a data
-provider.
+Data Curator -- step 3 of 8, block 1 of 3.  The only file in this repository that downloads time
+series from a data provider.  `Universe/universe.ipynb` asks the same provider what each security
+*is* -- name, type, exchange, currency, inception -- and caches that payload in
+`Universe/Provider_Cache/`; nothing else talks to a provider.
 
 In plain words: you describe the data you want -- provider, identifiers, dates and columns -- and
 the KaxaNuk Data Curator fetches it, aligns the calendar, handles splits and dividends, and writes
@@ -17,8 +19,9 @@ What is expected here is a short driver, not a framework:
   -- the provider's `m_*` columns plus the `c_*` columns defined in
   `Data/Curator/custom_calculations.py`.  Fix the end date rather than using today, so two people
   running a week apart get comparable files.
-- Call the public library once (`pip install kaxanuk.data_curator`).  It loops over the
-  identifiers, skips one that fails and says why, and writes `<identifier>.csv` for each.
+- Call the public library once -- `kaxanuk-data-curator`, already installed by `uv sync` from
+  `pyproject.toml`, imported as `kaxanuk.data_curator`.  It loops over the identifiers, skips one
+  that fails and says why, and writes `<identifier>.csv` for each.
 - Point its output at `Data/Curator/Time_Series/`.  The library's default folder is `Output/`;
   here every stage has one home, and this is the Curator's.
 

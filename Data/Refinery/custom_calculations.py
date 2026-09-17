@@ -5,10 +5,10 @@ Two kinds of column live here, and only here:
 
 1.  Anything that compares securities against each other on a date -- a rank, a breadth reading, a
     share of the cross-section.  No per-security calculation can express it.
-2.  Anything with a fitted parameter, even when it is per-security.  A model has settings an
-    experiment will sweep, and widening the Curator's schema costs a refetch of every identifier.
-    A sweep must never cost a download, so the model's frozen inputs stay in the Curator and the
-    model itself lives here.
+2.  Anything with a setting an experiment will sweep, even when it is per-security -- a fitted
+    model, or a window such as a twelve-month return's.  Widening the Curator's schema costs a
+    refetch of every identifier, and a sweep must never cost a download, so the frozen inputs stay
+    in the Curator and the column with the setting lives here.
 
 What is expected here is one function per column, named exactly as the column, resolved by
 parameter name the same way the Curator resolves its own.  Every parameter is a column of the
