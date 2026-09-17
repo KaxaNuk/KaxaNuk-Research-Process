@@ -1,6 +1,6 @@
 <!-- example: begin -->
 
-# liquid-momentum
+# Liquid Momentum
 
 **Own the most heavily traded stocks that went up over the past year, equally weighted, and hold
 nothing else.**
