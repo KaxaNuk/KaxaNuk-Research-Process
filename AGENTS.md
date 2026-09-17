@@ -1,21 +1,21 @@
 # Agents — how work is done here
 
-[`README.md`](README.md) says what this repository **is** and where each kind of logic goes. This
-file says **how work is done in it**: who writes each document, the restrictions, and the bar a
-result has to survive before anyone believes it. It does not repeat the README, so read that first.
+The [template's README](https://github.com/KaxaNuk/KaxaNuk-Research-Process) says what this process
+**is** and where each kind of logic goes; read it first. This file says **how work is done**: who
+writes each document, the restrictions, and the bar a result has to survive before anyone believes
+it.
 
 <!-- example: begin -->
 
-> **Status: `liquid-momentum`, the worked example — objective written, reading for its claims in
-> progress.** `OBJECTIVE.md` and six notes at abstract level exist, and the fine-tuning pass of the
-> objective from those notes is still owed; `Universe/Investable_Universe.csv` holds a seed of 788
-> identifiers and no dated membership; everything from `Data/` on is still the template's
-> description. `Experiments/Experiment_1/JOURNAL_1.md` is the record. Starting your own: rewrite
-> this banner as your own status — it is the same banner your README carries.
+> **Status: objective written, reading for its claims in progress.** Six notes exist, read from the
+> abstracts and, for one paper, two sections; the fine-tuning pass of `OBJECTIVE.md` is still owed.
+> `Universe/Investable_Universe.csv` holds 788 identifiers, delisted names kept, and no dated
+> membership. Nothing from `Data/` on is built: no data, no book, no number. Starting your own:
+> rewrite this banner as your own status, and your README's with it.
 
 <!-- example: end -->
 
-## First run — before anything else
+## First run — for the agent, before anything else
 
 **If `.venv/` is missing, this repository has not been set up.** Say so, and offer to follow
 [`SETUP.md`](SETUP.md): the commands in it, every one of them run in the repository root, never a
@@ -23,8 +23,7 @@ level above it. A missing `apm_modules/` means only that the skills were not ins
 `SETUP.md` allows. Do not start research work in a folder that has not been set up, and never create
 a folder around this one — `SETUP.md` says what that failure looks like.
 
-Three rules while doing it, here rather than only in `SETUP.md`, because this is the block you act on
-first:
+Three rules from `SETUP.md` apply from the first command:
 
 - **Never open, read back, print or echo `Config/.env`**, and never put a value from it into a
   command that gets recorded. You may say which keys are still empty, **by name only**.
@@ -39,29 +38,37 @@ first:
 
 | Branch | What it is | Cut from | Merges into |
 | --- | --- | --- | --- |
-| `main` | **the template** — the process and the contracts, with no strategy in them | — | — |
-| `example` | one strategy, `liquid-momentum`, worked through the process step by step — the documents filled in as far as the work has reached, the later steps described until they are run, the strategy's own lines between example markers. For reading and copying, never building on | `main` | never |
-| `issues/<number>` | one per issue on the GitHub Project. Where all work happens | `main` | `main` |
+| `main` | the accepted work: on the template, the process with no strategy in it; in a strategy repository, that strategy's finished work | — | — |
+| `example` | on the template: one strategy, `liquid-momentum`, worked through the process step by step — the documents filled in as far as the work has reached, the later steps described until they are run, its own lines between example markers. For reading and copying, never building on | `main` | never |
+| `issues/<number>` | one per issue on your repository's GitHub Project. Where all work happens | `main` | `main` |
+
+<!-- example: begin -->
+
+**On this branch.** `liquid-momentum` advances here: its work lands on `example`, directly or from a
+branch cut from it, never in a pull request into `main`, and `BLUEPRINT_1.md` is still committed
+before the rule. `main` is never merged into `example`; process changes come across file by file. A
+strategy of your own starts from `main` and stays in your own repository.
+
+<!-- example: end -->
 
 Use `issues/27-B` and `issues/27-C` when one issue needs a second attempt or splits into parallel
-lines of work: same issue, same discussion, separate history. **`example` never merges back** —
-everything in it that belongs to the *process* is on `main` already, and the rest is a strategy
-nobody else should inherit. When the process changes, `example` takes the change file by file, never
-by merging `main` into it.
+lines of work: same issue, same discussion, separate history.
 
-Two things follow for anyone starting from this repository. **Generating a new repository from the
-template copies `main` only** — the `example` branch stays behind unless every branch is asked for,
-which is the intended default: a new project should not inherit a strategy. It takes the files it
-needs from `example` one at a time and deletes what is the strategy's — everything between the
-example markers, the seed, the notes under `Bibliotheca/Papers/` and the entries in
-`Bibliotheca/LOG.md` — or lets the `experiment-lifecycle` skill scaffold them. And **the issue
-branches below are a recommendation**, there to keep project management simple, not a gate.
+**`example` never merges into `main`, and `main` is never merged into `example`**: when the process
+changes, `example` takes the change file by file. On the template, the files inside the folders live
+only on `example`; the shape is written down once, in the *What is in here* table of the template's
+README, which a strategy's own README links to.
 
-**`main` and `example` are both public**, at `KaxaNuk/KaxaNuk-Research-Process`, and issues and pull
-requests from anyone land there — the process improves in public, the way the Data Curator did.
-`example` is one strategy, `liquid-momentum`, worked through the shape so it can be read rather than
-imagined; a strategy of your own stays in your own repository. Publishing is a push of either branch;
-nothing else crosses.
+**A repository generated from the template copies `main` only**, on purpose, unless every branch is
+asked for. It takes the files it needs from `example` one at a time and deletes what is the
+strategy's — everything between the example markers, the seed, the notes under
+`Bibliotheca/Papers/` and the entries in `Bibliotheca/LOG.md` — or lets the `experiment-lifecycle`
+skill scaffold them. **The issue branches below are a recommendation**, there to keep project
+management simple, not a gate.
+
+**On the template, `main` and `example` are both public**, at `KaxaNuk/KaxaNuk-Research-Process`,
+and issues and pull requests from anyone land there — the process improves in public. A strategy of
+your own stays in your own repository.
 
 ### The issue exists before the branch
 
@@ -75,7 +82,8 @@ idea  ->  issue on the Project board  ->  issues/<number> cut from main  ->  PR 
 
 1. **Open the issue.** State the question, not the solution.
 2. **Cut the branch** — `git switch -c issues/<number> main`.
-3. **For an experiment, `BLUEPRINT_N.md` is the first commit on that branch**, before the rule. The
+3. **For an experiment, `BLUEPRINT_N.md` is the first commit on that branch**, before the rule; for
+   Experiment 1 only the `BRAINSTORMING_1.md` entry choosing the benchmark comes before it. The
    branch makes it visible in the diff that the hypothesis was written before the answer.
 4. **Work**, committing against the issue.
 5. **PR into `main`**, once the pipeline has been re-run end to end from a wiped working copy.
@@ -97,7 +105,7 @@ idea  ->  issue on the Project board  ->  issues/<number> cut from main  ->  PR 
 | Document | Who writes it | Changes when |
 | --- | --- | --- |
 | `OBJECTIVE.md` | a person, first | almost never — a change here means a *different* strategy |
-| the notes in `Bibliotheca/` | a person, or a researcher with `read` — one per paper, one per chapter of a book somebody chose, after a plan and a go | a source is read. A later note corrects an earlier one with a callout above the claim, never by smoothing it away |
+| the notes in `Bibliotheca/` | a person, or the [KaxaNuk-Researcher](https://github.com/KaxaNuk/KaxaNuk-Researcher) with its `read` skill — one per paper, one per chapter of a book somebody chose, after a plan and a go | a source is read. A later note corrects an earlier one with a callout above the claim, never by smoothing it away |
 | `Bibliotheca/BIBLIOGRAPHY.md` | a person adds the leads; whoever writes a note adds its row | a source is added, or read |
 | `RESULTS.md` | the AI, from the findings files | a `FINDINGS_N.md` changes |
 | `CHANGELOG.md` | whoever lands a change-set | any change-set lands |
@@ -113,9 +121,9 @@ same book start to circulate. **One deliberate exception:** findings from step 3
 `RESULTS.md`, because notebook outputs are stripped before committing and a measurement living only
 in a cell output does not survive the commit.
 
-Repository-level history — choosing the benchmark, the data step, the architecture — belongs in
-`JOURNAL_1.md`. Experiment 1 is the declared benchmark and therefore the shared context; later
-journals point there rather than copying it.
+Repository-level history — the benchmark once `BRAINSTORMING_1.md` has chosen it, the data step,
+the architecture — belongs in `JOURNAL_1.md`. Experiment 1 is the declared benchmark and therefore
+the shared context; later journals point there rather than copying it.
 
 ---
 
@@ -177,9 +185,10 @@ Two standing exceptions, and one that has to be asked for:
 - **Never print a value from `Config/.env`** — not into a commit, a notebook output, a log line, or
   a command that gets recorded. An exposed key is rotated, not edited out.
 - **Never use the section symbol** in documents here. Write "section" or name the heading.
-- **Mark example content as you add it.** `# --- example: begin ---` in Python,
-  an HTML comment of the same words in Markdown, and `# EXAMPLE-ONLY CELL` on a whole notebook cell.
-  Nothing consumes these; they exist so a person starting their own strategy can see what to delete.
+- **On `example`, mark the worked strategy's content as you add it.** `# --- example: begin ---` in
+  Python, an HTML comment of the same words in Markdown, and `# EXAMPLE-ONLY CELL` on a whole
+  notebook cell. Nothing consumes these; they show a person starting their own strategy what to
+  delete.
 
 ---
 
@@ -197,7 +206,7 @@ The part of the process that has nothing to do with Python.
 
 **The one deliberate look-ahead is named in its own column prefix.** A `current_*` column comes from
 today's security master, so any period before a reclassification is misattributed. That is why the
-prefix exists, and why anything bucketed on it is read as indicative.
+prefix exists, why anything bucketed on it is read as indicative, and why no rule selects on one.
 
 **If your signal is fitted, measure what look-ahead costs.** Read the same model causally and
 smoothed and report the gap. It is the cheapest audit in the process and routinely the largest
@@ -225,10 +234,11 @@ happened to pay over the sample.
 factor exposure is stripped out. The selection story gets sharper, and it answers the question the
 first cut alone cannot: **whether the Sharpe survives once that factor turns.**
 
-**What it settles:** whether there is genuine idiosyncratic alpha — graduation criterion 2
-evaluated, not deferred. For a strategy raising outside money it is also the plainest signal of
-sophistication: allocators are not buying returns, they are buying proof you know where the
-returns come from, and showing both layers cleanly is how that proof is given.
+**What it settles:** whether there is genuine idiosyncratic alpha — criterion 2 of the graduation
+gate that `Paper_Trading/BITACORA.md` defines, evaluated, not deferred. For a strategy raising
+outside money it is also the plainest signal of sophistication: allocators are not buying returns,
+they are buying proof you know where the returns come from, and showing both layers cleanly is how
+that proof is given.
 
 **What to expect it not to settle:** an *absolute* rule is close to invisible to a factor model
 built on *relative* factors, so a book can beat every benchmark while the model assigns roughly

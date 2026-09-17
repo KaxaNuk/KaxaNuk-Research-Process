@@ -10,6 +10,14 @@
 >
 > Record the date it was written, and delete this blockquote.
 
+<!-- example: begin -->
+
+> **Not written for `liquid-momentum` yet.** It comes after the fine-tuning pass of `OBJECTIVE.md`,
+> the universe and the data, so each prediction can cite a note or an analyzer measurement. This
+> block goes when the blueprint is written; from then on the file never changes.
+
+<!-- example: end -->
+
 ---
 
 ## Experiment 1 — the declared benchmark

@@ -140,7 +140,7 @@ twelve-month return, equally weighted. Its three claims are in
 | --- | --- |
 | [Jegadeesh & Titman (1993)](Papers/Jegadeesh_Titman_1993_Buying_Winners_Selling_Losers.md) — *Returns to Buying Winners and Selling Losers* | **claim 1 rests on this.** Three-to-twelve-month formation earns significant returns not explained by systematic risk; part of it dissipates over the following two years, which is why holding is short |
 | [Jegadeesh (1990)](Papers/Jegadeesh_1990_Predictable_Behavior_Of_Security_Returns.md) — *Evidence of Predictable Behavior of Security Returns* | **the note that changed the design.** One-month returns reverse, so the formation window ends a month before the trade: `r_momentum_12_1`, not `r_momentum_12_0` |
-| [Asness, Moskowitz & Pedersen (2013)](Papers/Asness_Moskowitz_Pedersen_2013_Value_And_Momentum_Everywhere.md) — *Value and Momentum Everywhere* | why 12-1 is **inherited rather than searched** — the anti-snooping defence in *what is not claimed*. Also why the same idea would travel to other asset classes |
+| [Asness, Moskowitz & Pedersen (2013)](Papers/Asness_Moskowitz_Pedersen_2013_Value_And_Momentum_Everywhere.md) — *Value and Momentum Everywhere* | why 12-1 is **inherited rather than searched** — the anti-snooping defence in *what is not claimed* — and why the idea would travel to other asset classes. It also finds the premium inside each market's largest, most liquid quintile: a capitalisation cut rather than our dollar-volume one, so evidence on the other side of the screen question rather than an answer |
 
 **The screen — what does restricting to liquid names do to it?** *Both of these argue against the
 strategy, and both are why claim 3 is worded as a cost.*

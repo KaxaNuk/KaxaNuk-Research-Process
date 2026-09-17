@@ -337,4 +337,48 @@ leaves open.
     - **Nothing is committed or pushed.** Until it is, `origin/example` is still `fac0a87`, and the
       fetch commands the template's `README.md` and the researcher's `read` give pull the old tree.
 
+## 2026-09-17 — the example made readable, and where the strategy stands by name
+
+- **Idea / question:** a first-time reader should meet the strategy on the first screen and the
+  process in a few lines. Three lines in the entries above are no longer true — *nothing is
+  committed or pushed*, the skills *installed on this branch*, and *the seed and the six notes
+  cannot carry an example marker* — and the entries number the steps two ways.
+- **What we tried / considered:** a fresh read of `main` after install and of this branch, by
+  readers who had seen neither. `git log origin/example` shows the branch pushed; `.gitignore`
+  lists `.claude/` and `apm_modules/`; each note's body sits between example markers, its
+  frontmatter outside.
+- **Outcome / decision:**
+    - **`README.md` is the strategy's**, in the shape `SETUP.md` step 5 gives: the idea, the status
+      banner `AGENTS.md` shares, a table of where it stands, the eight steps with where
+      `liquid-momentum` is on each, and a line each on the Lab, the skills and the researcher. The
+      template's README is no longer copied here; the copy had drifted.
+    - **`AGENTS.md`, `SETUP.md`, `RESULTS.md`, `CHANGELOG.md` and `.gitignore` take `main`'s 0.7.4
+      text** file by file, each with a marked note where this branch differs: work on
+      `liquid-momentum` lands on `example`, never in a pull request into `main`, and setup step 5 is
+      not run here.
+    - **The notebooks, `BLUEPRINT_1.md`, `BRAINSTORMING_1.md` and `BITACORA.md` stay whole**, each
+      with one marked line saying what is not written yet and why. `universe.ipynb` says the
+      universe is decided in `Universe/`, the seed and the notebook; it said eligibility was decided
+      in the notebook alone, which contradicted the Refinery screen `OBJECTIVE.md` names.
+    - **Two notes send their predictions to `BLUEPRINT_1.md`**, to be evaluated in `FINDINGS_1.md`;
+      they sent them to the findings. Logged in `Bibliotheca/LOG.md`.
+    - **`example` was committed and pushed**, so the fetch commands pull this tree. This closes the
+      *nothing is pushed* threads above.
+    - **The skills are installed in a working copy, not on the branch.** `.claude/` and
+      `apm_modules/` are ignored, so a clone has none until `uv run apm install --target claude`.
+    - **The notes carry example markers** around their bodies, their frontmatter outside, so
+      stripping the markers still leaves six files to delete whole. The seed carries none.
+    - **From here on, entries on this public branch record the strategy's decisions and the
+      repository's**, not the plumbing around them.
+- **Open threads:**
+    - **Where the strategy stands, by name:** the objective is written; the reading for its claims
+      is in progress; the universe has a seed and no dated membership; nothing from the data on is
+      built.
+    - **Next, in order:** the fine-tuning pass of `OBJECTIVE.md`, with the five design questions and
+      the audit's remaining findings; dated membership for the seed; the `c_*` and `r_*` columns and
+      the drivers, run as curator, `universe.ipynb`, refinery, `analyzer.ipynb`; the benchmark entry
+      in `BRAINSTORMING_1.md`; `BLUEPRINT_1.md` before the rule.
+    - **The published `experiment-lifecycle` skill still lists the universe before the objective.**
+      The template's README, *Starting your own strategy*, holds over it.
+
 <!-- example: end -->

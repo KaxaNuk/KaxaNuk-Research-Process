@@ -41,6 +41,62 @@ for somebody who was not in the room:
 
 ---
 
+## 0.7.4 (2026-09-17)
+
+**PATCH** — the template reads in the order a newcomer needs it, and a repository made from it says
+what comes after setup and stays true about itself. No result changes.
+
+**What to do differently:** after setup, start at `OBJECTIVE.md`; the order after it is *Starting
+your own strategy* in the template's README, which now follows *Setup* directly. In step 5, put the
+README's status line in `AGENTS.md`'s banner and rename `name` and `author` in `apm.yml`, and commit
+all four files together.
+
+### Changed
+
+* **`README.md` puts the newcomer's path first**: what the template is for and what it needs, the
+  install line, the eight steps, *The tools*, *Setup*, *Starting your own strategy* and *The
+  documents*; *What is in here*, *The six Lab modules* and *The conventions worth keeping* follow as
+  reference for when the work reaches the universe and the data. The paragraph on `main` and
+  `example` moves below the install line, and the first lines say that building the data needs a
+  provider key and that steps 5 and 6 need the licensed engines.
+* **The order of work says what it is before it starts.** Its eight items are named as the order of
+  work, not the eight steps; the files it names are said to be on `example` before the list, not
+  after; item 3 requires delisted names in the seed; item 5 is headed by the benchmark choice it
+  asks for first.
+* **`AGENTS.md` holds inside a strategy repository.** It pointed at a local `README.md` that step 5
+  replaces, said `main` holds no strategy, and put issues on KaxaNuk's project. It now points at the
+  template's README, says what `main` and `example` are on the template and in a strategy
+  repository, states that `main` is never merged into `example`, and marks example content only on
+  `example`. Its banner no longer says every file is a description on a branch whose folders hold
+  `.gitkeep`.
+* **Setup step 5 hands over a next step.** The strategy README it writes links to the order of work
+  and names `OBJECTIVE.md` as next, and so does the agent's hand-over; step 5 also carries the
+  status line into `AGENTS.md` and the owner's name into `apm.yml`, whose comment asking for that
+  is gone.
+* **`SETUP.md` is shorter before its first command**: the folder rule is two paragraphs, the skills
+  step says what APM and a skill are, the keys step names each key, and the paragraph for somebody
+  who needs no research process is one sentence.
+* **`OBJECTIVE.md` marks all its guidance in italics** and has the fifth part its closing table
+  lists, *Where each half is named*, which is where the `c_*` and `r_*` columns are now asked for.
+* **`RESULTS.md`'s comparison rule says what to compare**: a winner's Sharpe with its own
+  experiment's control, and `vs control` across experiments.
+* **The six Lab modules are numbered by the step they belong to**, 3 to 6, not 1 to 6 beside a step
+  table where step 1 is the Bibliotheca, and the licensed engines point at the skills that install
+  them.
+
+### Fixed
+
+* **The two-command lines in `SETUP.md` step 5 and `README.md`'s fetch are split in two**: `&&` is a
+  parse error in Windows PowerShell 5.1, which step 1 names as the shell the Claude app and Codex
+  drive on Windows.
+* **`SETUP.md` says `uv` uses Python 3.12 if it finds it**, and downloads 3.13 only if neither is
+  there; `pyproject.toml` allows both.
+* **`AGENTS.md` puts the benchmark in `JOURNAL_1.md` once `BRAINSTORMING_1.md` has chosen it**, and
+  lets that entry come before `BLUEPRINT_1.md`, which is otherwise still the first commit on an
+  experiment's branch; it named the journal as where the benchmark is chosen.
+* **`RESULTS.md` says *Known limitations* is not empty**, and `.gitignore` and `AGENTS.md` point at
+  files a strategy repository still has.
+
 ## 0.7.3 (2026-09-16)
 
 **PATCH** — the public `example` is the worked strategy, and the documents stop contradicting each

@@ -25,3 +25,10 @@
 The first entry is usually *choosing the benchmark*: what should every future experiment be measured
 against, which candidates were considered, and the one property that decided between them — a
 benchmark is chosen for being transparent, liquid and stable, not for being clever.
+
+<!-- example: begin -->
+
+No entry for `liquid-momentum` yet. The first, choosing the benchmark, comes just before
+`BLUEPRINT_1.md`.
+
+<!-- example: end -->

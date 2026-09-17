@@ -12,8 +12,8 @@ prices, with live universe changes, and with the delistings and corporate action
 has already tidied up.
 
 Step 8, Production, is not here: a strategy leaves this repository when it is funded — real
-capital, real monitoring, a real drawdown policy, the README's step 8 — and where that is depends on
-whose desk it is.
+capital, real monitoring, a real drawdown policy, step 8 of the KN Research Process — and where that
+is depends on whose desk it is.
 
 > **This file is the gate, not a log.** `JOURNAL_N.md` means an append-only dated record inside an
 > experiment folder; this document is a contract — what graduation means and what has to be true
@@ -77,6 +77,13 @@ and it re-introduces exactly the search that produces negative out-of-sample per
 
 **Nothing has graduated. Nothing has been tested.** This is the template; the first candidate
 arrives when an experiment's `FINDINGS_N.md` can evidence criterion 1.
+
+<!-- example: begin -->
+
+On `example` nothing has reached this gate: `liquid-momentum` has no book, and its Experiment 1 is
+the benchmark, which is not a graduation candidate.
+
+<!-- example: end -->
 
 When one does, record it here: which experiment, which variant, which criteria it clears, and —
 above all — which it does not and why. **The blocking items are the content of this section, not the

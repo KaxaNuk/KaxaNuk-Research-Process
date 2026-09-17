@@ -17,3 +17,8 @@
 - updated: `Papers/Asness_Moskowitz_Pedersen_2013_Value_And_Momentum_Everywhere.md` — a claim heading on the liquid universe, and the bullets under *What it changes*
 - updated: `Papers/Jegadeesh_Titman_1993_Buying_Winners_Selling_Losers.md` — an implication no longer asserts a monthly rebalance nobody has decided
 - read: two sections of the paper; still not the full paper
+
+## [2026-09-17] read | wording only — where two notes send a prediction; no source re-read
+- updated: `Papers/Jegadeesh_Titman_1993_Buying_Winners_Selling_Losers.md` — its predictions go to `BLUEPRINT_1.md`, and the shared portfolio module is called a description, not a default
+- updated: `Papers/Ibbotson_Chen_Kim_Hu_2013_Liquidity_As_An_Investment_Style.md` — its two predictions go to `BLUEPRINT_1.md`, evaluated in `FINDINGS_1.md`
+- updated: the Asness, Moskowitz & Pedersen row in `BIBLIOGRAPHY.md`, to carry the liquid-universe finding its note gained on 2026-09-16

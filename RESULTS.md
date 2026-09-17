@@ -6,15 +6,23 @@
 > changes, change it in `FINDINGS_N.md` first**, then update this file — a summary that leads its
 > sources is how two numbers for the same book start to circulate.
 >
-> **One exception:** findings from step 3 go straight into *Before any experiment* below. Notebook
-> outputs are stripped before committing, so a step-3 measurement that lives only in a cell output
-> does not survive the commit.
+> **One exception:** findings from step 3, `Data/analyzer.ipynb`, go straight into *Before any
+> experiment* below: notebook outputs are stripped before committing, so a measurement that lives
+> only in a cell output does not survive the commit.
 >
 > Every performance figure comes from the **KaxaNuk Backtest Engine**. There is no second backtest
 > in this repository, by design.
 >
-> Every table below is empty by design: the shape is fixed, the numbers arrive from the pipeline.
+> Every table below except *Known limitations* is empty by design: the shape is fixed, the numbers
+> arrive from the pipeline.
 > Delete this blockquote when the first one reports.
+
+<!-- example: begin -->
+
+> **On `example`, nothing is measured yet.** `liquid-momentum` has not reached the Data step; its
+> first entry goes under *Before any experiment*, from `Data/analyzer.ipynb`.
+
+<!-- example: end -->
 
 ## The project in three sentences
 
@@ -36,9 +44,9 @@ book. Cite the section each number came from.
 Each experiment ranks its variants over **one window shared by all of them**, and those windows can
 differ between experiments.
 
-> **Read the Sharpe column down, not across.** An experiment's winner is comparable to *its own*
-> control row, not to another experiment's headline. The `vs control` column is the one that carries
-> meaning across rows.
+> **Compare a winner's Sharpe with its own experiment's control.** Windows can differ between
+> experiments, so a winner is comparable to its own control row, not to another experiment's
+> headline; `vs control` is the column to compare across experiments.
 
 | Exp | Book | CAGR | Sharpe | Max DD | Control Sharpe | vs control | Status | Findings |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | --- | --- |

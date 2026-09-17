@@ -11,9 +11,11 @@
 <!-- example: begin -->
 
 > **This file is the worked example — `liquid-momentum`.** One strategy filled in, kept on the
-> `example` branch so the shape can be read rather than imagined. **Written 2026-09-10, before any
-> data was downloaded and before any rule was coded.** Starting your own: delete everything between
-> the example markers and write yours in its place.
+> `example` branch so the shape can be read rather than imagined. **Drafted 2026-09-10 before any
+> paper was read, any data downloaded or any rule coded; its evidence rewritten from the six notes
+> the same day, and edited on 2026-09-16.** The fine-tuning pass is still owed, with five design
+> questions open in `Experiments/Experiment_1/JOURNAL_1.md`. Starting your own: delete everything
+> between the example markers and write yours in its place.
 
 ## The main idea
 
@@ -133,7 +135,7 @@ sweep as a curve.
 Widening the Curator's schema forces a refetch of every identifier, so a column whose settings an
 experiment will tune belongs one stage later. Its inputs — the adjusted close and `c_return_1d` —
 stay in the Curator, where nothing about them is tunable. The convention is in
-[`README.md`](README.md); this is the strategy that made us apply it.
+`Data/Refinery/custom_calculations.py`; this is the strategy that made us apply it.
 
 <!-- example: end -->
 

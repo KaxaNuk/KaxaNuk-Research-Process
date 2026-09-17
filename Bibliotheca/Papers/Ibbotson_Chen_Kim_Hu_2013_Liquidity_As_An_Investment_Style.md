@@ -50,8 +50,8 @@ better-performing end.
   filter".
 - **Claim 3 is worded as a cost:** the screen selects the low-return end of the style on purpose,
   and if the book outperforms, the screen is not where that came from.
-- **Two predictions for `FINDINGS_1.md`, evaluated separately:** lower gross return than an
-  unscreened momentum book, and a better chance of keeping what is left after costs.
+- **Two predictions for `BLUEPRINT_1.md`, evaluated separately in `FINDINGS_1.md`:** lower gross
+  return than an unscreened momentum book, and a better chance of keeping what is left after costs.
 - **What the sort's shape looks like inside the liquid end is a sweep a later experiment owes.** The
   top quintile is a cut we chose for roundness, not one this paper endorses, so the cost of our
   specific threshold is not known from here.

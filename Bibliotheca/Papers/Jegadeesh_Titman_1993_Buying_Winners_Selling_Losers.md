@@ -29,8 +29,8 @@ are formed on nothing but past price: no accounting input, no analyst estimate, 
 > stay inside the same range. Twelve months is the slow end of the formation range, the end that
 > trades least. How often the book is re-struck is not stated in `OBJECTIVE.md`; it is one of the
 > open design questions in `JOURNAL_1.md`, owed by the fine-tuning pass of the objective and settled
-> in `BLUEPRINT_1.md`, and until then the shared portfolio module's default is to re-strike whenever
-> the eligible set changes.
+> in `BLUEPRINT_1.md`, and until then the shared portfolio module, still a description, re-strikes
+> whenever the eligible set changes.
 
 ## The profits are not explained by systematic risk, nor by delayed reaction to common factors
 
@@ -42,7 +42,7 @@ lead-lag transmission of common factor news — and reports that neither account
 > the systematic risks *it* tested. Our attribution runs against a modern factor set that includes a
 > momentum factor — so a book that is *only* momentum should expect attribution to hand most of the
 > return to that factor and little to selection. That is the expected outcome, not a disappointment,
-> and `FINDINGS_1.md` should say so before it is measured.
+> and `BLUEPRINT_1.md` should predict it before it is measured.
 
 ## Part of the abnormal return earned in the first year dissipates over the following two years
 
@@ -62,7 +62,7 @@ given back over the subsequent two years.
   an open question in `JOURNAL_1.md`, to be settled in `BLUEPRINT_1.md`.
 - **Step 6 is not optional, and its expected answer is written down first:** a book that is only
   momentum should see attribution hand most of the return to the momentum factor and little to
-  selection — `FINDINGS_1.md` says so before it is measured.
+  selection — a prediction for `BLUEPRINT_1.md`, written before it is measured.
 - **Holding stays short.** A buy-and-hold reading hands back part of what it earned, so the horizon
   is a property of the signal, not a dial to turn down for costs.
 - **Anything claimed from it is about the effect's existence, never its current magnitude** — the
