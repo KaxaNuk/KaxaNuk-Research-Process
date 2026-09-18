@@ -466,4 +466,24 @@ leaves open.
       panel, so it is a presentation choice rather than a correctness one.
     - The per-asset Brinson-Fachler question stands.
 
+## 2026-09-17 — the five style files lower-cased, and the factor set now matches both panels
+
+- **Idea / question:** the thread above. The attribution's plots group factors into a style panel and
+  an industry panel by exact name, and the style files did not match.
+- **What we tried / considered:** read the two lists out of the installed library rather than trusting
+  a summary of them. The style panel takes `f_size`, `f_momentum`, `f_beta`, `f_residual volatility`
+  and `f_value`, all lower case; the industry panel takes the eleven GICS names **capitalised**, which
+  is what this repository's sector files already were. A name in neither list still attributes — it is
+  simply absent from both charts.
+- **Outcome / decision:**
+    - **Five files renamed** in `Data/Curator/Factors/`, sector files left alone. Every factor file now
+      lands in a panel: five of five style, eleven of eleven industry, nothing unmatched but the four
+      reserved names.
+    - **Nothing about the attribution moved.** Each factor's contribution is what it was before the
+      rename, down to the last digit; only the labels changed. Unlike the `f_market` rename in the
+      entry above, this one is cosmetic — which is worth writing down precisely so nobody later reads
+      the two as the same kind of change.
+- **Open threads:**
+    - The per-asset Brinson-Fachler question stands.
+
 <!-- example: end -->
