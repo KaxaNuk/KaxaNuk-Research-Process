@@ -17,10 +17,19 @@ What is expected here:
   file the engine read is exactly what it refuses.  The book it attributes is the one the engine
   held each trading day, drift and the cash proxy included; the benchmark's holdings follow the
   same rule.
-- Shape the hand-supplied files into the layout the library auto-detects: benchmark weights and a
-  benchmark return series, both horizontal -- securities down, dates across -- with no nulls.
-  Getting the orientation wrong does not fail; it makes the loader read the attribution transposed
-  and report a plausible number.  That is why the shaping lives here and not in a notebook.
+- Shape the hand-supplied files into what the library's loader accepts, which is decided by **one
+  cell**: the first header.  `Ticker` means securities down and dates across; `date_column` means
+  dates down and securities across.  Anything else -- `date`, `m_date`, the name a provider happened
+  to use -- raises before a number is read.  The same rule governs the book, the benchmark's
+  holdings and the benchmark's return series, and none of them may carry nulls.  That is why the
+  shaping lives here and not in a notebook.
+- Say what the factor directory has to look like, because every entry in it is read as a factor
+  file: one CSV per factor, its name taken from the file name up to the first dot, a date column
+  first -- its header may be empty -- and one column per security after it.  Four names are
+  reserved, matched exactly and in lower case, and dropped from the percentage decomposition:
+  `f_market`, `f_total_factor_returns`, `f_total_excess_returns` and `f_idyo_returns`.  A file
+  capitalised differently is attributed as an ordinary factor, which is a quiet way to double-count
+  the market.
 - Name the two output files and the date convention once, so switching to a different index is an
   edit here and no notebook names a file.
 - Capture the library's figures.  It shows them and returns nothing, so this module has to catch
@@ -39,6 +48,6 @@ reasoning.
 It produces `Attribution/` -- the figures and the two decompositions -- for `FINDINGS_N.md`, and
 the answer to graduation criterion 2.
 
-It prevents selling factor beta as if it were alpha, and an attribution read transposed because
-nobody checked the table's shape.
+It prevents selling factor beta as if it were alpha, and a run that stops at its first file because
+a header carries the name a provider gave it rather than the one the loader expects.
 """

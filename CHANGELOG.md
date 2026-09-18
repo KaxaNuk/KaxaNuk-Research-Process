@@ -41,6 +41,32 @@ for somebody who was not in the room:
 
 ---
 
+## 0.7.7 (2026-09-17)
+
+**PATCH** — step 6's module says what the attribution library's loader actually accepts, checked by
+running it against this repository's own files. No result changes.
+
+**What to do differently:** give every weight file a first header of `Ticker` or `date_column` —
+nothing else loads, whatever the library's documentation says — and check that the four reserved
+factor names are in lower case before an attribution run.
+
+### Changed
+
+* **`Experiments/attribution_analysis.py` names the one cell that decides whether a file loads**: the
+  first header. `Ticker` means securities down and dates across, `date_column` means dates down and
+  securities across, and any other name — `date`, `m_date`, whatever a provider used — raises before a
+  number is read. The module said the hand-supplied files were both horizontal, and that a wrong
+  orientation produced a transposed number rather than an error. Both were wrong.
+* **The same module says what the factor directory has to look like**: every entry in it is read as a
+  factor file, the factor's name is the file name up to the first dot, the date column comes first and
+  its header may be empty, and the four reserved names — `f_market`, `f_total_factor_returns`,
+  `f_total_excess_returns`, `f_idyo_returns` — are matched exactly and in lower case, so a file
+  capitalised differently is attributed as an ordinary factor.
+* **`JOURNAL_1.md` records the run** that settled all of it: both engines installed, a synthetic book
+  priced, and the attribution run over the repository's real benchmark and factor files. It also
+  records a backtest that reported success while valuing 522 of 1305 days, because a book summing to
+  one with no cash reserve cannot pay commission at a rebalance.
+
 ## 0.7.6 (2026-09-17)
 
 **PATCH** — the tools are three jobs with a choice for each, not a fixed list. No result changes.

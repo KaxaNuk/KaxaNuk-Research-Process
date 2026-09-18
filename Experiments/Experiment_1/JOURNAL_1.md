@@ -406,4 +406,42 @@ leaves open.
       before step 6 reports an allocation number as a group bet.
     - **The five design questions of 2026-09-16 stand**, unchanged.
 
+## 2026-09-17 — both engines run, and what this repository's own inputs needed
+
+- **Idea / question:** `Data/Curator/Benchmarks/` and `Data/Curator/Factors/` were refreshed. Do the
+  licensed engines accept them as they sit here, and does the step 5 to step 6 hand-off work the way
+  0.7.5 describes it?
+- **What we tried / considered:** both engines installed, their keys read from `Config/.env`. A
+  plumbing run on synthetic prices and an equal-weight book of eight securities that appear in both
+  the benchmark holdings and the factor files: the engine priced the book, and the attribution ran
+  over this repository's real benchmark and factor files at full size in about half a minute.
+  **Nothing was downloaded, and no number from it is a result** — the prices are a random walk, so
+  the run says only whether the plumbing holds.
+- **Outcome / decision:**
+    - **`KN_US _Equity_600_Returns.csv` now starts `date_column`**, where it started `m_date`; its
+      rows are untouched. The loader decides a weight file's orientation from its first header and
+      takes only `Ticker` or `date_column`. The holdings file already said `date_column` and loaded
+      as it was — 788 securities, about 251 rows a year, which is what the library's daily-density
+      check wants.
+    - **The twenty factor files load as they are**, 967 MB in total, each read only for the securities
+      the book holds. `.gitkeep` is skipped, and the empty first header is accepted.
+    - **Step 6 reads the book's daily weights from step 5**, as 0.7.5 says it would: the engine hands
+      them back with drift and the cash position included. `attribution_analysis.py` now carries the
+      header rule and what the factor directory has to look like, so the shaping stays out of the
+      notebook.
+    - **A backtest can report success over a stub.** With weights summing to one and no cash reserve,
+      the book could not pay commission at a rebalance: 522 of 1305 days valued, success reported, an
+      Excel report written, and a CAGR of 23.6% against 14.2% for the complete run. The engine's
+      returned end date and years describe what it *valued* — compare them with the window that was
+      asked for. That is the fifth way a backtest lies, reproduced on demand.
+- **Open threads:**
+    - **`f_Market.csv` is attributed as an ordinary factor.** The four reserved names are matched in
+      lower case, so this one is not stripped and the market is counted twice in the percentage
+      decomposition. Rename it `f_market.csv` before the first real attribution, or decide that it is
+      meant to be a factor of its own.
+    - **The style files are capitalised** — `f_Beta`, `f_Size`, `f_Momentum`, `f_Value`,
+      `f_Residual Volatility` — while the library's plots group on lower-case names. They attribute;
+      they do not appear in the style panel.
+    - The per-asset Brinson-Fachler question above stands.
+
 <!-- example: end -->
