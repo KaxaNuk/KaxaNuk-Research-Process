@@ -44,7 +44,7 @@ for somebody who was not in the room:
 ## 0.7.8 (2026-09-17)
 
 **PATCH** — step 6 compares the book with the whole benchmark, not the part of it the book holds. No
-result changes; nothing has been attributed for real yet.
+result changes.
 
 **What to do differently:** before handing the book to the attribution library, add every benchmark
 constituent it does not hold at zero weight, each with a price series. The engine's daily weights
@@ -52,13 +52,14 @@ name only what was held.
 
 ### Changed
 
-* **`Experiments/attribution_analysis.py` widens the book to the benchmark.** The library prices only
-  the securities named in the book's weight file, and the first cut computes the benchmark's return
-  from those prices alone; the index's own return series never enters it. A book of 8 names inside a
-  788-name index was compared with the 7% of the index it overlapped: the benchmark return came out at
-  6% of the index's, and alpha about five times too large, most of the excess filed under interaction.
-  With the other 780 names added at zero weight the benchmark return reached 98.9% of the index's, the
-  rest being the held names' own returns. The run is recorded in `JOURNAL_1.md`.
+* **`Experiments/attribution_analysis.py`, on `example`, widens the book to the
+  benchmark.** The library prices only the securities named in the book's weight file, and the first
+  cut computes the benchmark's return from those prices alone; the index's own return series never
+  enters it. A book of 8 names inside a 788-name index was compared with the 7% of the index it
+  overlapped: the benchmark return came out at 6% of the index's, and alpha about five times too
+  large, most of the excess filed under interaction. With the other 780 names added at zero weight the
+  benchmark return reached 98.9% of the index's, the rest being the held names' own returns. The run is
+  recorded in `JOURNAL_1.md` on that branch.
 * **The same module drops the engine's benchmark column** from the daily weights, which the engine
   returns at zero, and keeps the cash position.
 * **The README's four shared modules** say that `attribution_analysis.py` widens the book to every
@@ -67,7 +68,7 @@ name only what was held.
 ## 0.7.7 (2026-09-17)
 
 **PATCH** — step 6's module says what the attribution library's loader actually accepts, checked by
-running it against this repository's own files. No result changes.
+running it against a strategy's own files. No result changes.
 
 **What to do differently:** give every weight file a first header of `Ticker` or `date_column` —
 nothing else loads, whatever the library's documentation says — and check that the four reserved
@@ -75,20 +76,21 @@ factor names are in lower case before an attribution run.
 
 ### Changed
 
-* **`Experiments/attribution_analysis.py` names the one cell that decides whether a file loads**: the
-  first header. `Ticker` means securities down and dates across, `date_column` means dates down and
-  securities across, and any other name — `date`, `m_date`, whatever a provider used — raises before a
-  number is read. The module said the hand-supplied files were both horizontal, and that a wrong
-  orientation produced a transposed number rather than an error. Both were wrong.
+* **`Experiments/attribution_analysis.py`, on `example`, names the one cell that
+  decides whether a file loads**: the first header. `Ticker` means securities down and dates across,
+  `date_column` means dates down and securities across, and any other name — `date`, `m_date`,
+  whatever a provider used — raises before a number is read. The module said the hand-supplied files
+  were both horizontal, and that a wrong orientation produced a transposed number rather than an
+  error. Both were wrong.
 * **The same module says what the factor directory has to look like**: every entry in it is read as a
   factor file, the factor's name is the file name up to the first dot, the date column comes first and
   its header may be empty, and the four reserved names — `f_market`, `f_total_factor_returns`,
   `f_total_excess_returns`, `f_idyo_returns` — are matched exactly and in lower case, so a file
   capitalised differently is attributed as an ordinary factor.
-* **`JOURNAL_1.md` records the run** that settled all of it: both engines installed, a synthetic book
-  priced, and the attribution run over the repository's real benchmark and factor files. It also
-  records a backtest that reported success while valuing 522 of 1305 days, because a book summing to
-  one with no cash reserve cannot pay commission at a rebalance.
+* **`JOURNAL_1.md` on that branch records the run** that settled all of it: both engines installed, a
+  synthetic book priced, and the attribution run over a strategy's real benchmark and factor files. It
+  also records a backtest that reported success while valuing 522 of 1305 days, because a book summing
+  to one with no cash reserve cannot pay commission at a rebalance.
 
 ## 0.7.6 (2026-09-17)
 
