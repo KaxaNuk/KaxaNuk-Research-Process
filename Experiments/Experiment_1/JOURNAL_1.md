@@ -486,4 +486,39 @@ leaves open.
 - **Open threads:**
     - The per-asset Brinson-Fachler question stands.
 
+## 2026-09-17 — the book must be widened to the benchmark before step 6, and a run that proves it
+
+- **Idea / question:** with the engine's own daily weights handed to the attribution, the first cut
+  reported a benchmark return of +0.0461 over a window in which the KN 600's own returns file shows
+  +0.7658 — six per cent of it. Is step 6 comparing the book with the index at all?
+- **What we tried / considered:** traced it to the library. It loads market data only for the
+  securities named in the book's weight file, and the first cut computes the benchmark's return from
+  those prices alone; the index's return series is not one of its inputs. The book held 8 of the
+  index's 788 names, 7.3% of it by weight. Then a run to prove the fix: the same book with the 780
+  names it does not hold added at zero weight, each priced so that it earns exactly the index's
+  daily return. Still a plumbing run — the held names' prices are synthetic.
+- **Outcome / decision:**
+
+  | First cut | Book only | Widened |
+  | --- | --- | --- |
+  | portfolio return | +0.9305 | +0.9305 |
+  | benchmark return | +0.0461 | +0.7571 |
+  | alpha | +0.8845 | +0.1735 |
+  | interaction | +0.7415 | +0.0399 |
+
+    - **The benchmark return went from 6.0% to 98.9% of the index's**, and the benchmark weight left
+      unpriced from 92.7% to none. The last 1.1% is the 8 held names, which carry 7.3% of the index
+      and earn their own returns rather than the index's — the gap the design predicted.
+    - **Without the widening, alpha was overstated about fivefold**, and nearly all of the excess was
+      filed under interaction, the effect least likely to be questioned. The book's own return did not
+      move, which is what zero weights should do.
+    - **The rule, now in `Experiments/attribution_analysis.py`:** the book handed to step 6 lists every
+      benchmark constituent, at zero weight where it is not held, each with a price series. For
+      `liquid-momentum` that is cheap — the seed already is the index's 788 names, so the curator will
+      have their prices — but the engine's `Daily_Weights` names only what was held, so the hand-off
+      has to add the rest.
+- **Open threads:**
+    - The per-asset Brinson-Fachler question stands, and matters more now: allocation and selection
+      are only worth reading once the benchmark is whole.
+
 <!-- example: end -->

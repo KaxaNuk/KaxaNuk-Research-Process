@@ -17,6 +17,13 @@ What is expected here:
   file the engine read is exactly what it refuses.  The book it attributes is the one the engine
   held each trading day, drift and the cash proxy included; the benchmark's holdings follow the
   same rule.
+- Widen the book to the benchmark before handing it over: every benchmark constituent the book
+  does not hold, added at zero weight, each with its own price series.  The library prices only
+  the securities named in the book, and the first cut computes the benchmark's return from those
+  prices alone -- the index's own return series is never one of its inputs.  A book that names only
+  what it holds is compared against the fraction of the index it happens to own, and the
+  difference is reported as alpha, most of it filed under interaction, where nobody looks.  Drop
+  the engine's benchmark column on the way, which it returns at zero, and keep the cash position.
 - Shape the hand-supplied files into what the library's loader accepts, which is decided by **one
   cell**: the first header.  `Ticker` means securities down and dates across; `date_column` means
   dates down and securities across.  Anything else -- `date`, `m_date`, the name a provider happened

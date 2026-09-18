@@ -41,6 +41,29 @@ for somebody who was not in the room:
 
 ---
 
+## 0.7.8 (2026-09-17)
+
+**PATCH** — step 6 compares the book with the whole benchmark, not the part of it the book holds. No
+result changes; nothing has been attributed for real yet.
+
+**What to do differently:** before handing the book to the attribution library, add every benchmark
+constituent it does not hold at zero weight, each with a price series. The engine's daily weights
+name only what was held.
+
+### Changed
+
+* **`Experiments/attribution_analysis.py` widens the book to the benchmark.** The library prices only
+  the securities named in the book's weight file, and the first cut computes the benchmark's return
+  from those prices alone; the index's own return series never enters it. A book of 8 names inside a
+  788-name index was compared with the 7% of the index it overlapped: the benchmark return came out at
+  6% of the index's, and alpha about five times too large, most of the excess filed under interaction.
+  With the other 780 names added at zero weight the benchmark return reached 98.9% of the index's, the
+  rest being the held names' own returns. The run is recorded in `JOURNAL_1.md`.
+* **The same module drops the engine's benchmark column** from the daily weights, which the engine
+  returns at zero, and keeps the cash position.
+* **The README's four shared modules** say that `attribution_analysis.py` widens the book to every
+  benchmark constituent.
+
 ## 0.7.7 (2026-09-17)
 
 **PATCH** — step 6's module says what the attribution library's loader actually accepts, checked by
