@@ -133,7 +133,8 @@ packages, `universe` and `portfolio-construction` can now be named.
 * **The attribution reads the book's daily weights.** Attribution Analysis 0.2.0 rejects a weight file
   that is not a daily series once it spans a year, so `backtest_engine.py` reads the book's daily
   weights back from the engine and `attribution_analysis.py` shapes them. The README's four shared
-  modules say so; on `example` the module descriptions and the notebook's handoff table do too.
+  modules say so; on `example` the module descriptions and the notebook's
+  handoff table do too.
 * **`SETUP.md` step 4 and `apm.yml` list the published packages** — `common`, `universe`,
   `data-curator`, `portfolio-construction`, `backtest-engine`, `attribution-analysis` and
   `investment-lab` — in the order of the steps they serve.
@@ -236,8 +237,8 @@ fenced content, the seed, the notes under `Bibliotheca/Papers/` and the entries 
   notebook talks to the provider too, a window to sweep lives in the Refinery, the null VWAP is one
   provider's habit rather than every provider's, `Universe/Charts/` is gone, and step 8 is funding,
   wherever the desk is.
-* `example` takes the same text, and its notes, notebooks and journal stop saying the branch is
-  private or that a filled-in copy is elsewhere.
+* `example` takes the same text, and its notes, notebooks and journal stop
+  saying the branch is private or that a filled-in copy is elsewhere.
 
 ### Fixed
 
@@ -282,7 +283,8 @@ rather than the first thing done.
   reverses. Its row names `OBJECTIVE.md` beside `Bibliotheca/`.
 * **`SETUP.md`'s last paragraph** names the objective as the first thing to do, where it named the
   universe.
-* `example` takes the same text, and its `BIBLIOGRAPHY.md` plain-words line to match.
+* `example` takes the same text, and its `BIBLIOGRAPHY.md` plain-words line
+  to match.
 
 ---
 
@@ -295,7 +297,8 @@ time. No result changes.
 `Bibliotheca/Extracts/`, where the researcher's script leaves a book's chapters as text. A book is
 a folder — `Books/Author_Year_Title/INDEX.md` for the chapter table, one file per chapter read —
 and `Bibliotheca/Knowledge/` is gone: the notes beside the sources are the library, `BIBLIOGRAPHY.md`
-is its index and `Bibliotheca/LOG.md` its record. The files themselves are on `example`.
+is its index and `Bibliotheca/LOG.md` its record. The files themselves are on
+`example`.
 
 ### Added
 
