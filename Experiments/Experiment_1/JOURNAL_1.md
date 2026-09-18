@@ -444,4 +444,26 @@ leaves open.
       they do not appear in the style panel.
     - The per-asset Brinson-Fachler question above stands.
 
+## 2026-09-17 — `f_Market.csv` renamed `f_market.csv`, and what that one letter moved
+
+- **Idea / question:** the entry above left the capitalised market factor open. The library's four
+  reserved names are matched in lower case, so the file was being read as an ordinary factor.
+- **What we tried / considered:** renamed it in `Data/Curator/Factors/` and re-ran the same plumbing
+  attribution, changing nothing else.
+- **Outcome / decision:**
+    - **The factor is now excluded from the percentage decomposition**, where before it was carried at
+      a contribution of its own, and the idiosyncratic share moved by exactly that amount. The column
+      is still loaded and still in the per-factor time series; what changed is that it stops competing
+      with the residual it belongs to.
+    - **Capitalised, it double-counted the market**: once as an explanatory factor and once inside the
+      total, which understates idiosyncratic return by the market's whole contribution. On a real book
+      that is the difference between "the signal earned this" and "the market did".
+    - The figures behind this are from synthetic prices and are not results; what carries over is the
+      mechanism, not the size.
+- **Open threads:**
+    - **The style files are still capitalised** — `f_Beta`, `f_Size`, `f_Momentum`, `f_Value`,
+      `f_Residual Volatility`. Unlike the reserved names this costs nothing but the plots' style
+      panel, so it is a presentation choice rather than a correctness one.
+    - The per-asset Brinson-Fachler question stands.
+
 <!-- example: end -->
