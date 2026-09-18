@@ -278,7 +278,7 @@ notebook as a description of what it must do.
 | `securities_panel.py` | reading the refined files, stitching renamed securities into one position, pivoting to `dates x securities` |
 | `portfolio_construction.py` | turning an eligible set into weights through one signature, one rebalance date at a time on a history cut before it — the Portfolio Construction library called inside it where it is installed |
 | `backtest_engine.py` | writing the weight file, running the engine, reading results back — the book's daily weights among them — and aligning variants onto one window |
-| `attribution_analysis.py` | shaping the hand-supplied index and factor files, and the book's daily weights from the backtest, into what the attribution library reads — it rejects a file with only the rebalance dates — and saying what is missing before it tries |
+| `attribution_analysis.py` | shaping the hand-supplied index and factor files, and the book's daily weights from the backtest, into what the attribution library reads — it rejects a file with only the rebalance dates — widening the book to every benchmark constituent at zero weight so the benchmark is compared whole, and saying what is missing before it tries |
 
 **A strategy column is named in exactly two kinds of place: a notebook's setup cell, and the rule.**
 Never in a shared module, so a signal cannot become every later experiment's default without anyone
