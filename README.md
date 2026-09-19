@@ -1,4 +1,4 @@
-# KN Research Process
+# KaxaNuk Research Process
 
 **A template for researching an investment strategy with the KaxaNuk Investment Lab.** Its eight
 steps as a folder structure, with the conventions that let two people share a tool without
